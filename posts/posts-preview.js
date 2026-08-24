@@ -1224,8 +1224,12 @@ function isEditorPageBreakNode(
 ========================================================== */
 
 function showEditorPreviewPage(
-  index
+  index,
+  options = {}
 ) {
+
+  const resetZoom =
+    options.resetZoom !== false;
 
   if (
     editorPreviewPages.length === 0
@@ -1304,11 +1308,19 @@ function showEditorPreviewPage(
 
 
   /*
-    페이지가 바뀌면 이전 페이지에서 확대/이동했던
-    상태가 그대로 남아있으면 어색하므로 초기화.
+    실제로 다른 페이지로 이동한 경우에는 이전 페이지에서
+    확대/이동했던 상태가 그대로 남아있으면 어색하므로 초기화.
+
+    반면 title/source/ratio 토글처럼 "같은 페이지 내용을
+    다시 그리는" 경우(options.resetZoom === false)에는
+    사용자가 맞춰둔 확대/이동 상태를 그대로 유지해야 한다.
   */
 
-  resetMobilePreviewZoomPan();
+  if (resetZoom) {
+
+    resetMobilePreviewZoomPan();
+
+  }
 
 
   requestAnimationFrame(
@@ -1323,7 +1335,14 @@ function showEditorPreviewPage(
    BUILD PAGED PREVIEW
 ========================================================== */
 
-function renderEditorPreviewPages() {
+function renderEditorPreviewPages(
+  options = {}
+) {
+
+  const preserveView =
+    options.preserveView ===
+    true;
+
 
   if (
     !postEditorPreviewPages
@@ -1623,7 +1642,11 @@ function renderEditorPreviewPages() {
     Math.min(
       editorPreviewPageIndex,
       editorPreviewPages.length - 1
-    )
+    ),
+    {
+      resetZoom:
+        !preserveView
+    }
   );
 
   applyEditorPreviewScale();
@@ -1636,7 +1659,9 @@ function renderEditorPreviewPages() {
    UPDATE PREVIEW
 ========================================================== */
 
-function updateEditorPreview() {
+function updateEditorPreview(
+  options = {}
+) {
 
   if (
     !postEditorPreviewPages
@@ -1645,7 +1670,9 @@ function updateEditorPreview() {
   }
 
 
-  renderEditorPreviewPages();
+  renderEditorPreviewPages(
+    options
+  );
 
 }
 
@@ -1742,6 +1769,145 @@ async function exportEditorPreviewAsImages() {
   }
 
 
+  /*
+    ★ export 버튼은 프리뷰 패널 밖(에디터 하단)에 있어서,
+    모바일에서는 프리뷰 시트를 한 번도 열지 않고도
+    바로 export를 누를 수 있다.
+
+    그런데 모바일 프리뷰 섹션은 열려있지 않으면
+    display:none이라 실제 레이아웃 크기가 0이 되고,
+    그 상태에서 updateEditorPreview()(페이지 분할 계산)가
+    돌면 previewPageIsOverflowing이 항상 false로 나와
+    본문 전체가 한 페이지에 잘못 채워진다.
+
+    → export 직전에 (닫혀 있었다면) 화면 밖에서만
+    잠깐 레이아웃을 갖게 만들어 정확히 분할되게 하고,
+    끝나면 원래 상태로 되돌린다.
+  */
+
+  const sectionForExport =
+    postEditorPreviewSection;
+
+  const wasSectionOpenBeforeExport =
+    sectionForExport
+      ?.classList
+      .contains(
+        "is-open"
+      ) ||
+    false;
+
+  let sectionForcedForExport =
+    false;
+
+  if (
+    sectionForExport &&
+    !wasSectionOpenBeforeExport &&
+    isMobilePostEditor()
+  ) {
+
+    /*
+      "is-open"은 모바일 미디어쿼리에서만 display:none을
+      풀어주는 클래스라서, 이 강제 오픈은 모바일에서만
+      의미/부작용이 있다.
+
+      데스크톱은 애초에 이 섹션이 항상 레이아웃을 갖고
+      있으므로(=이 문제가 없으므로) 건드리지 않는다 —
+      건드리면 오히려 현재 열려 있는 실제 프리뷰 패널이
+      export 도중 화면 밖으로 잠깐 밀려나 보이게 된다.
+    */
+
+    sectionForExport
+      .classList
+      .add(
+        "is-open"
+      );
+
+
+    /*
+      단순히 화면 밖(left:-100000px)으로 보내면
+      position:fixed + width:auto인 상태라
+      shrink-to-fit 계산 때문에 안쪽 sheet의
+      width:100%가 기준으로 삼을 너비가 불확실해진다.
+
+      대신 실제 뷰포트 크기(100%)는 그대로 갖되
+      visibility만 숨겨서, 실제로 열었을 때와
+      동일한 레이아웃 폭/높이로 측정되게 한다.
+    */
+
+    sectionForExport.style.position =
+      "fixed";
+
+    sectionForExport.style.left =
+      "0";
+
+    sectionForExport.style.top =
+      "0";
+
+    sectionForExport.style.width =
+      "100%";
+
+    sectionForExport.style.height =
+      "100%";
+
+    sectionForExport.style.visibility =
+      "hidden";
+
+    sectionForExport.style.pointerEvents =
+      "none";
+
+
+    sectionForcedForExport =
+      true;
+
+  }
+
+
+  function restoreForcedExportSection() {
+
+    if (
+      !sectionForcedForExport
+    ) {
+      return;
+    }
+
+
+    sectionForExport
+      .classList
+      .remove(
+        "is-open"
+      );
+
+    sectionForExport.style.removeProperty(
+      "position"
+    );
+
+    sectionForExport.style.removeProperty(
+      "left"
+    );
+
+    sectionForExport.style.removeProperty(
+      "top"
+    );
+
+    sectionForExport.style.removeProperty(
+      "width"
+    );
+
+    sectionForExport.style.removeProperty(
+      "height"
+    );
+
+    sectionForExport.style.removeProperty(
+      "visibility"
+    );
+
+    sectionForExport.style.removeProperty(
+      "pointer-events"
+    );
+
+  }
+
+
   updateEditorPreview();
 
 
@@ -1765,6 +1931,8 @@ async function exportEditorPreviewAsImages() {
     alert(
       "내보낼 미리보기가 없습니다."
     );
+
+    restoreForcedExportSection();
 
     return;
 
@@ -1872,6 +2040,31 @@ const pageHeight =
 
 exportPage.style.textSizeAdjust =
   "100%";
+
+
+      /*
+        ★ padding은 CSS 변수(--post-preview-padding-y/x)로
+        지정되고, 그 변수는 실제 페이지의 부모인
+        postEditorPreviewPages에 얹혀서 상속된다.
+
+        exportPage는 document.body 바로 아래로 옮겨져서
+        그 상속 체인이 끊기므로, 그대로 두면 변수가
+        기본값(34px/30px)으로 되돌아가 실제 QUOTE 설정과
+        다른 여백으로 저장된다.
+
+        → 캡처 직전에 실제 화면에 보이던 페이지의
+        계산된 padding을 그대로 복사해서 고정한다.
+      */
+
+      const computedPagePadding =
+        window.getComputedStyle(
+          page
+        )
+          .padding;
+
+
+      exportPage.style.padding =
+        computedPagePadding;
 
 
       exportPage.hidden =
@@ -2068,10 +2261,15 @@ exportPage.style.textSizeAdjust =
 
     /*
       모든 페이지 다시 원래 표시 상태로.
+      (export는 사용자 네비게이션이 아니므로
+      확대/이동 상태는 건드리지 않는다.)
     */
 
     showEditorPreviewPage(
-      editorPreviewPageIndex
+      editorPreviewPageIndex,
+      {
+        resetZoom: false
+      }
     );
 
 
@@ -2255,7 +2453,10 @@ exportPage.style.textSizeAdjust =
 
 
     showEditorPreviewPage(
-      editorPreviewPageIndex
+      editorPreviewPageIndex,
+      {
+        resetZoom: false
+      }
     );
 
 
@@ -2273,6 +2474,9 @@ exportPage.style.textSizeAdjust =
         "export";
 
     }
+
+
+    restoreForcedExportSection();
 
   }
 
@@ -2296,11 +2500,12 @@ function openEditorPreview() {
   resetPreviewVisibilityOverrides();
 
 
-  updateEditorPreview();
-
-
   if (!postEditorPreviewSection) {
+
+    updateEditorPreview();
+
     return;
+
   }
 
 
@@ -2313,6 +2518,9 @@ function openEditorPreview() {
         "aria-hidden",
         "false"
       );
+
+
+    updateEditorPreview();
 
     return;
 
@@ -2350,6 +2558,21 @@ function openEditorPreview() {
   resetMobilePreviewZoomPan();
 
 
+  /*
+    ★ 페이지네이션(줄바꿈/분할) 계산은
+    실제 레이아웃 높이가 있어야 정확하다.
+
+    section이 아직 display:none인 상태에서
+    updateEditorPreview()를 먼저 부르면
+    모든 페이지의 scrollHeight/clientHeight가 0으로
+    측정되어(previewPageIsOverflowing이 항상 false)
+    title/source가 켜져 있어도 여백을 무시한 채
+    본문 전체가 한 페이지에 잘못 채워진다.
+
+    그래서 is-open을 먼저 붙여 실제 크기를 갖게 한 뒤에
+    updateEditorPreview()를 호출해야 한다.
+  */
+
   postEditorPreviewSection
     .classList
     .add(
@@ -2379,6 +2602,9 @@ function openEditorPreview() {
       "↓";
 
   }
+
+
+  updateEditorPreview();
 
 }
 

@@ -703,48 +703,53 @@
 
             </div>
 
-          </div>
 
+            <!-- ===============================================
+                 PAGE NAVIGATION
 
+                 캔버스(stage) 안쪽에 떠 있는 오버레이.
+                 stage는 핀치 줌/이동 뷰포트라
+                 실제 캔버스 위치는 변할 수 있으므로,
+                 캔버스 모서리가 아니라 stage 하단 중앙에
+                 고정해 항상 같은 자리에 보이게 함.
+            ================================================ -->
 
-          <!-- =================================================
-               PAGE NAVIGATION
-          ================================================== -->
-
-          <div
-            class="post-editor-preview-pagination"
-            id="postEditorPreviewPagination"
-            hidden
-          >
-
-
-            <button
-              class="post-editor-preview-page-button"
-              id="postEditorPreviewPrev"
-              type="button"
-              aria-label="이전 페이지"
+            <div
+              class="post-editor-preview-pagination"
+              id="postEditorPreviewPagination"
+              hidden
             >
-              ‹
-            </button>
 
 
-            <span
-              class="post-editor-preview-page-indicator"
-              id="postEditorPreviewPageIndicator"
-            >
-              1 / 1
-            </span>
+              <button
+                class="post-editor-preview-page-button"
+                id="postEditorPreviewPrev"
+                type="button"
+                aria-label="이전 페이지"
+              >
+                ‹
+              </button>
 
 
-            <button
-              class="post-editor-preview-page-button"
-              id="postEditorPreviewNext"
-              type="button"
-              aria-label="다음 페이지"
-            >
-              ›
-            </button>
+              <span
+                class="post-editor-preview-page-indicator"
+                id="postEditorPreviewPageIndicator"
+              >
+                1 / 1
+              </span>
 
+
+              <button
+                class="post-editor-preview-page-button"
+                id="postEditorPreviewNext"
+                type="button"
+                aria-label="다음 페이지"
+              >
+                ›
+              </button>
+
+
+            </div>
 
           </div>
 

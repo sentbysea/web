@@ -1385,6 +1385,8 @@ body.post-mode .music-button {
 ========================================================== */
 
 .post-editor-preview-stage {
+  position: relative;
+
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -1626,18 +1628,62 @@ text-size-adjust: 100%;
 
 /* =========================================================
    PREVIEW PAGINATION
+
+   더 이상 캔버스 아래 흰 바탕 위에 얹힌 툴바가 아니라,
+   stage(캔버스 뷰포트) 안쪽 하단에 가볍게 떠 있는
+   반투명 오버레이. 캔버스를 가리지 않도록 배경은
+   최소한만 쓰고, 화살표는 원형 버튼으로 분리.
 ========================================================== */
 
 .post-editor-preview-pagination {
+  position: absolute;
+
+  left: 50%;
+  bottom: 10px;
+
+  transform:
+    translateX(-50%);
+
+  z-index: 4;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 16px;
+  gap: 6px;
 
-  min-height: 28px;
+  padding: 3px;
 
-  margin-top: 12px;
+  border-radius: 999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.55
+    );
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  box-shadow:
+    0
+    2px
+    10px
+    rgba(
+      0,
+      0,
+      0,
+      0.06
+    );
+
+  pointer-events: none;
+}
+
+
+.post-editor-preview-pagination > * {
+  pointer-events: auto;
 }
 
 
@@ -1647,30 +1693,42 @@ text-size-adjust: 100%;
 
 
 .post-editor-preview-page-button {
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
 
   padding: 0;
 
   border: 0;
+  border-radius: 50%;
 
-  background: transparent;
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.05
+    );
 
   font-family:
     "Pretendard",
     sans-serif;
 
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 300;
 
   line-height: 1;
 
-  color: #aaaaaa;
+  color: #888888;
 
   cursor: pointer;
 
   transition:
-    color 0.18s ease;
+    color 0.18s ease,
+    background 0.18s ease;
 
   -webkit-tap-highlight-color:
     transparent;
@@ -1679,26 +1737,43 @@ text-size-adjust: 100%;
 
 .post-editor-preview-page-button:hover {
   color: #df8eac;
+
+  background:
+    rgba(
+      223,
+      142,
+      172,
+      0.12
+    );
 }
 
 
 .post-editor-preview-page-button:disabled {
-  color: #dddddd;
+  color: #cccccc;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.03
+    );
 
   cursor: default;
 }
 
 
 .post-editor-preview-page-indicator {
-  min-width: 42px;
+  min-width: 36px;
 
   text-align: center;
 
   font-size: 9px;
+  font-weight: 500;
 
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
 
-  color: #aaaaaa;
+  color: #888888;
 }
 
 /* =========================================================

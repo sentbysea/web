@@ -537,9 +537,21 @@
 
 
 .post-editor-preview-pagination {
-  flex: 0 0 auto;
+  bottom:
+    max(
+      10px,
+      env(safe-area-inset-bottom)
+    );
 
-  margin-top: 9px;
+  gap: 8px;
+}
+
+
+.post-editor-preview-page-button {
+  width: 34px;
+  height: 34px;
+
+  font-size: 17px;
 }
 
 

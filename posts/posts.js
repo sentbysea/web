@@ -1777,7 +1777,11 @@ postEditorPreviewTitleToggle
       syncPreviewVisibilityToggleButtons();
 
 
-      updateEditorPreview();
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
 
     }
   );
@@ -1795,7 +1799,11 @@ postEditorPreviewSourceToggle
       syncPreviewVisibilityToggleButtons();
 
 
-      updateEditorPreview();
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
 
     }
   );
@@ -1813,7 +1821,11 @@ postEditorPreviewSourcePositionFlow
       syncPreviewVisibilityToggleButtons();
 
 
-      updateEditorPreview();
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
 
     }
   );
@@ -1831,7 +1843,11 @@ postEditorPreviewSourcePositionFixed
       syncPreviewVisibilityToggleButtons();
 
 
-      updateEditorPreview();
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
 
     }
   );
@@ -1872,7 +1888,11 @@ postEditorPreviewRatioButtons
           syncPreviewRatioControls();
 
 
-          updateEditorPreview();
+          updateEditorPreview(
+            {
+              preserveView: true
+            }
+          );
 
         }
       );
@@ -1898,7 +1918,11 @@ postEditorPreviewRatioCustomWidth
         "custom"
       ) {
 
-        updateEditorPreview();
+        updateEditorPreview(
+          {
+            preserveView: true
+          }
+        );
 
       }
 
@@ -1923,7 +1947,11 @@ postEditorPreviewRatioCustomHeight
         "custom"
       ) {
 
-        updateEditorPreview();
+        updateEditorPreview(
+          {
+            preserveView: true
+          }
+        );
 
       }
 
