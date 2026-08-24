@@ -1,0 +1,1361 @@
+:root {
+  --heart-size: 60vw;
+  --heart-group-y: -50px;
+  --hint-gap: 20px;
+  --heart-max-size: 420px;
+  --heart-open-opacity: 0.22;
+
+  /* GLOW */
+  --glow-core: 0.58;
+  --glow-mid: 0.38;
+  --glow-outer: 0.20;
+  --glow-edge: 0.08;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+}
+
+
+body {
+  position: relative;
+}
+
+
+/* =========================================================
+   메뉴 버튼
+========================================================== */
+
+.menu-button {
+  position: fixed;
+
+  top:
+    max(
+      16px,
+      env(safe-area-inset-top)
+    );
+
+  left:
+    max(
+      16px,
+      env(safe-area-inset-left)
+    );
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+
+  border:
+    1px solid #f2f2f2;
+
+  background:
+    rgba(255, 255, 255, 0.55);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 100;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.triangle {
+  width: 0;
+  height: 0;
+
+  border-left:
+    5px solid transparent;
+
+  border-right:
+    5px solid transparent;
+
+  border-top:
+    6px solid #222222;
+
+  transition:
+    transform 0.25s ease;
+}
+
+
+.menu-button.open .triangle {
+  transform:
+    rotate(180deg);
+}
+
+
+/* =========================================================
+   메뉴 패널
+========================================================== */
+
+.menu-panel {
+  position: fixed;
+
+  top:
+    calc(
+      max(
+        16px,
+        env(safe-area-inset-top)
+      )
+      + 46px
+    );
+
+  left:
+    max(
+      16px,
+      env(safe-area-inset-left)
+    );
+
+  width: 120px;
+
+  padding:
+    4px 0;
+
+  background:
+    rgba(255, 255, 255, 0.94);
+
+  border:
+    1px solid #eeeeee;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform:
+    translateY(-8px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
+
+  z-index: 99;
+}
+
+
+.menu-panel.open {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateY(0);
+}
+
+
+.menu-panel a {
+  display: block;
+
+  padding:
+    8px 10px;
+
+  color: #333333;
+
+  text-decoration: none;
+
+  font-size: 11px;
+
+  letter-spacing:
+    0.04em;
+}
+
+
+.menu-panel a:hover {
+  background:
+    #f6f6f6;
+
+  color:
+    #aaaaaa;
+}
+
+
+.external-icon {
+  display: inline-block;
+
+  margin-left: 3px;
+
+  font-size: 8px;
+
+  color:
+    #aaaaaa;
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   화면 중앙
+========================================================== */
+
+.viewer-area {
+  position: relative;
+
+  width: 100%;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   하트 그룹
+========================================================== */
+
+.heart-group {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  transform:
+    translateY(
+      var(--heart-group-y)
+    );
+}
+
+
+/* =========================================================
+   하트 + 프로필 영역
+========================================================== */
+
+.heart-stage {
+  position: relative;
+
+  width:
+    var(--heart-size);
+
+  height:
+    var(--heart-size);
+
+  max-width:
+    var(--heart-max-size);
+
+  max-height:
+    var(--heart-max-size);
+
+  overflow: visible;
+
+  isolation: isolate;
+}
+
+
+/* =========================================================
+   하트 뒤 핑크 GLOW
+========================================================== */
+
+.heart-stage::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 118%;
+  height: 118%;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+
+      rgba(
+        255,
+        155,
+        197,
+        var(--glow-core)
+      )
+      0%,
+
+      rgba(
+        255,
+        180,
+        211,
+        var(--glow-mid)
+      )
+      30%,
+
+      rgba(
+        255,
+        206,
+        226,
+        var(--glow-outer)
+      )
+      54%,
+
+      rgba(
+        255,
+        228,
+        239,
+        var(--glow-edge)
+      )
+      70%,
+
+      rgba(
+        255,
+        244,
+        249,
+        0.025
+      )
+      82%,
+
+      rgba(
+        255,
+        255,
+        255,
+        0
+      )
+      100%
+    );
+
+  filter:
+    blur(14px);
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+
+/* =========================================================
+   3D 하트
+========================================================== */
+
+model-viewer {
+  position: relative;
+
+  z-index: 1;
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  background:
+    transparent;
+
+  --poster-color:
+    transparent;
+
+  cursor:
+    grab;
+
+  transition:
+    opacity 0.45s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+model-viewer:active {
+  cursor:
+    grabbing;
+}
+
+
+.heart-group.profile-open model-viewer {
+  opacity:
+    var(--heart-open-opacity);
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   click ♡
+========================================================== */
+
+.hint {
+  margin-top:
+    var(--hint-gap);
+
+  font-size:
+    11px;
+
+  letter-spacing:
+    0.1em;
+
+  color:
+    #999999;
+
+  user-select:
+    none;
+
+  -webkit-user-select:
+    none;
+
+  pointer-events:
+    none;
+
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+
+.heart-group.profile-open .hint {
+  opacity: 0;
+
+  transform:
+    translateY(-4px);
+}
+
+
+/* =========================================================
+   프로필
+========================================================== */
+
+.profile {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 88%;
+
+  transform:
+    translate(-50%, -50%)
+    translateY(8px);
+
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.55s ease,
+    visibility 0.55s ease;
+
+  z-index: 5;
+}
+
+
+.heart-group.profile-open .profile {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translate(-50%, -50%)
+    translateY(0);
+
+  pointer-events: auto;
+
+  cursor: default;
+}
+
+
+/* =========================================================
+   프로필 페이지
+========================================================== */
+
+.profile-page {
+  display: none;
+
+  width: 100%;
+
+  animation:
+    profileFade 0.6s ease;
+}
+
+
+.profile-page.active {
+  display: block;
+}
+
+
+@keyframes profileFade {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================================
+   프로필 1페이지
+========================================================== */
+
+.profile-name {
+  margin-bottom: 20px;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 14px;
+  font-weight: 400;
+
+  letter-spacing:
+    0.14em;
+
+  color: #555555;
+}
+
+
+.profile-text {
+  margin: 0;
+
+  font-size: 10px;
+
+  line-height: 1.9;
+
+  letter-spacing:
+    0.06em;
+
+  color: #777777;
+}
+
+
+/* =========================================================
+   MORE / BACK
+========================================================== */
+
+.profile-nav {
+  display: inline-block;
+
+  margin-top: 27px;
+
+  padding:
+    4px 7px;
+
+  border: 0;
+
+  background:
+    transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+
+  letter-spacing:
+    0.1em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  text-decoration:
+    underline;
+
+  text-decoration-thickness:
+    0.5px;
+
+  text-underline-offset:
+    3px;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.profile-nav:hover {
+  color: #555555;
+}
+
+
+/* =========================================================
+   프로필 2페이지
+========================================================== */
+
+.more-section {
+  margin-bottom: 18px;
+}
+
+
+.more-title {
+  margin-bottom: 10px;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  letter-spacing:
+    0.12em;
+
+  color: #555555;
+}
+
+
+.more-text {
+  margin:
+    0 auto;
+
+  max-width: 290px;
+
+  font-size: 10px;
+
+  line-height: 1.5;
+
+  letter-spacing:
+    0.04em;
+
+  color: #777777;
+}
+
+
+.more-text.from-supabase {
+  white-space:
+    pre-line;
+}
+
+
+.more-section:last-of-type {
+  margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   100회전 LOVE EVENT
+========================================================== */
+
+.love-event {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  opacity: 0;
+  visibility: hidden;
+
+  z-index: 1000;
+}
+
+
+.love-event.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* =========================================================
+   하트비 영역
+========================================================== */
+
+.love-rain {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   떨어지는 ♡ / ୨୧
+========================================================== */
+
+.love-drop {
+  position: absolute;
+
+  top: -32px;
+
+  display: block;
+
+  color:
+    #ee9fbd;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-weight: 400;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  user-select: none;
+
+  -webkit-user-select: none;
+
+  text-shadow:
+    0 0 6px
+    rgba(
+      255,
+      174,
+      207,
+      0.20
+    );
+
+  animation-name:
+    loveFall;
+
+  animation-timing-function:
+    linear;
+
+  animation-fill-mode:
+    both;
+
+  will-change:
+    transform;
+}
+
+
+/* =========================================================
+   하트비 낙하
+========================================================== */
+
+@keyframes loveFall {
+
+  0% {
+
+    transform:
+      translate3d(
+        0,
+        -40px,
+        0
+      )
+      rotate(0deg);
+
+  }
+
+
+  28% {
+
+    transform:
+      translate3d(
+        calc(
+          var(--love-drift)
+          * 0.28
+        ),
+        32dvh,
+        0
+      )
+      rotate(
+        calc(
+          var(--love-rotate)
+          * 0.28
+        )
+      );
+
+  }
+
+
+  58% {
+
+    transform:
+      translate3d(
+        calc(
+          var(--love-drift)
+          * 0.58
+        ),
+        68dvh,
+        0
+      )
+      rotate(
+        calc(
+          var(--love-rotate)
+          * 0.58
+        )
+      );
+
+  }
+
+
+  100% {
+
+    transform:
+      translate3d(
+        var(--love-drift),
+        112dvh,
+        0
+      )
+      rotate(
+        var(--love-rotate)
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   중앙 문구
+========================================================== */
+
+.love-message {
+  position: absolute;
+
+  left: 50%;
+top:
+  calc(
+    50%
+    +
+    var(--heart-group-y)
+    +
+    min(30vw, 210px)
+    +
+    -8px
+  );
+
+  width:
+    calc(
+      100%
+      -
+      48px
+    );
+
+  max-width:
+    440px;
+
+  transform:
+    translate(-50%, -50%)
+    translateY(8px);
+
+  text-align: center;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 400;
+
+  line-height: 1.6;
+
+  letter-spacing:
+    0.08em;
+
+  color:
+    #e893b4;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+.love-event.show
+.love-message {
+
+  animation:
+    loveMessageShow
+    3.4s
+    ease
+    forwards;
+
+}
+
+
+/* =========================================================
+   문구 등장 / 퇴장
+========================================================== */
+
+@keyframes loveMessageShow {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      translateY(8px);
+
+  }
+
+
+  10% {
+
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%)
+      translateY(0);
+
+  }
+
+
+  72% {
+
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%)
+      translateY(0);
+
+  }
+
+
+  100% {
+
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      translateY(-4px);
+
+  }
+
+}
+
+
+/* =========================================================
+   하단 방문자 + COPYRIGHT
+========================================================== */
+
+.site-footer {
+  position: fixed;
+
+  left: 50%;
+  bottom:
+    max(
+      14px,
+      env(safe-area-inset-bottom)
+    );
+
+  transform:
+    translateX(-50%);
+
+  width: max-content;
+
+  text-align: center;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  color: #c7c7c7;
+
+  z-index: 20;
+
+  pointer-events: none;
+}
+
+.today-count {
+  margin-bottom: 5px;
+
+  font-size: 9px;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+.copyright {
+  font-size: 8px;
+
+  letter-spacing:
+    0.07em;
+
+  color:
+    #d0d0d0;
+}
+
+
+/* =========================================================
+   YOUTUBE BGM
+========================================================== */
+
+.music-button {
+  position: fixed;
+
+  right:
+    max(
+      16px,
+      env(safe-area-inset-right)
+    );
+
+  bottom:
+    max(
+      18px,
+      env(safe-area-inset-bottom)
+    );
+
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  border: 0;
+
+  background:
+    transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 13px;
+
+  color: #cfcfcf;
+
+  cursor: pointer;
+
+  z-index: 230;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.music-button:hover {
+  color:
+    #aaaaaa;
+}
+
+
+/* =========================================================
+   YouTube 영상 숨김
+========================================================== */
+
+.youtube-player-shell {
+  position: fixed;
+
+  left: -9999px;
+  top: -9999px;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  overflow: hidden;
+}
+
+
+.youtube-player-shell.open {
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+}
+
+
+.youtube-player-shell iframe {
+  display: block;
+
+  width: 1px;
+  height: 1px;
+
+  border: 0;
+}
+
+
+/* =========================================================
+   모바일
+========================================================== */
+.admin-heart {
+  display: inline;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: inherit;
+
+  font: inherit;
+  line-height: inherit;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  box-shadow: none;
+
+  vertical-align: baseline;
+
+  pointer-events: auto;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+
+.admin-heart:hover {
+  color: #ee9fbd;
+}
+
+
+.admin-heart:focus,
+.admin-heart:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+
+.admin-heart.is-entering {
+  color: #ee9fbd;
+
+  text-shadow:
+    0 0 6px
+    rgba(
+      255,
+      174,
+      207,
+      0.35
+    );
+}
+
+
+@media (max-width: 600px) {
+
+  :root {
+
+    --heart-max-size:
+      none;
+
+    --detail-top:
+      120px;
+
+  }
+
+
+  .heart-stage {
+
+    max-width:
+      none;
+
+    max-height:
+      none;
+
+  }
+
+
+  .heart-group,
+  .heart-group.profile-open,
+  .heart-group.profile-open.detail-open {
+
+    transform:
+      translateY(
+        var(--heart-group-y)
+      );
+
+  }
+
+
+  /* 프로필 1 */
+
+  .profile {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 90%;
+
+    transform:
+      translate(-50%, -50%);
+
+    text-align:
+      center;
+
+  }
+
+
+  .heart-group.profile-open
+  .profile {
+
+    transform:
+      translate(-50%, -50%);
+
+  }
+
+
+  /* 프로필 2 */
+
+  .heart-group.detail-open
+  .profile,
+
+  .heart-group.profile-open.detail-open
+  .profile {
+
+    position: absolute;
+
+    left: 50%;
+
+    top:
+      calc(
+        var(--detail-top)
+        -
+        50dvh
+        -
+        var(--heart-group-y)
+        +
+        30vw
+      );
+
+    width:
+      calc(
+        100vw
+        -
+        44px
+      );
+
+    max-width:
+      420px;
+
+    transform:
+      translateX(-50%);
+
+  }
+
+
+  #profilePage2 {
+
+    width:
+      100%;
+
+    text-align:
+      center;
+
+  }
+
+
+  .more-section {
+
+    width:
+      100%;
+
+    margin-left:
+      auto;
+
+    margin-right:
+      auto;
+
+    margin-bottom:
+      18px;
+
+  }
+
+
+  .more-title {
+
+    margin-bottom:
+      10px;
+
+  }
+
+
+  .more-text {
+
+    width:
+      100%;
+
+    max-width:
+      340px;
+
+    margin-left:
+      auto;
+
+    margin-right:
+      auto;
+
+    text-align:
+      center;
+
+    line-height:
+      1.5;
+
+  }
+
+
+  #backButton {
+
+    margin-top:
+      12px;
+
+  }
+
+
+  /* LOVE EVENT 모바일 */
+
+  .love-message {
+
+    width:
+      calc(
+        100%
+        -
+        34px
+      );
+
+    font-size:
+      12px;
+
+    letter-spacing:
+      0.055em;
+
+  }
+
+
+  .love-drop {
+
+    text-shadow:
+      0 0 4px
+      rgba(
+        255,
+        174,
+        207,
+        0.16
+      );
+
+  }
+}

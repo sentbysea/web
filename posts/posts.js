@@ -1,0 +1,2452 @@
+/* =========================================================
+   POSTS
+========================================================== */
+
+
+/* =========================================================
+   ROUTING
+========================================================== */
+
+const SITE_BASE_PATH =
+  window.location.hostname.endsWith(".github.io")
+    ? (
+        "/" +
+        (
+          window.location.pathname
+            .split("/")
+            .filter(Boolean)[0] || ""
+        )
+      ).replace(/\/$/, "")
+    : "";
+
+
+function buildPostRoute(path = "/") {
+
+  const normalizedPath =
+    path.startsWith("/")
+      ? path
+      : `/${path}`;
+
+  return (
+    `${SITE_BASE_PATH}${normalizedPath}` ||
+    "/"
+  );
+
+}
+
+
+function getPostRoutePath() {
+
+  let pathname =
+    window.location.pathname;
+
+
+  if (
+    SITE_BASE_PATH &&
+    pathname.startsWith(
+      SITE_BASE_PATH
+    )
+  ) {
+
+    pathname =
+      pathname.slice(
+        SITE_BASE_PATH.length
+      ) || "/";
+
+  }
+
+
+  return pathname;
+
+}
+
+
+
+/* =========================================================
+   ELEMENTS
+========================================================== */
+
+const postArea =
+  document.getElementById(
+    "postArea"
+  );
+
+const postPageTitle =
+  document.getElementById(
+    "postPageTitle"
+  );
+
+const postList =
+  document.getElementById(
+    "postList"
+  );
+
+const postDetail =
+  document.getElementById(
+    "postDetail"
+  );
+
+const postDetailTitle =
+  document.getElementById(
+    "postDetailTitle"
+  );
+
+const postDetailDate =
+  document.getElementById(
+    "postDetailDate"
+  );
+
+const postDetailContent =
+  document.getElementById(
+    "postDetailContent"
+  );
+
+const postBackButton =
+  document.getElementById(
+    "postBackButton"
+  );
+
+const postAddButton =
+  document.getElementById(
+    "postAddButton"
+  );
+
+const postDetailActions =
+  document.getElementById(
+    "postDetailActions"
+  );
+
+const postEditButton =
+  document.getElementById(
+    "postEditButton"
+  );
+
+const postDeleteButton =
+  document.getElementById(
+    "postDeleteButton"
+  );
+
+const postRelated =
+  document.getElementById(
+    "postRelated"
+  );
+
+const postRelatedTitle =
+  document.getElementById(
+    "postRelatedTitle"
+  );
+
+const postRelatedList =
+  document.getElementById(
+    "postRelatedList"
+  );
+
+
+
+/* =========================================================
+   EDITOR
+========================================================== */
+
+const postEditor =
+  document.getElementById(
+    "postEditor"
+  );
+
+const postEditorCategory =
+  document.getElementById(
+    "postEditorCategory"
+  );
+
+const postEditorTitle =
+  document.getElementById(
+    "postEditorTitle"
+  );
+
+const postEditorContent =
+  document.getElementById(
+    "postEditorContent"
+  );
+
+const postEditorCancelButton =
+  document.getElementById(
+    "postEditorCancelButton"
+  );
+
+const postEditorSaveButton =
+  document.getElementById(
+    "postEditorSaveButton"
+  );
+
+const postEditorExportButton =
+  document.getElementById(
+    "postEditorExportButton"
+  );
+
+const postEditorMessage =
+  document.getElementById(
+    "postEditorMessage"
+  );
+
+
+
+/* =========================================================
+   TOOLBAR
+========================================================== */
+
+const postEditorFontToggle =
+  document.getElementById(
+    "postEditorFontToggle"
+  );
+
+const postEditorHighlightPreset =
+  document.getElementById(
+    "postEditorHighlightPreset"
+  );
+
+const postEditorPresetSwatch =
+  document.getElementById(
+    "postEditorPresetSwatch"
+  );
+
+const postEditorCustomColor =
+  document.getElementById(
+    "postEditorCustomColor"
+  );
+
+const postEditorCustomSwatch =
+  document.getElementById(
+    "postEditorCustomSwatch"
+  );
+
+const postEditorClearStyle =
+  document.getElementById(
+    "postEditorClearStyle"
+  );
+
+const postEditorPresetSelect =
+  document.getElementById(
+    "postEditorPresetSelect"
+  );
+
+  const postEditorCustomControl =
+  document.querySelector(
+    ".post-highlight-custom-control"
+  );
+
+
+/* =========================================================
+   PREVIEW
+========================================================== */
+
+const postEditorPreviewToggle =
+  document.getElementById(
+    "postEditorPreviewToggle"
+  );
+
+const postEditorPreviewToggleIcon =
+  document.getElementById(
+    "postEditorPreviewToggleIcon"
+  );
+
+const postEditorPreviewSection =
+  document.getElementById(
+    "postEditorPreviewSection"
+  );
+
+const postEditorPreviewBackdrop =
+  document.getElementById(
+    "postEditorPreviewBackdrop"
+  );
+
+const postEditorPreviewSheet =
+  document.getElementById(
+    "postEditorPreviewSheet"
+  );
+
+const postEditorPreviewDragHandle =
+  document.getElementById(
+    "postEditorPreviewDragHandle"
+  );
+
+const postEditorPreviewStage =
+  document.getElementById(
+    "postEditorPreviewStage"
+  );
+
+const postEditorPreviewClose =
+  document.getElementById(
+    "postEditorPreviewClose"
+  );
+
+const postEditorPreviewTitleToggle =
+  document.getElementById(
+    "postEditorPreviewTitleToggle"
+  );
+
+const postEditorPreviewSourceToggle =
+  document.getElementById(
+    "postEditorPreviewSourceToggle"
+  );
+
+const postEditorPreviewSourcePositionRow =
+  document.getElementById(
+    "postEditorPreviewSourcePositionRow"
+  );
+
+const postEditorPreviewSourcePositionFlow =
+  document.getElementById(
+    "postEditorPreviewSourcePositionFlow"
+  );
+
+const postEditorPreviewSourcePositionFixed =
+  document.getElementById(
+    "postEditorPreviewSourcePositionFixed"
+  );
+
+const postEditorPreviewRatioTrigger =
+  document.getElementById(
+    "postEditorPreviewRatioTrigger"
+  );
+
+const postEditorPreviewRatioControls =
+  document.getElementById(
+    "postEditorPreviewRatioControls"
+  );
+
+const postEditorPreviewRatioButtons =
+  document.querySelectorAll(
+    "#postEditorPreviewRatioControls .post-editor-preview-ratio-button"
+  );
+
+const postEditorPreviewRatioCustomInputs =
+  document.getElementById(
+    "postEditorPreviewRatioCustomInputs"
+  );
+
+const postEditorPreviewRatioCustomWidth =
+  document.getElementById(
+    "postEditorPreviewRatioCustomWidth"
+  );
+
+const postEditorPreviewRatioCustomHeight =
+  document.getElementById(
+    "postEditorPreviewRatioCustomHeight"
+  );
+
+const postEditorPreviewTitle =
+  document.getElementById(
+    "postEditorPreviewTitle"
+  );
+
+const postEditorPreviewContent =
+  document.getElementById(
+    "postEditorPreviewContent"
+  );
+
+  /* =========================================================
+   PAGED PREVIEW
+========================================================== */
+
+const postEditorPageBreak =
+  document.getElementById(
+    "postEditorPageBreak"
+  );
+
+
+const postEditorPreviewPages =
+  document.getElementById(
+    "postEditorPreviewPages"
+  );
+
+
+const postEditorPreviewPagination =
+  document.getElementById(
+    "postEditorPreviewPagination"
+  );
+
+
+const postEditorPreviewPrev =
+  document.getElementById(
+    "postEditorPreviewPrev"
+  );
+
+
+const postEditorPreviewNext =
+  document.getElementById(
+    "postEditorPreviewNext"
+  );
+
+
+const postEditorPreviewPageIndicator =
+  document.getElementById(
+    "postEditorPreviewPageIndicator"
+  );
+
+
+const categoryMenuLinks =
+  document.getElementById(
+    "categoryMenuLinks"
+  );
+
+
+
+/* =========================================================
+   STATE
+========================================================== */
+
+let currentPostCategoryId =
+  null;
+
+let currentPostId =
+  null;
+
+let currentPostOwnerId =
+  null;
+
+let currentPostView =
+  "home";
+
+
+let currentEditorMode =
+  null;
+
+let editorSourcePostId =
+  null;
+
+
+let postStyleSettings =
+  null;
+
+
+/*
+  contenteditable에서 마지막으로 잡은 선택영역.
+
+  툴바나 컬러피커를 눌렀을 때
+  선택이 풀리는 문제를 막기 위해 저장함.
+*/
+
+let savedEditorRange =
+  null;
+
+
+let postCurtainAnimation =
+  null;
+
+/* =========================================================
+   PREVIEW PAGE STATE
+========================================================== */
+
+let editorPreviewPages =
+  [];
+
+
+let editorPreviewPageIndex =
+  0;
+
+/* =========================================================
+   MOBILE PREVIEW SCALE
+
+   applyEditorPreviewScale
+
+   -> posts-preview.js 로 이동함.
+========================================================== */
+
+
+
+/* =========================================================
+   POST TRANSITION / POST TRANSITION OUT
+
+   showPostArea, hidePostAreaCurtain
+
+   -> posts-view.js 로 이동함.
+========================================================== */
+
+
+
+
+
+/* =========================================================
+   VIBE PRESET / HIGHLIGHT / ACTION-DIALOGUE / BODY STYLE / RENDER POST
+
+   loadPostStylePreset, getPresetHighlightColor,
+   getSafeHighlightColor, updatePresetHighlightSwatch,
+   updateCustomHighlightSwatch, replaceActionDialogueTextNode,
+   applyActionDialogueStyles, applyPostBodyStyles,
+   renderStyledPostContentInto, renderStyledPostContent
+
+   -> posts-style.js 로 이동함.
+
+   SAFE HTML (sanitizeRichNode 등) -> posts-sanitize.js 로 이동함.
+========================================================== */
+
+
+
+/* =========================================================
+   DATE
+
+   formatPostListDate / formatPostDetailDate
+
+   -> posts-format.js 로 이동함.
+========================================================== */
+
+
+
+/* =========================================================
+   MENU
+========================================================== */
+
+function closePostMenu() {
+
+  menuPanel?.classList.remove(
+    "open"
+  );
+
+
+  menuButton?.classList.remove(
+    "open"
+  );
+
+
+  menuButton?.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+
+/* =========================================================
+   AUTH
+========================================================== */
+
+async function getSignedInUser() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+
+  if (
+    error ||
+    !data?.user
+  ) {
+
+    return null;
+
+  }
+
+
+  return data.user;
+
+}
+
+
+
+/* =========================================================
+   EDITOR MESSAGE / CATEGORY / RICH EDITOR SELECTION /
+   RANGE HELPERS / FONT TOGGLE / HIGHLIGHT / CLEAR STYLE /
+   TOOLBAR STATE / EDITOR CONTENT
+
+   showPostEditorMessage, loadPostEditorCategories,
+   nodeIsInsideEditor, saveEditorSelection, restoreEditorSelection,
+   getEditorRange, selectWrappedContent, unwrapElement,
+   closestRichStyle, toggleEditorFont, applyEditorHighlight,
+   stripRichStylesFromFragment, clearEditorStyle,
+   updateEditorToolbarState, clearRichEditor, setRichEditorContent,
+   getRichEditorHTML, getRichEditorPlainText
+
+   -> posts-editor.js 로 이동함.
+========================================================== */
+
+
+/* =========================================================
+   EDITOR PREVIEW ~ MOBILE PREVIEW
+
+   getPostPreviewRatio, applyPostPreviewPresetVariables,
+   applyPreviewTitleStyle, applyPreviewLineBreakMode,
+   createPreviewSource, createEditorPreviewPage,
+   previewPageIsOverflowing, isEditorPageBreakNode,
+   showEditorPreviewPage, renderEditorPreviewPages,
+   updateEditorPreview, waitForExport, getExportBaseFileName,
+   downloadDataUrl, exportEditorPreviewAsImages,
+   isMobilePostEditor, openEditorPreview, closeEditorPreview,
+   syncEditorPreviewMode
+
+   -> posts-preview.js 로 이동함.
+========================================================== */
+
+
+
+
+
+/* =========================================================
+   PREPARE EDITOR ~ CANCEL EDITOR
+
+   prepareEditorUI, hidePostEditor, updatePostAddButton,
+   closePostArea, openCategoryPage, openPostPage,
+   updatePostOwnerActions, loadRelatedPosts,
+   openNewPostEditor, openPostEditor, cancelPostEditor
+
+   -> posts-view.js 로 이동함.
+========================================================== */
+
+
+
+
+
+/* =========================================================
+   CATEGORY MENU
+========================================================== */
+
+categoryMenuLinks
+  ?.addEventListener(
+    "click",
+    async event => {
+
+      const link =
+        event.target.closest(
+          "a[data-category-id]"
+        );
+
+
+      if (!link) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      await openCategoryPage(
+        link.dataset.categoryId
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   POST LIST
+========================================================== */
+
+postList
+  ?.addEventListener(
+    "click",
+    async event => {
+
+      const item =
+        event.target.closest(
+          ".post-list-item"
+        );
+
+
+      if (!item) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      await openPostPage(
+        item.dataset.postId
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   RELATED
+========================================================== */
+
+postRelatedList
+  ?.addEventListener(
+    "click",
+    async event => {
+
+      const item =
+        event.target.closest(
+          "[data-post-id]"
+        );
+
+
+      if (!item) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      postArea.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+
+      await openPostPage(
+        item.dataset.postId
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   BACK
+========================================================== */
+
+postBackButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        currentPostView ===
+          "editor"
+      ) {
+
+        await cancelPostEditor();
+
+        return;
+
+      }
+
+
+      if (
+        currentPostView ===
+          "post" &&
+        currentPostCategoryId
+      ) {
+
+        await openCategoryPage(
+          currentPostCategoryId
+        );
+
+        return;
+
+      }
+
+
+      await closePostArea();
+
+    }
+  );
+
+
+
+/* =========================================================
+   EDIT
+========================================================== */
+
+postEditButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (!currentPostId) {
+        return;
+      }
+
+
+      await openPostEditor(
+        currentPostId
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   DELETE
+========================================================== */
+
+postDeleteButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (!currentPostId) {
+        return;
+      }
+
+
+      if (
+        !confirm(
+          "이 글을 삭제할까요?"
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      const user =
+        await getSignedInUser();
+
+
+      if (
+        !user ||
+        user.id !==
+          currentPostOwnerId
+      ) {
+
+        return;
+
+      }
+
+
+      const categoryId =
+        currentPostCategoryId;
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from(
+            "posts"
+          )
+          .delete()
+          .eq(
+            "id",
+            currentPostId
+          )
+          .eq(
+            "user_id",
+            user.id
+          );
+
+
+      if (error) {
+
+        console.error(
+          error
+        );
+
+
+        alert(
+          "삭제하지 못했습니다."
+        );
+
+
+        return;
+
+      }
+
+
+      await openCategoryPage(
+        categoryId
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   ADD
+========================================================== */
+
+postAddButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      await openNewPostEditor(
+        currentPostCategoryId
+      );
+
+    }
+  );
+
+/* =========================================================
+   MANUAL PAGE BREAK
+========================================================== */
+
+function insertEditorPageBreak() {
+
+  if (
+    !postEditorContent
+  ) {
+    return;
+  }
+
+
+  /*
+    toolbar 클릭 직전 저장된
+    caret 위치 복원.
+  */
+
+  restoreEditorSelection();
+
+
+  const selection =
+    window.getSelection();
+
+
+  if (
+    !selection ||
+    selection.rangeCount === 0
+  ) {
+
+    showPostEditorMessage(
+      "페이지를 나눌 위치에 커서를 놓아주세요."
+    );
+
+
+    return;
+
+  }
+
+
+  const range =
+    selection.getRangeAt(
+      0
+    );
+
+
+  if (
+    !nodeIsInsideEditor(
+      range.startContainer
+    )
+  ) {
+
+    showPostEditorMessage(
+      "페이지를 나눌 위치에 커서를 놓아주세요."
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+    선택된 글자가 있다면
+    선택 시작점을 기준으로 삽입.
+  */
+
+  range.collapse(
+    true
+  );
+
+
+  const marker =
+    document.createElement(
+      "div"
+    );
+
+
+  marker.className =
+    "post-editor-page-break";
+
+
+  marker.dataset.pageBreak =
+    "true";
+
+
+  marker.setAttribute(
+    "contenteditable",
+    "false"
+  );
+
+
+  marker.textContent =
+    "PAGE BREAK";
+
+
+  /*
+    editor 자체에 커서가 있는 경우
+  */
+
+  if (
+    range.startContainer ===
+    postEditorContent
+  ) {
+
+    const reference =
+      postEditorContent.childNodes[
+        range.startOffset
+      ] || null;
+
+
+    postEditorContent.insertBefore(
+      marker,
+      reference
+    );
+
+  }
+
+
+  /*
+    일반 텍스트 바로 위에 커서가 있는 경우:
+    텍스트를 정확히 그 위치에서 둘로 나눔.
+  */
+
+  else if (
+    range.startContainer.nodeType ===
+      Node.TEXT_NODE
+    &&
+    range.startContainer.parentNode ===
+      postEditorContent
+  ) {
+
+    const textNode =
+      range.startContainer;
+
+
+    const offset =
+      range.startOffset;
+
+
+    const after =
+      textNode.splitText(
+        offset
+      );
+
+
+    postEditorContent.insertBefore(
+      marker,
+      after
+    );
+
+  }
+
+
+  /*
+    highlight 등 내부 span 안에 있는 경우에는
+    해당 최상위 덩어리 다음에서 나눔.
+  */
+
+  else {
+
+    let topLevel =
+      range.startContainer
+        .nodeType ===
+        Node.ELEMENT_NODE
+          ? range.startContainer
+          : range.startContainer
+              .parentElement;
+
+
+    while (
+      topLevel &&
+      topLevel.parentNode !==
+        postEditorContent
+    ) {
+
+      topLevel =
+        topLevel.parentElement;
+
+    }
+
+
+    if (topLevel) {
+
+      topLevel.after(
+        marker
+      );
+
+    }
+
+
+    else {
+
+      postEditorContent.appendChild(
+        marker
+      );
+
+    }
+
+  }
+
+
+  /*
+    커서를 PAGE BREAK 뒤로 이동.
+  */
+
+  const nextRange =
+    document.createRange();
+
+
+  nextRange.setStartAfter(
+    marker
+  );
+
+
+  nextRange.collapse(
+    true
+  );
+
+
+  selection.removeAllRanges();
+
+
+  selection.addRange(
+    nextRange
+  );
+
+
+  savedEditorRange =
+    nextRange.cloneRange();
+
+
+  postEditorContent.focus();
+
+
+  showPostEditorMessage(
+    ""
+  );
+
+
+  updateEditorPreview();
+
+}
+
+/* =========================================================
+   RICH EDITOR EVENTS
+========================================================== */
+
+postEditorTitle
+  ?.addEventListener(
+    "input",
+    updateEditorPreview
+  );
+
+
+postEditorContent
+  ?.addEventListener(
+    "input",
+    () => {
+
+      saveEditorSelection();
+
+      updateEditorPreview();
+
+    }
+  );
+
+
+postEditorContent
+  ?.addEventListener(
+    "keyup",
+    saveEditorSelection
+  );
+
+
+postEditorContent
+  ?.addEventListener(
+    "mouseup",
+    saveEditorSelection
+  );
+
+
+postEditorContent
+  ?.addEventListener(
+    "touchend",
+    () => {
+
+      setTimeout(
+        saveEditorSelection,
+        0
+      );
+
+    }
+  );
+
+
+document.addEventListener(
+  "selectionchange",
+  () => {
+
+    const selection =
+      window.getSelection();
+
+
+    if (
+      !selection ||
+      selection.rangeCount === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const range =
+      selection.getRangeAt(
+        0
+      );
+
+
+    if (
+      nodeIsInsideEditor(
+        range.commonAncestorContainer
+      )
+    ) {
+
+      saveEditorSelection();
+
+    }
+
+  }
+);
+
+/* =========================================================
+   ENTER = SIMPLE LINE BREAK
+========================================================== */
+
+postEditorContent
+  ?.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key !== "Enter"
+      ) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      const selection =
+        window.getSelection();
+
+
+      if (
+        !selection ||
+        selection.rangeCount === 0
+      ) {
+        return;
+      }
+
+
+      const range =
+        selection.getRangeAt(
+          0
+        );
+
+
+      if (
+        !nodeIsInsideEditor(
+          range.commonAncestorContainer
+        )
+      ) {
+        return;
+      }
+
+
+      range.deleteContents();
+
+
+      const br =
+        document.createElement(
+          "br"
+        );
+
+
+      range.insertNode(
+        br
+      );
+
+
+      const nextRange =
+        document.createRange();
+
+
+      nextRange.setStartAfter(
+        br
+      );
+
+
+      nextRange.collapse(
+        true
+      );
+
+
+      selection.removeAllRanges();
+
+
+      selection.addRange(
+        nextRange
+      );
+
+
+      savedEditorRange =
+        nextRange.cloneRange();
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+/* =========================================================
+   PASTE
+   일반 텍스트 + 줄바꿈 그대로 붙여넣기
+========================================================== */
+
+postEditorContent
+  ?.addEventListener(
+    "paste",
+    event => {
+
+      const selection =
+        window.getSelection();
+
+
+      if (
+        !selection ||
+        selection.rangeCount === 0
+      ) {
+        return;
+      }
+
+
+      const range =
+        selection.getRangeAt(0);
+
+
+      if (
+        !nodeIsInsideEditor(
+          range.commonAncestorContainer
+        )
+      ) {
+        return;
+      }
+
+
+      const text =
+        event.clipboardData
+          ?.getData("text/plain");
+
+
+      /*
+        브라우저에서 텍스트를 못 가져온 경우에는
+        기본 붙여넣기를 막지 않음.
+      */
+
+      if (
+        typeof text !== "string"
+      ) {
+        return;
+      }
+
+
+      event.preventDefault();
+
+
+      range.deleteContents();
+
+
+      const fragment =
+        document.createDocumentFragment();
+
+
+      const lines =
+        text.split(/\r?\n/);
+
+
+      let lastNode =
+        null;
+
+
+      lines.forEach(
+        (line, index) => {
+
+          const textNode =
+            document.createTextNode(
+              line
+            );
+
+
+          fragment.appendChild(
+            textNode
+          );
+
+
+          lastNode =
+            textNode;
+
+
+          if (
+            index <
+            lines.length - 1
+          ) {
+
+            const br =
+              document.createElement(
+                "br"
+              );
+
+
+            fragment.appendChild(
+              br
+            );
+
+
+            lastNode =
+              br;
+
+          }
+
+        }
+      );
+
+
+      range.insertNode(
+        fragment
+      );
+
+
+      if (lastNode) {
+
+        range.setStartAfter(
+          lastNode
+        );
+
+
+        range.collapse(true);
+
+
+        selection.removeAllRanges();
+
+
+        selection.addRange(
+          range
+        );
+
+
+        savedEditorRange =
+          range.cloneRange();
+
+      }
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+  /* =========================================================
+   TOOLBAR SELECTION KEEP
+========================================================== */
+
+function captureEditorSelectionBeforeToolbar() {
+
+  const selection =
+    window.getSelection();
+
+
+  if (
+    !selection ||
+    selection.rangeCount === 0
+  ) {
+    return;
+  }
+
+
+  const range =
+    selection.getRangeAt(0);
+
+
+  if (
+    range.collapsed ||
+    !nodeIsInsideEditor(
+      range.commonAncestorContainer
+    )
+  ) {
+    return;
+  }
+
+
+  savedEditorRange =
+    range.cloneRange();
+
+}
+
+function captureEditorCaretBeforeToolbar() {
+
+  const selection =
+    window.getSelection();
+
+
+  if (
+    !selection ||
+    selection.rangeCount === 0
+  ) {
+    return;
+  }
+
+
+  const range =
+    selection.getRangeAt(
+      0
+    );
+
+
+  if (
+    !nodeIsInsideEditor(
+      range.startContainer
+    )
+  ) {
+    return;
+  }
+
+
+  savedEditorRange =
+    range.cloneRange();
+
+}
+
+/*
+  데스크톱 + 모바일 둘 다 pointerdown 사용
+*/
+
+[
+  postEditorFontToggle,
+  postEditorHighlightPreset,
+  postEditorClearStyle
+].forEach(
+  button => {
+
+    button
+      ?.addEventListener(
+        "pointerdown",
+        event => {
+
+          captureEditorSelectionBeforeToolbar();
+
+          /*
+            버튼이 focus를 훔치지 못하게 함.
+          */
+          event.preventDefault();
+
+        }
+      );
+
+  }
+);
+
+/* =========================================================
+   FONT BUTTON
+========================================================== */
+
+postEditorFontToggle
+  ?.addEventListener(
+    "click",
+    () => {
+
+      toggleEditorFont();
+
+    }
+  );
+
+/* =========================================================
+   PAGE BREAK
+========================================================== */
+
+postEditorPageBreak
+  ?.addEventListener(
+    "pointerdown",
+    event => {
+
+      captureEditorCaretBeforeToolbar();
+
+      event.preventDefault();
+
+    }
+  );
+
+
+postEditorPageBreak
+  ?.addEventListener(
+    "click",
+    insertEditorPageBreak
+  );
+
+  /* =========================================================
+   PREVIEW PAGE NAV
+========================================================== */
+
+postEditorPreviewPrev
+  ?.addEventListener(
+    "click",
+    () => {
+
+      showEditorPreviewPage(
+        editorPreviewPageIndex - 1
+      );
+
+    }
+  );
+
+
+postEditorPreviewNext
+  ?.addEventListener(
+    "click",
+    () => {
+
+      showEditorPreviewPage(
+        editorPreviewPageIndex + 1
+      );
+
+    }
+  );
+
+/* =========================================================
+   PRESET HIGHLIGHT
+========================================================== */
+
+
+postEditorHighlightPreset
+  ?.addEventListener(
+    "click",
+    () => {
+
+      applyEditorHighlight(
+        getPresetHighlightColor()
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   CUSTOM HIGHLIGHT
+========================================================== */
+
+/*
+  컬러피커를 여는 순간에도
+  현재 선택영역을 먼저 저장해 둠.
+*/
+
+postEditorCustomControl
+  ?.addEventListener(
+    "pointerdown",
+    () => {
+
+      captureEditorSelectionBeforeToolbar();
+
+    }
+  );
+
+postEditorCustomColor
+  ?.addEventListener(
+    "focus",
+    () => {
+
+      updateCustomHighlightSwatch();
+
+    }
+  );
+
+
+postEditorCustomColor
+  ?.addEventListener(
+    "input",
+    updateCustomHighlightSwatch
+  );
+
+
+postEditorCustomColor
+  ?.addEventListener(
+    "change",
+    () => {
+
+      updateCustomHighlightSwatch();
+
+
+      applyEditorHighlight(
+        postEditorCustomColor.value
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   CLEAR
+========================================================== */
+
+
+postEditorClearStyle
+  ?.addEventListener(
+    "click",
+    clearEditorStyle
+  );
+
+
+
+/* =========================================================
+   PRESET SELECT
+========================================================== */
+
+postEditorPresetSelect
+  ?.addEventListener(
+    "change",
+    () => {
+
+      applyPostPresetById(
+        postEditorPresetSelect.value
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   PREVIEW OPEN / CLOSE
+========================================================== */
+
+postEditorPreviewToggle
+  ?.addEventListener(
+    "click",
+    () => {
+
+      const isOpen =
+        postEditorPreviewSection
+          ?.classList
+          .contains(
+            "is-open"
+          );
+
+
+      if (isOpen) {
+
+        closeEditorPreview();
+
+      }
+
+
+      else {
+
+        openEditorPreview();
+
+      }
+
+    }
+  );
+
+
+postEditorPreviewClose
+  ?.addEventListener(
+    "click",
+    closeEditorPreview
+  );
+
+
+postEditorPreviewBackdrop
+  ?.addEventListener(
+    "click",
+    closeEditorPreview
+  );
+
+
+
+/* =========================================================
+   PREVIEW TITLE / SOURCE VISIBILITY TOGGLE
+========================================================== */
+
+postEditorPreviewTitleToggle
+  ?.addEventListener(
+    "click",
+    () => {
+
+      previewTitleVisible =
+        !previewTitleVisible;
+
+
+      syncPreviewVisibilityToggleButtons();
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+
+postEditorPreviewSourceToggle
+  ?.addEventListener(
+    "click",
+    () => {
+
+      previewSourceVisible =
+        !previewSourceVisible;
+
+
+      syncPreviewVisibilityToggleButtons();
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+
+postEditorPreviewSourcePositionFlow
+  ?.addEventListener(
+    "click",
+    () => {
+
+      previewSourcePosition =
+        "flow";
+
+
+      syncPreviewVisibilityToggleButtons();
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+
+postEditorPreviewSourcePositionFixed
+  ?.addEventListener(
+    "click",
+    () => {
+
+      previewSourcePosition =
+        "fixed";
+
+
+      syncPreviewVisibilityToggleButtons();
+
+
+      updateEditorPreview();
+
+    }
+  );
+
+
+postEditorPreviewRatioTrigger
+  ?.addEventListener(
+    "click",
+    () => {
+
+      previewRatioRowExpanded =
+        !previewRatioRowExpanded;
+
+
+      syncPreviewRatioControls();
+
+    }
+  );
+
+
+
+/* =========================================================
+   PREVIEW RATIO CONTROLS
+========================================================== */
+
+postEditorPreviewRatioButtons
+  ?.forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          previewRatioMode =
+            button.dataset.ratio;
+
+
+          syncPreviewRatioControls();
+
+
+          updateEditorPreview();
+
+        }
+      );
+
+    }
+  );
+
+
+postEditorPreviewRatioCustomWidth
+  ?.addEventListener(
+    "input",
+    () => {
+
+      previewCustomRatioWidth =
+        Number(
+          postEditorPreviewRatioCustomWidth.value
+        ) ||
+        1;
+
+
+      if (
+        previewRatioMode ===
+        "custom"
+      ) {
+
+        updateEditorPreview();
+
+      }
+
+    }
+  );
+
+
+postEditorPreviewRatioCustomHeight
+  ?.addEventListener(
+    "input",
+    () => {
+
+      previewCustomRatioHeight =
+        Number(
+          postEditorPreviewRatioCustomHeight.value
+        ) ||
+        1;
+
+
+      if (
+        previewRatioMode ===
+        "custom"
+      ) {
+
+        updateEditorPreview();
+
+      }
+
+    }
+  );
+
+
+
+/* =========================================================
+   MOBILE PREVIEW PINCH ZOOM / PAN
+========================================================== */
+
+postEditorPreviewStage
+  ?.addEventListener(
+    "pointerdown",
+    handlePreviewStagePointerDown
+  );
+
+
+postEditorPreviewStage
+  ?.addEventListener(
+    "pointermove",
+    handlePreviewStagePointerMove
+  );
+
+
+postEditorPreviewStage
+  ?.addEventListener(
+    "pointerup",
+    handlePreviewStagePointerUp
+  );
+
+
+postEditorPreviewStage
+  ?.addEventListener(
+    "pointercancel",
+    handlePreviewStagePointerUp
+  );
+
+
+
+/* =========================================================
+   MOBILE PREVIEW SHEET RESIZE
+========================================================== */
+
+postEditorPreviewDragHandle
+  ?.addEventListener(
+    "pointerdown",
+    handlePreviewDragPointerDown
+  );
+
+
+postEditorPreviewDragHandle
+  ?.addEventListener(
+    "pointermove",
+    handlePreviewDragPointerMove
+  );
+
+
+postEditorPreviewDragHandle
+  ?.addEventListener(
+    "pointerup",
+    handlePreviewDragPointerUp
+  );
+
+
+postEditorPreviewDragHandle
+  ?.addEventListener(
+    "pointercancel",
+    handlePreviewDragPointerUp
+  );
+
+
+
+/* =========================================================
+   ESC
+========================================================== */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key ===
+        "Escape" &&
+      postEditorPreviewSection
+        ?.classList
+        .contains(
+          "is-open"
+        )
+    ) {
+
+      closeEditorPreview();
+
+    }
+
+  }
+);
+
+
+
+/* =========================================================
+   RESPONSIVE PREVIEW
+========================================================== */
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    syncEditorPreviewMode();
+
+
+    if (
+      currentPostView ===
+      "editor"
+    ) {
+
+      updateEditorPreview();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CANCEL
+========================================================== */
+
+postEditorCancelButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      await cancelPostEditor();
+
+    }
+  );
+
+/* =========================================================
+   EXPORT
+========================================================== */
+
+postEditorExportButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      await exportEditorPreviewAsImages();
+
+    }
+  );
+
+/* =========================================================
+   SAVE
+========================================================== */
+
+postEditorSaveButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      const user =
+        await getSignedInUser();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const categoryId =
+        Number(
+          postEditorCategory.value
+        );
+
+
+      const title =
+        postEditorTitle
+          .value
+          .trim();
+
+
+      /*
+        ★ textarea.value가 아니라
+        sanitized rich HTML 저장
+      */
+
+      const content =
+        getRichEditorHTML();
+
+
+      const plainText =
+        getRichEditorPlainText()
+          .trim();
+
+
+      if (!title) {
+
+        showPostEditorMessage(
+          "제목을 입력해주세요."
+        );
+
+        return;
+
+      }
+
+
+      if (!plainText) {
+
+        showPostEditorMessage(
+          "본문을 입력해주세요."
+        );
+
+        return;
+
+      }
+
+
+      postEditorSaveButton.disabled =
+        true;
+
+
+      postEditorSaveButton.textContent =
+        "...";
+
+
+      /* =====================================================
+         EDIT
+      ====================================================== */
+
+      if (
+        currentEditorMode ===
+          "edit" &&
+        editorSourcePostId
+      ) {
+
+        const savedId =
+          editorSourcePostId;
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from(
+              "posts"
+            )
+            .update({
+              category_id:
+                categoryId,
+
+              title,
+
+              content,
+
+              updated_at:
+                new Date()
+                  .toISOString()
+            })
+            .eq(
+              "id",
+              savedId
+            )
+            .eq(
+              "user_id",
+              user.id
+            );
+
+
+        postEditorSaveButton.disabled =
+          false;
+
+
+        postEditorSaveButton.textContent =
+          "save";
+
+
+        if (error) {
+
+          console.error(
+            error
+          );
+
+
+          showPostEditorMessage(
+            "저장하지 못했습니다."
+          );
+
+
+          return;
+
+        }
+
+
+        hidePostEditor();
+
+
+        await openPostPage(
+          savedId,
+          {
+            updateUrl:
+              false
+          }
+        );
+
+
+        return;
+
+      }
+
+
+      /* =====================================================
+         CREATE
+      ====================================================== */
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from(
+            "posts"
+          )
+          .insert({
+            user_id:
+              user.id,
+
+            category_id:
+              categoryId,
+
+            title,
+
+            content,
+
+            updated_at:
+              new Date()
+                .toISOString()
+          })
+          .select(
+            "id"
+          )
+          .single();
+
+
+      postEditorSaveButton.disabled =
+        false;
+
+
+      postEditorSaveButton.textContent =
+        "save";
+
+
+      if (
+        error ||
+        !data
+      ) {
+
+        console.error(
+          error
+        );
+
+
+        showPostEditorMessage(
+          "저장하지 못했습니다."
+        );
+
+
+        return;
+
+      }
+
+
+      hidePostEditor();
+
+
+      await openPostPage(
+        data.id
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   ROUTER
+========================================================== */
+
+async function handlePostRoute() {
+
+  const pathname =
+    getPostRoutePath();
+
+
+  const postMatch =
+    pathname.match(
+      /^\/post\/(\d+)\/?$/
+    );
+
+
+  if (postMatch) {
+
+    await openPostPage(
+      Number(
+        postMatch[1]
+      ),
+      {
+        updateUrl:
+          false
+      }
+    );
+
+
+    return;
+
+  }
+
+
+  const categoryMatch =
+    pathname.match(
+      /^\/category\/(\d+)\/?$/
+    );
+
+
+  if (categoryMatch) {
+
+    await openCategoryPage(
+      Number(
+        categoryMatch[1]
+      ),
+      {
+        updateUrl:
+          false
+      }
+    );
+
+
+    return;
+
+  }
+
+
+  await closePostArea({
+    updateUrl:
+      false,
+
+    animate:
+      false
+  });
+
+}
+
+
+
+/* =========================================================
+   404 REDIRECT RESTORE
+========================================================== */
+
+async function startPostRouter() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const route =
+    params.get(
+      "route"
+    );
+
+
+  if (route) {
+
+    const restored =
+      route.startsWith("/")
+        ? route
+        : `/${route}`;
+
+
+    history.replaceState(
+      {},
+      "",
+      buildPostRoute(
+        restored
+      )
+    );
+
+  }
+
+
+  await handlePostRoute();
+
+}
+
+
+
+/* =========================================================
+   BROWSER BACK / FORWARD
+========================================================== */
+
+window.addEventListener(
+  "popstate",
+  async () => {
+
+    await handlePostRoute();
+
+  }
+);
+
+
+
+/* =========================================================
+   START
+========================================================== */
+
+syncEditorPreviewMode();
+
+loadPostStylePreset();
+
+loadPostPresetOptions();
+
+startPostRouter();
+
+refreshSiteFooterMarkers?.();

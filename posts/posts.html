@@ -1,0 +1,814 @@
+<!-- =========================================================
+     POSTS
+========================================================== -->
+
+<section
+  class="post-area"
+  id="postArea"
+  hidden
+>
+
+  <div class="post-container">
+
+
+    <!-- =====================================================
+         POST HEADER
+    ====================================================== -->
+
+    <header class="post-header">
+
+      <button
+        class="post-back-button"
+        id="postBackButton"
+        type="button"
+        aria-label="뒤로 가기"
+      >
+        ←
+      </button>
+
+
+      <h1
+        class="post-page-title"
+        id="postPageTitle"
+      ></h1>
+
+
+      <button
+        class="post-add-button"
+        id="postAddButton"
+        type="button"
+        aria-label="글 추가"
+        hidden
+      >
+        ＋
+      </button>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CATEGORY POST LIST
+    ====================================================== -->
+
+    <div
+      class="post-list"
+      id="postList"
+    ></div>
+
+
+
+    <!-- =====================================================
+         POST DETAIL
+    ====================================================== -->
+
+    <article
+      class="post-detail"
+      id="postDetail"
+      hidden
+    >
+
+      <div class="post-detail-heading">
+
+        <h1
+          class="post-detail-title"
+          id="postDetailTitle"
+        ></h1>
+
+
+        <div
+          class="post-detail-actions"
+          id="postDetailActions"
+          hidden
+        >
+
+          <button
+            class="post-action-button"
+            id="postEditButton"
+            type="button"
+          >
+            edit
+          </button>
+
+
+          <button
+            class="post-action-button post-delete-button"
+            id="postDeleteButton"
+            type="button"
+          >
+            delete
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="post-detail-date"
+        id="postDetailDate"
+      ></div>
+
+
+      <div
+        class="post-detail-content"
+        id="postDetailContent"
+      ></div>
+
+
+
+      <!-- ===================================================
+           RELATED POSTS
+      ==================================================== -->
+
+      <section
+        class="post-related"
+        id="postRelated"
+      >
+
+        <div
+          class="post-related-title"
+          id="postRelatedTitle"
+        ></div>
+
+
+        <div
+          class="post-related-list"
+          id="postRelatedList"
+        ></div>
+
+      </section>
+
+    </article>
+
+
+
+    <!-- =====================================================
+         POST EDITOR
+    ====================================================== -->
+
+    <section
+      class="post-editor"
+      id="postEditor"
+      hidden
+    >
+
+
+      <!-- ===================================================
+           CATEGORY
+      ==================================================== -->
+
+      <div class="post-editor-field">
+
+        <label
+          for="postEditorCategory"
+        >
+          CATEGORY
+        </label>
+
+
+        <select
+          id="postEditorCategory"
+          class="post-editor-input"
+        ></select>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           TITLE
+      ==================================================== -->
+
+      <div class="post-editor-field">
+
+        <label
+          for="postEditorTitle"
+        >
+          TITLE
+        </label>
+
+
+        <input
+          id="postEditorTitle"
+          class="post-editor-input"
+          type="text"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+
+      <!-- ===================================================
+           CONTENT
+      ==================================================== -->
+
+      <div class="post-editor-field">
+
+
+        <!-- CONTENT + MESSAGE -->
+
+        <div class="post-editor-content-heading">
+
+          <div class="post-editor-content-label">
+            CONTENT
+          </div>
+
+
+          <div
+            class="post-editor-message"
+            id="postEditorMessage"
+          ></div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TOOLBAR
+        ================================================== -->
+
+        <div
+          class="post-editor-toolbar"
+          id="postEditorToolbar"
+        >
+
+
+          <!-- =================================================
+               HIGHLIGHT
+          ================================================== -->
+
+          <div class="post-editor-tool-group">
+
+            <span class="post-editor-tool-label">
+              HIGHLIGHT
+            </span>
+
+
+            <!-- PRESET -->
+
+            <button
+              class="post-highlight-preset-button"
+              id="postEditorHighlightPreset"
+              type="button"
+              title="preset highlight"
+            >
+
+              <span
+                class="post-highlight-swatch"
+                id="postEditorPresetSwatch"
+              ></span>
+
+              <span>
+                preset
+              </span>
+
+            </button>
+
+
+
+            <!-- CUSTOM -->
+
+            <label
+              class="post-highlight-custom-control"
+              for="postEditorCustomColor"
+            >
+
+              <span
+                class="post-highlight-swatch"
+                id="postEditorCustomSwatch"
+              ></span>
+
+              <span>
+                custom
+              </span>
+
+            </label>
+
+
+            <input
+              id="postEditorCustomColor"
+              class="post-highlight-color-input"
+              type="color"
+              value="#f4dce6"
+              aria-label="커스텀 하이라이트 색상 선택"
+            >
+
+          </div>
+
+
+
+          <!-- =================================================
+               CLEAR
+          ================================================== -->
+
+          <div class="post-editor-tool-group">
+
+            <button
+              class="post-editor-tool-button clear"
+              id="postEditorClearStyle"
+              type="button"
+            >
+              clear
+            </button>
+
+          </div>
+
+
+
+          <!-- =================================================
+               PRESET
+
+               저장해둔 QUOTE 프리셋을 골라서
+               프리뷰/export 서식을 바꿔 끼움
+               (본문 내용은 그대로).
+          ================================================== -->
+
+          <div class="post-editor-tool-group">
+
+            <span class="post-editor-tool-label">
+              PRESET
+            </span>
+
+
+            <select
+              class="post-editor-preset-select"
+              id="postEditorPresetSelect"
+            ></select>
+
+          </div>
+
+
+
+          <!-- =================================================
+               PAGE BREAK
+          ================================================== -->
+
+          <div class="post-editor-tool-group post-editor-page-group">
+
+            <span class="post-editor-tool-label">
+              PAGE
+            </span>
+
+
+            <button
+              class="post-editor-tool-button page-break"
+              id="postEditorPageBreak"
+              type="button"
+              title="현재 위치에서 다음 페이지로 넘기기"
+            >
+              break
+            </button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             RICH TEXT EDITOR
+        ================================================== -->
+
+        <div
+          id="postEditorContent"
+          class="post-editor-richtext"
+          contenteditable="true"
+          role="textbox"
+          aria-multiline="true"
+          aria-label="본문 입력"
+          spellcheck="false"
+          data-placeholder="본문을 입력하세요."
+        ></div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           MOBILE PREVIEW BUTTON
+      ==================================================== -->
+
+      <button
+        class="post-editor-preview-toggle"
+        id="postEditorPreviewToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="postEditorPreviewSection"
+      >
+
+        <span>
+          PREVIEW
+        </span>
+
+        <span
+          class="post-editor-preview-toggle-icon"
+          id="postEditorPreviewToggleIcon"
+        >
+          ↑
+        </span>
+
+      </button>
+
+
+
+      <!-- ===================================================
+           PREVIEW
+      ==================================================== -->
+
+      <section
+        class="post-editor-preview-section"
+        id="postEditorPreviewSection"
+        aria-hidden="true"
+      >
+
+
+        <!-- 모바일 배경 -->
+
+        <button
+          class="post-editor-preview-backdrop"
+          id="postEditorPreviewBackdrop"
+          type="button"
+          aria-label="미리보기 닫기"
+        ></button>
+
+
+
+        <!-- =================================================
+             PREVIEW SHEET
+        ================================================== -->
+
+        <div
+          class="post-editor-preview-sheet"
+          id="postEditorPreviewSheet"
+        >
+
+
+          <!-- DRAG HANDLE (resize) -->
+
+          <div
+            class="post-editor-preview-drag-handle"
+            id="postEditorPreviewDragHandle"
+            aria-hidden="true"
+          ></div>
+
+
+
+          <!-- HEADER -->
+
+          <div class="post-editor-preview-header">
+
+            <div class="post-editor-preview-header-left">
+
+              <span class="post-editor-preview-label">
+                PREVIEW
+              </span>
+
+
+              <div class="post-editor-preview-visibility-controls">
+
+                <button
+                  class="post-editor-preview-visibility-toggle"
+                  id="postEditorPreviewTitleToggle"
+                  type="button"
+                  aria-pressed="true"
+                >
+                  title
+                </button>
+
+
+                <button
+                  class="post-editor-preview-visibility-toggle"
+                  id="postEditorPreviewSourceToggle"
+                  type="button"
+                  aria-pressed="true"
+                >
+                  source
+                </button>
+
+
+                <button
+                  class="post-editor-preview-visibility-toggle post-editor-preview-ratio-trigger"
+                  id="postEditorPreviewRatioTrigger"
+                  type="button"
+                  aria-pressed="false"
+                  aria-expanded="false"
+                  aria-controls="postEditorPreviewRatioControls"
+                >
+                  ratio
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <button
+              class="post-editor-preview-close"
+              id="postEditorPreviewClose"
+              type="button"
+              aria-label="미리보기 닫기"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+
+          <!-- =================================================
+               SOURCE POSITION (source가 켜져 있을 때만 펼쳐짐)
+          ================================================== -->
+
+          <div
+            class="post-editor-preview-subrow"
+            id="postEditorPreviewSourcePositionRow"
+            hidden
+          >
+
+            <span class="post-editor-preview-subrow-label">
+              position
+            </span>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              id="postEditorPreviewSourcePositionFlow"
+              type="button"
+              data-position="flow"
+              aria-pressed="true"
+            >
+              flow
+            </button>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              id="postEditorPreviewSourcePositionFixed"
+              type="button"
+              data-position="fixed"
+              aria-pressed="false"
+            >
+              fixed
+            </button>
+
+          </div>
+
+
+
+          <!-- =================================================
+               RATIO (ratio 버튼을 눌러야 펼쳐짐)
+          ================================================== -->
+
+          <div
+            class="post-editor-preview-ratio-controls"
+            id="postEditorPreviewRatioControls"
+            hidden
+          >
+
+            <button
+              class="post-editor-preview-ratio-button"
+              type="button"
+              data-ratio="4:5"
+              aria-pressed="false"
+            >
+              4:5
+            </button>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              type="button"
+              data-ratio="4:6"
+              aria-pressed="false"
+            >
+              4:6
+            </button>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              type="button"
+              data-ratio="1:1"
+              aria-pressed="false"
+            >
+              1:1
+            </button>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              type="button"
+              data-ratio="4:3"
+              aria-pressed="false"
+            >
+              4:3
+            </button>
+
+
+            <button
+              class="post-editor-preview-ratio-button"
+              type="button"
+              data-ratio="custom"
+              aria-pressed="false"
+            >
+              custom
+            </button>
+
+
+            <div
+              class="post-editor-preview-ratio-custom-inputs"
+              id="postEditorPreviewRatioCustomInputs"
+              hidden
+            >
+
+              <input
+                class="post-editor-preview-ratio-custom-input"
+                id="postEditorPreviewRatioCustomWidth"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                value="4"
+                aria-label="가로 비율"
+              >
+
+              <span class="post-editor-preview-ratio-custom-sep">
+                :
+              </span>
+
+              <input
+                class="post-editor-preview-ratio-custom-input"
+                id="postEditorPreviewRatioCustomHeight"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                value="5"
+                aria-label="세로 비율"
+              >
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               CANVAS VIEWPORT
+
+               앞으로 이 안에
+               4:5 페이지가 한 장씩 표시됨.
+          ================================================== -->
+
+          <div
+            class="post-editor-preview-stage"
+            id="postEditorPreviewStage"
+          >
+
+
+            <div
+              class="post-editor-preview-pages"
+              id="postEditorPreviewPages"
+            >
+
+
+              <!-- =============================================
+                   PAGE 1
+
+                   JS에서 내용이 넘치면
+                   같은 구조의 PAGE 2, 3... 자동 생성 예정.
+              ============================================== -->
+
+              <article
+                class="post-editor-preview post-editor-preview-page"
+                id="postEditorPreview"
+                data-page-index="0"
+              >
+
+
+                <div
+                  class="post-editor-preview-title"
+                  id="postEditorPreviewTitle"
+                ></div>
+
+
+                <div
+                  class="post-editor-preview-content"
+                  id="postEditorPreviewContent"
+                ></div>
+
+
+              </article>
+
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =================================================
+               PAGE NAVIGATION
+          ================================================== -->
+
+          <div
+            class="post-editor-preview-pagination"
+            id="postEditorPreviewPagination"
+            hidden
+          >
+
+
+            <button
+              class="post-editor-preview-page-button"
+              id="postEditorPreviewPrev"
+              type="button"
+              aria-label="이전 페이지"
+            >
+              ‹
+            </button>
+
+
+            <span
+              class="post-editor-preview-page-indicator"
+              id="postEditorPreviewPageIndicator"
+            >
+              1 / 1
+            </span>
+
+
+            <button
+              class="post-editor-preview-page-button"
+              id="postEditorPreviewNext"
+              type="button"
+              aria-label="다음 페이지"
+            >
+              ›
+            </button>
+
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ===================================================
+           EDITOR BUTTONS
+      ==================================================== -->
+
+<div class="post-editor-actions">
+
+  <button
+    id="postEditorCancelButton"
+    class="post-editor-button"
+    type="button"
+  >
+    cancel
+  </button>
+
+  <button
+    id="postEditorExportButton"
+    class="post-editor-button export"
+    type="button"
+  >
+    export
+  </button>
+
+  <button
+    id="postEditorSaveButton"
+    class="post-editor-button save"
+    type="button"
+  >
+    save
+  </button>
+
+</div>
+
+
+    </section>
+
+
+  </div>
+
+      <!-- =========================================================
+     POSTS FOOTER
+========================================================== -->
+
+<footer class="post-site-footer">
+
+  <div
+    class="post-today-count"
+    data-site-today-count
+  ></div>
+
+  <div
+    class="post-copyright"
+    data-site-copyright
+  ></div>
+
+</footer>
+
+</section>

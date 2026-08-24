@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>admin</title>
+
+  <link
+    rel="stylesheet"
+    href="./admin.css"
+  >
+
+</head>
+
+
+<body>
+
+  <a
+  class="admin-home-heart"
+  href="../"
+  aria-label="홈으로 돌아가기"
+  title="home"
+>
+  ♡
+</a>
+
+  <main class="admin-page">
+
+
+    <!-- =====================================================
+         로그인 전
+    ====================================================== -->
+
+    <section
+      class="login-box"
+      id="loginBox"
+    >
+
+      <h1>
+        admin
+      </h1>
+
+      <p class="login-desc">
+        sign in to continue ♡
+      </p>
+
+      <button
+        class="google-login-button"
+        id="googleLoginButton"
+        type="button"
+      >
+
+        <span class="google-icon">
+          G
+        </span>
+
+        <span>
+          Sign in with Google
+        </span>
+
+      </button>
+
+      <p
+        class="login-message"
+        id="loginMessage"
+      ></p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         로그인 후
+    ====================================================== -->
+
+    <section
+      class="admin-dashboard"
+      id="adminDashboard"
+      hidden
+    >
+
+
+      <!-- ===================================================
+           공통 상단
+      ==================================================== -->
+
+      <header class="admin-header">
+
+        <div>
+
+          <h1>
+            admin
+          </h1>
+
+          <p
+            class="user-email"
+            id="userEmail"
+          ></p>
+
+        </div>
+
+
+        <button
+          class="logout-button"
+          id="logoutButton"
+          type="button"
+        >
+          logout
+        </button>
+
+      </header>
+
+
+
+      <!-- ===================================================
+           ADMIN HOME
+      ==================================================== -->
+
+      <section
+        class="admin-view"
+        id="adminHome"
+      >
+
+        <div class="admin-menu">
+
+
+          <button
+            class="admin-menu-item"
+            id="openWriteButton"
+            type="button"
+          >
+
+            <span class="menu-number">
+              01
+            </span>
+
+            <span class="menu-copy">
+
+              <strong>
+                WRITE
+              </strong>
+
+              <small>
+                posts & archive
+              </small>
+
+            </span>
+
+            <span class="menu-arrow">
+              →
+            </span>
+
+          </button>
+
+
+
+          <button
+            class="admin-menu-item"
+            id="openQuoteButton"
+            type="button"
+          >
+
+            <span class="menu-number">
+              02
+            </span>
+
+            <span class="menu-copy">
+
+              <strong>
+                QUOTE
+              </strong>
+
+              <small>
+                image style
+              </small>
+
+            </span>
+
+            <span class="menu-arrow">
+              →
+            </span>
+
+          </button>
+
+
+
+          <button
+            class="admin-menu-item"
+            id="openSettingsButton"
+            type="button"
+          >
+
+            <span class="menu-number">
+              03
+            </span>
+
+            <span class="menu-copy">
+
+              <strong>
+                SETTINGS
+              </strong>
+
+            </span>
+
+            <span class="menu-arrow">
+              →
+            </span>
+
+          </button>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ===================================================
+           WRITE
+      ==================================================== -->
+
+      <section
+        class="admin-view"
+        id="writePanel"
+        hidden
+      >
+
+        <div class="view-top">
+
+          <button
+            class="back-button"
+            id="writeBackButton"
+            type="button"
+          >
+            ← back
+          </button>
+
+          <div class="view-heading">
+
+            <h2>
+              WRITE
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <section class="write-editor">
+
+
+          <div class="write-field">
+
+            <label for="postCategory">
+              CATEGORY
+            </label>
+
+            <select
+              id="postCategory"
+              class="write-select"
+            >
+
+              <option value="">
+                select
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="write-field">
+
+            <label for="postTitle">
+              TITLE
+            </label>
+
+            <input
+              id="postTitle"
+              class="write-input"
+              type="text"
+              autocomplete="off"
+              placeholder="title"
+            >
+
+          </div>
+
+
+          <div class="write-field">
+
+            <label for="postContent">
+              CONTENT
+            </label>
+
+            <textarea
+              id="postContent"
+              class="write-textarea"
+              placeholder="txt 또는 html을 붙여넣으세요."
+            ></textarea>
+
+          </div>
+
+
+          <div class="write-actions">
+
+            <button
+              class="write-preview-button"
+              id="postPreviewButton"
+              type="button"
+            >
+              preview
+            </button>
+
+            <button
+              class="save-button"
+              id="postSaveButton"
+              type="button"
+            >
+              save
+            </button>
+
+          </div>
+
+
+          <p
+            class="save-message"
+            id="postSaveMessage"
+          ></p>
+
+
+          <section
+            class="post-preview"
+            id="postPreview"
+            hidden
+          >
+
+            <div class="post-preview-label">
+              PREVIEW
+            </div>
+
+            <h3
+              class="post-preview-title"
+              id="postPreviewTitle"
+            ></h3>
+
+            <div
+              class="post-preview-content"
+              id="postPreviewContent"
+            ></div>
+
+          </section>
+
+
+        </section>
+
+      </section>
+
+
+
+      <!-- ===================================================
+           QUOTE
+      ==================================================== -->
+
+      <section
+        class="admin-view"
+        id="quotePanel"
+        hidden
+      >
+
+        <div class="view-top">
+
+          <button
+            class="back-button"
+            id="quoteBackButton"
+            type="button"
+          >
+            ← back
+          </button>
+
+
+          <div class="view-heading">
+
+            <h2>
+              QUOTE
+            </h2>
+
+            <p>
+              image style
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="quote-workspace">
+
+
+          <!-- =================================================
+               LEFT
+          ================================================== -->
+
+          <section class="quote-controls">
+
+
+            <!-- ===============================================
+                 TEST CONTENT
+            ================================================ -->
+
+            <section
+              class="quote-accordion is-open"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  TEST CONTENT
+                </span>
+
+                <small>
+                  preview text
+                </small>
+
+                <span class="quote-accordion-icon">
+                  −
+                </span>
+
+              </button>
+
+
+              <div class="quote-accordion-content">
+
+
+                <div class="quote-test-field">
+
+                  <label for="quoteTestTitle">
+                    TITLE
+                  </label>
+
+                  <input
+                    id="quoteTestTitle"
+                    class="quote-text-input"
+                    type="text"
+                    value="비 오는 날"
+                    autocomplete="off"
+                  >
+
+                </div>
+
+
+                <div class="quote-test-field">
+
+                  <label for="quoteTestBody">
+                    BODY
+                  </label>
+
+                  <textarea
+                    id="quoteTestBody"
+                    class="quote-test-textarea"
+                  >*홍지원은 창밖을 바라봤다.*
+
+"비가 내리고 있네."
+
+차우연은 아무 말 없이 창문을 닫았다.</textarea>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+
+            <!-- ===============================================
+                 CANVAS
+            ================================================ -->
+
+            <section
+              class="quote-accordion is-open"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  CANVAS
+                </span>
+
+                <small>
+                  image
+                </small>
+
+                <span class="quote-accordion-icon">
+                  −
+                </span>
+
+              </button>
+
+
+              <div class="quote-accordion-content">
+
+
+                <div class="quote-setting-block">
+
+                  <div class="quote-setting-label">
+                    RATIO
+                  </div>
+
+
+                  <div
+                    class="quote-ratio-buttons"
+                    id="quoteRatioButtons"
+                  >
+
+                    <button
+                      class="quote-ratio-button active"
+                      type="button"
+                      data-ratio="1:1"
+                    >
+                      1:1
+                    </button>
+
+                    <button
+                      class="quote-ratio-button"
+                      type="button"
+                      data-ratio="4:5"
+                    >
+                      4:5
+                    </button>
+
+                    <button
+                      class="quote-ratio-button"
+                      type="button"
+                      data-ratio="3:4"
+                    >
+                      3:4
+                    </button>
+
+                    <button
+                      class="quote-ratio-button"
+                      type="button"
+                      data-ratio="9:16"
+                    >
+                      9:16
+                    </button>
+
+                    <button
+                      class="quote-ratio-button"
+                      type="button"
+                      data-ratio="custom"
+                    >
+                      CUSTOM
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+
+                <div
+                  class="quote-custom-ratio"
+                  id="quoteCustomRatioFields"
+                  hidden
+                >
+
+                  <div class="quote-pair-grid">
+
+                    <div class="quote-pair-field">
+
+                      <label for="quoteRatioWidth">
+                        RATIO WIDTH
+                      </label>
+
+                      <input
+                        id="quoteRatioWidth"
+                        class="quote-number-input"
+                        type="number"
+                        min="1"
+                        max="100"
+                        value="4"
+                      >
+
+                    </div>
+
+
+                    <div class="quote-pair-field">
+
+                      <label for="quoteRatioHeight">
+                        RATIO HEIGHT
+                      </label>
+
+                      <input
+                        id="quoteRatioHeight"
+                        class="quote-number-input"
+                        type="number"
+                        min="1"
+                        max="100"
+                        value="5"
+                      >
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteWidth">
+                    EXPORT WIDTH
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quoteWidth"
+                      class="quote-number-input"
+                      type="number"
+                      min="320"
+                      max="3000"
+                      value="1080"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteBackground">
+                    BACKGROUND
+                  </label>
+
+                  <input
+                    id="quoteBackground"
+                    class="quote-color-input"
+                    type="color"
+                    value="#ffffff"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quotePadding">
+                    PADDING
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quotePadding"
+                      class="quote-number-input"
+                      type="number"
+                      min="0"
+                      max="500"
+                      value="48"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteVerticalPadding">
+                      VERTICAL EXTRA
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteVerticalPadding"
+                        class="quote-number-input"
+                        type="number"
+                        min="0"
+                        max="500"
+                        value="0"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteHorizontalPadding">
+                      HORIZONTAL EXTRA
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteHorizontalPadding"
+                        class="quote-number-input"
+                        type="number"
+                        min="0"
+                        max="500"
+                        value="0"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+
+            <!-- ===============================================
+                 TITLE
+            ================================================ -->
+
+            <section
+              class="quote-accordion"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  TITLE
+                </span>
+
+                <small>
+                  typography
+                </small>
+
+                <span class="quote-accordion-icon">
+                  +
+                </span>
+
+              </button>
+
+
+              <div
+                class="quote-accordion-content"
+                hidden
+              >
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTitleEnabled">
+                    DISPLAY
+                  </label>
+
+                  <input
+                    id="quoteTitleEnabled"
+                    class="quote-check-input"
+                    type="checkbox"
+                    checked
+                  >
+
+                </div>
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTitleColor">
+                    COLOR
+                  </label>
+
+                  <input
+                    id="quoteTitleColor"
+                    class="quote-color-input"
+                    type="color"
+                    value="#222222"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteTitleSize">
+                      FONT SIZE
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteTitleSize"
+                        class="quote-number-input"
+                        type="number"
+                        min="10"
+                        max="120"
+                        value="24"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteTitleWeight">
+                      WEIGHT
+                    </label>
+
+                    <select
+                      id="quoteTitleWeight"
+                      class="quote-select-input"
+                    >
+
+                      <option value="300">
+                        light
+                      </option>
+
+                      <option
+                        value="400"
+                        selected
+                      >
+                        regular
+                      </option>
+
+                      <option value="500">
+                        medium
+                      </option>
+
+                      <option value="600">
+                        semibold
+                      </option>
+
+                      <option value="700">
+                        bold
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTitleAlign">
+                    ALIGN
+                  </label>
+
+                  <select
+                    id="quoteTitleAlign"
+                    class="quote-select-input"
+                  >
+
+                    <option
+                      value="left"
+                      selected
+                    >
+                      left
+                    </option>
+
+                    <option value="center">
+                      center
+                    </option>
+
+                    <option value="right">
+                      right
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTitleLetterSpacing">
+                    LETTER SPACING
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quoteTitleLetterSpacing"
+                      class="quote-number-input"
+                      type="number"
+                      min="-10"
+                      max="30"
+                      step="0.1"
+                      value="0"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTitleSpacing">
+                    BOTTOM SPACE
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quoteTitleSpacing"
+                      class="quote-number-input"
+                      type="number"
+                      min="0"
+                      max="300"
+                      value="28"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+
+            <!-- ===============================================
+                 BODY
+            ================================================ -->
+
+            <section
+              class="quote-accordion"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  BODY
+                </span>
+
+                <small>
+                  text
+                </small>
+
+                <span class="quote-accordion-icon">
+                  +
+                </span>
+
+              </button>
+
+
+              <div
+                class="quote-accordion-content"
+                hidden
+              >
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteTextColor">
+                    COLOR
+                  </label>
+
+                  <input
+                    id="quoteTextColor"
+                    class="quote-color-input"
+                    type="color"
+                    value="#333333"
+                  >
+
+                </div>
+
+
+
+                <!-- ===========================================
+                     DEFAULT HIGHLIGHT
+                     에디터 PRESET 하이라이트에서 사용
+                ============================================ -->
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteHighlightColor">
+                    DEFAULT HIGHLIGHT
+                  </label>
+
+                  <input
+                    id="quoteHighlightColor"
+                    class="quote-color-input"
+                    type="color"
+                    value="#f4dce6"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteFontSize">
+                      FONT SIZE
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteFontSize"
+                        class="quote-number-input"
+                        type="number"
+                        min="8"
+                        max="100"
+                        value="16"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteBodyWeight">
+                      WEIGHT
+                    </label>
+
+                    <select
+                      id="quoteBodyWeight"
+                      class="quote-select-input"
+                    >
+
+                      <option value="300">
+                        light
+                      </option>
+
+                      <option value="400">
+                        regular
+                      </option>
+
+                      <option
+                        value="500"
+                        selected
+                      >
+                        medium
+                      </option>
+
+                      <option value="600">
+                        semibold
+                      </option>
+
+                      <option value="700">
+                        bold
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteLineHeight">
+                    LINE HEIGHT
+                  </label>
+
+                  <input
+                    id="quoteLineHeight"
+                    class="quote-number-input"
+                    type="number"
+                    min="1"
+                    max="3"
+                    step="0.1"
+                    value="1.8"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteLetterSpacing">
+                    LETTER SPACING
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quoteLetterSpacing"
+                      class="quote-number-input"
+                      type="number"
+                      min="-5"
+                      max="20"
+                      step="0.1"
+                      value="0"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteParagraphSpacing">
+                    PARAGRAPH
+                  </label>
+
+                  <div class="quote-input-with-unit">
+
+                    <input
+                      id="quoteParagraphSpacing"
+                      class="quote-number-input"
+                      type="number"
+                      min="0"
+                      max="200"
+                      value="14"
+                    >
+
+                    <span class="quote-unit">
+                      px
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteBodyAlign">
+                      HORIZONTAL
+                    </label>
+
+                    <select
+                      id="quoteBodyAlign"
+                      class="quote-select-input"
+                    >
+
+                      <option
+                        value="left"
+                        selected
+                      >
+                        left
+                      </option>
+
+                      <option value="center">
+                        center
+                      </option>
+
+                      <option value="right">
+                        right
+                      </option>
+
+                      <option value="justify">
+                        justify
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteVerticalAlign">
+                      VERTICAL
+                    </label>
+
+                    <select
+                      id="quoteVerticalAlign"
+                      class="quote-select-input"
+                    >
+
+                      <option
+                        value="top"
+                        selected
+                      >
+                        top
+                      </option>
+
+                      <option value="center">
+                        center
+                      </option>
+
+                      <option value="bottom">
+                        bottom
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteLineBreak">
+                      LINE BREAK
+                    </label>
+
+                    <select
+                      id="quoteLineBreak"
+                      class="quote-select-input"
+                    >
+
+                      <option
+                        value="keep"
+                        selected
+                      >
+                        keep
+                      </option>
+
+                      <option value="word">
+                        word
+                      </option>
+
+                      <option value="char">
+                        char
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteIndent">
+                      FIRST INDENT
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteIndent"
+                        class="quote-number-input"
+                        type="number"
+                        min="0"
+                        max="200"
+                        value="0"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+
+                <!-- ===========================================
+                     ACTION / DIALOGUE
+                ============================================ -->
+
+                <div class="quote-special-grid">
+
+
+                  <div class="quote-special-column">
+
+                    <div class="quote-special-heading">
+
+                      <span>
+                        ACTION
+                      </span>
+
+                      <small>
+                        *text*
+                      </small>
+
+                    </div>
+
+
+                    <div class="quote-special-field">
+
+                      <label for="quoteActionColor">
+                        COLOR
+                      </label>
+
+                      <input
+                        id="quoteActionColor"
+                        class="quote-color-input"
+                        type="color"
+                        value="#888888"
+                      >
+
+                    </div>
+
+
+                    <div class="quote-special-field">
+
+                      <label for="quoteActionWeight">
+                        WEIGHT
+                      </label>
+
+                      <select
+                        id="quoteActionWeight"
+                        class="quote-select-input"
+                      >
+
+                        <option value="300">
+                          light
+                        </option>
+
+                        <option
+                          value="400"
+                          selected
+                        >
+                          regular
+                        </option>
+
+                        <option value="500">
+                          medium
+                        </option>
+
+                        <option value="600">
+                          semibold
+                        </option>
+
+                        <option value="700">
+                          bold
+                        </option>
+
+                      </select>
+
+                    </div>
+
+                  </div>
+
+
+
+                  <div class="quote-special-column">
+
+                    <div class="quote-special-heading">
+
+                      <span>
+                        DIALOGUE
+                      </span>
+
+                      <small>
+                        "text"
+                      </small>
+
+                    </div>
+
+
+                    <div class="quote-special-field">
+
+                      <label for="quoteDialogueColor">
+                        COLOR
+                      </label>
+
+                      <input
+                        id="quoteDialogueColor"
+                        class="quote-color-input"
+                        type="color"
+                        value="#333333"
+                      >
+
+                    </div>
+
+
+                    <div class="quote-special-field">
+
+                      <label for="quoteDialogueWeight">
+                        WEIGHT
+                      </label>
+
+                      <select
+                        id="quoteDialogueWeight"
+                        class="quote-select-input"
+                      >
+
+                        <option value="300">
+                          light
+                        </option>
+
+                        <option value="400">
+                          regular
+                        </option>
+
+                        <option
+                          value="500"
+                          selected
+                        >
+                          medium
+                        </option>
+
+                        <option value="600">
+                          semibold
+                        </option>
+
+                        <option value="700">
+                          bold
+                        </option>
+
+                      </select>
+
+                    </div>
+
+                  </div>
+
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+
+            <!-- ===============================================
+                 SOURCE
+            ================================================ -->
+
+            <section
+              class="quote-accordion"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  SOURCE
+                </span>
+
+                <small>
+                  footer
+                </small>
+
+                <span class="quote-accordion-icon">
+                  +
+                </span>
+
+              </button>
+
+
+              <div
+                class="quote-accordion-content"
+                hidden
+              >
+
+
+                <div class="quote-test-field">
+
+                  <label for="quoteTestSource">
+                    SOURCE TEXT
+                  </label>
+
+                  <input
+                    id="quoteTestSource"
+                    class="quote-text-input"
+                    type="text"
+                    value="@hongcha"
+                    autocomplete="off"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteSourceEnabled">
+                    DISPLAY
+                  </label>
+
+                  <input
+                    id="quoteSourceEnabled"
+                    class="quote-check-input"
+                    type="checkbox"
+                    checked
+                  >
+
+                </div>
+
+
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteSourceColor">
+                    COLOR
+                  </label>
+
+                  <input
+                    id="quoteSourceColor"
+                    class="quote-color-input"
+                    type="color"
+                    value="#999999"
+                  >
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteSourceSize">
+                      FONT SIZE
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteSourceSize"
+                        class="quote-number-input"
+                        type="number"
+                        min="8"
+                        max="60"
+                        value="11"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteSourceWeight">
+                      WEIGHT
+                    </label>
+
+                    <select
+                      id="quoteSourceWeight"
+                      class="quote-select-input"
+                    >
+
+                      <option
+                        value="300"
+                        selected
+                      >
+                        light
+                      </option>
+
+                      <option value="400">
+                        regular
+                      </option>
+
+                      <option value="500">
+                        medium
+                      </option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="quote-pair-grid">
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteSourceAlign">
+                      ALIGN
+                    </label>
+
+                    <select
+                      id="quoteSourceAlign"
+                      class="quote-select-input"
+                    >
+
+                      <option value="left">
+                        left
+                      </option>
+
+                      <option value="center">
+                        center
+                      </option>
+
+                      <option
+                        value="right"
+                        selected
+                      >
+                        right
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="quote-pair-field">
+
+                    <label for="quoteSourceSpacing">
+                      TOP SPACE
+                    </label>
+
+                    <div class="quote-input-with-unit">
+
+                      <input
+                        id="quoteSourceSpacing"
+                        class="quote-number-input"
+                        type="number"
+                        min="0"
+                        max="300"
+                        value="28"
+                      >
+
+                      <span class="quote-unit">
+                        px
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+
+            <!-- ===============================================
+                 PRESET
+            ================================================ -->
+
+            <section
+              class="quote-accordion is-open"
+              data-quote-section
+            >
+
+              <button
+                class="quote-accordion-toggle"
+                type="button"
+              >
+
+                <span class="quote-accordion-title">
+                  PRESET
+                </span>
+
+                <small>
+                  save
+                </small>
+
+                <span class="quote-accordion-icon">
+                  −
+                </span>
+
+              </button>
+
+
+              <div class="quote-accordion-content">
+
+
+                <div class="quote-preset-save-row">
+
+
+                  <div class="quote-preset-name-field">
+
+                    <label for="quotePresetName">
+                      PRESET NAME
+                    </label>
+
+                    <input
+                      id="quotePresetName"
+                      class="quote-text-input"
+                      type="text"
+                      autocomplete="off"
+                      placeholder="예: 홍차 기본 발췌"
+                    >
+
+                  </div>
+
+
+                  <button
+                    class="save-button quote-preset-save-button"
+                    id="quoteSaveButton"
+                    type="button"
+                  >
+                    save preset
+                  </button>
+
+
+                </div>
+
+
+                <p
+                  class="save-message quote-preset-message"
+                  id="quoteSaveMessage"
+                ></p>
+
+
+                <div class="quote-preset-list-wrap">
+
+                  <div class="quote-setting-label">
+                    SAVED PRESETS
+                  </div>
+
+                  <div
+                    class="quote-preset-list"
+                    id="quotePresetList"
+                  ></div>
+
+                </div>
+
+
+              </div>
+
+            </section>
+
+
+          </section>
+
+
+
+          <!-- =================================================
+               RIGHT : PREVIEW
+          ================================================== -->
+
+          <section class="quote-preview-panel">
+
+            <div class="quote-preview-heading">
+
+              <span>
+                PREVIEW
+              </span>
+
+              <small
+                id="quotePreviewSize"
+              >
+                1080 × 1080
+              </small>
+
+            </div>
+
+
+            <div class="quote-preview-stage">
+
+              <div
+                class="quote-preview-canvas"
+                id="quotePreviewCanvas"
+              >
+
+
+                <div
+                  class="quote-preview-title"
+                  id="quotePreviewTitle"
+                >
+                  비 오는 날
+                </div>
+
+
+                <div
+                  class="quote-preview-text"
+                  id="quotePreviewText"
+                >
+
+                  <p>
+                    홍지원은 창밖을 바라봤다.
+                  </p>
+
+                </div>
+
+
+                <div
+                  class="quote-preview-source"
+                  id="quotePreviewSource"
+                >
+                  @hongcha
+                </div>
+
+
+              </div>
+
+            </div>
+
+
+            <p class="quote-preview-help">
+              settings are reflected here
+            </p>
+
+          </section>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ===================================================
+           SETTINGS
+      ==================================================== -->
+
+      <section
+        class="admin-view"
+        id="settingsPanel"
+        hidden
+      >
+
+        <div class="view-top">
+
+          <button
+            class="back-button"
+            id="settingsBackButton"
+            type="button"
+          >
+            ← back
+          </button>
+
+
+          <div class="settings-heading-row">
+
+            <div class="view-heading">
+
+              <h2>
+                SETTINGS
+              </h2>
+
+            </div>
+
+
+            <nav
+              class="settings-tabs"
+              aria-label="settings"
+            >
+
+              <button
+                class="settings-tab active"
+                id="profileTabButton"
+                type="button"
+              >
+                PROFILE
+              </button>
+
+              <span class="settings-tab-divider">
+                |
+              </span>
+
+              <button
+                class="settings-tab"
+                id="categoryTabButton"
+                type="button"
+              >
+                CATEGORY
+              </button>
+
+              <span class="settings-tab-divider">
+                |
+              </span>
+
+              <button
+                class="settings-tab"
+                id="bgmTabButton"
+                type="button"
+              >
+                BGM
+              </button>
+
+            </nav>
+
+          </div>
+
+        </div>
+
+
+
+        <section
+          class="settings-group settings-subpanel"
+          id="profileSettingsPanel"
+        >
+
+          <div class="settings-group-title">
+
+            <span>
+              PROFILE
+            </span>
+
+            <small>
+              about · notice · ng
+            </small>
+
+          </div>
+
+
+          <div class="editor-block">
+
+            <label for="aboutInput">
+              ABOUT
+            </label>
+
+            <textarea
+              id="aboutInput"
+              placeholder="ABOUT 내용을 입력하세요."
+            ></textarea>
+
+          </div>
+
+
+          <div class="editor-block">
+
+            <label for="noticeInput">
+              NOTICE
+            </label>
+
+            <textarea
+              id="noticeInput"
+              placeholder="NOTICE 내용을 입력하세요."
+            ></textarea>
+
+          </div>
+
+
+          <div class="editor-block">
+
+            <label for="ngInput">
+              NG
+            </label>
+
+            <textarea
+              id="ngInput"
+              placeholder="NG 내용을 입력하세요."
+            ></textarea>
+
+          </div>
+
+
+          <button
+            class="save-button"
+            id="saveButton"
+            type="button"
+          >
+            save
+          </button>
+
+
+          <p
+            class="save-message"
+            id="saveMessage"
+          ></p>
+
+        </section>
+
+
+
+        <section
+          class="settings-group categories-group settings-subpanel"
+          id="categorySettingsPanel"
+          hidden
+        >
+
+          <div class="settings-group-title">
+
+            <span>
+              CATEGORIES
+            </span>
+
+            <small>
+              menu
+            </small>
+
+          </div>
+
+
+          <div
+            class="category-list"
+            id="categoryList"
+          ></div>
+
+
+          <button
+            class="add-category-button"
+            id="addCategoryButton"
+            type="button"
+          >
+            + add category
+          </button>
+
+
+          <button
+            class="save-button"
+            id="categorySaveButton"
+            type="button"
+          >
+            save
+          </button>
+
+
+          <p
+            class="save-message"
+            id="categorySaveMessage"
+          ></p>
+
+        </section>
+
+
+
+        <section
+          class="settings-group bgm-group settings-subpanel"
+          id="bgmSettingsPanel"
+          hidden
+        >
+
+          <div class="settings-group-title">
+
+            <span>
+              BGM
+            </span>
+
+            <small>
+              youtube
+            </small>
+
+          </div>
+
+
+          <div class="setting-line">
+
+            <label for="bgmUrlInput">
+              YouTube URL
+            </label>
+
+            <input
+              id="bgmUrlInput"
+              class="setting-input"
+              type="url"
+              placeholder="https://www.youtube.com/watch?v=..."
+            >
+
+          </div>
+
+
+          <button
+            class="save-button"
+            id="bgmSaveButton"
+            type="button"
+          >
+            save
+          </button>
+
+
+          <p
+            class="save-message"
+            id="bgmSaveMessage"
+          ></p>
+
+        </section>
+
+
+      </section>
+
+
+    </section>
+
+  </main>
+
+
+
+  <footer class="admin-site-footer">
+
+    <div
+      class="admin-today-count"
+      data-site-today-count
+    ></div>
+
+    <div
+      class="admin-copyright"
+      data-site-copyright
+    ></div>
+
+  </footer>
+
+
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script src="./admin.js"></script>
+  <script src="./admin-settings.js"></script>
+  <script src="./admin-posts.js"></script>
+  <script src="./admin-quote.js"></script>
+  <script src="../site-footer.js"></script>
+
+
+</body>
+
+</html>

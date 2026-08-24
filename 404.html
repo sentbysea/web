@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>-ˋˏ ♡ ˎˊ-</title>
+
+</head>
+
+<body>
+
+  <script>
+
+    /*
+      GitHub Pages에서
+      /post/2
+      /category/3
+      같은 주소로 직접 들어왔을 때
+
+      실제 index.html로 돌아간 뒤
+      원래 주소를 복원하기 위한 404 페이지
+    */
+
+
+    const isGithubProjectPage =
+      window.location.hostname.endsWith(
+        ".github.io"
+      );
+
+
+    const segments =
+      window.location.pathname
+        .split("/")
+        .filter(Boolean);
+
+
+    /*
+      github.io 프로젝트 페이지라면
+      첫 번째 segment = 저장소 이름
+      예: /web/post/2 → /web/
+    */
+
+    const baseSegments =
+      isGithubProjectPage
+        ? segments.slice(
+            0,
+            1
+          )
+        : [];
+
+
+    const routeSegments =
+      isGithubProjectPage
+        ? segments.slice(
+            1
+          )
+        : segments;
+
+
+    const basePath =
+      baseSegments.length
+        ? `/${baseSegments.join("/")}/`
+        : "/";
+
+
+    let routePath =
+      `/${routeSegments.join("/")}`;
+
+
+    if (
+      routePath === "/"
+    ) {
+
+      routePath =
+        "/";
+
+    }
+
+
+    /*
+      원래 query/hash도 보존
+    */
+
+    const originalRoute =
+      (
+        routePath +
+        window.location.search +
+        window.location.hash
+      );
+
+
+    const redirectUrl =
+      (
+        basePath +
+        "?route=" +
+        encodeURIComponent(
+          originalRoute
+        )
+      );
+
+
+    window.location.replace(
+      redirectUrl
+    );
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,1867 @@
+/* =========================================================
+   POST AREA
+========================================================== */
+
+.post-area {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100dvh;
+
+  overflow-y: auto;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.98
+    );
+
+  backdrop-filter:
+    blur(5px);
+
+  -webkit-backdrop-filter:
+    blur(5px);
+
+  z-index: 50;
+
+  padding:
+    72px
+    24px
+    24px;
+}
+
+
+.post-area[hidden] {
+  display: none;
+}
+
+
+.post-container {
+  width: 100%;
+  max-width: 720px;
+
+  margin: 0 auto;
+}
+
+/* =========================================================
+   POST HEADER
+========================================================== */
+
+.post-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 34px;
+
+  margin-bottom: 34px;
+}
+
+
+.post-page-title {
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  letter-spacing: 0.12em;
+
+  color: #444444;
+}
+
+
+.post-back-button,
+.post-add-button {
+  position: absolute;
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  padding: 4px;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-back-button {
+  left: 0;
+
+  font-size: 13px;
+}
+
+
+.post-add-button {
+  right: 0;
+
+  font-size: 17px;
+  font-weight: 300;
+}
+
+
+.post-back-button:hover,
+.post-add-button:hover {
+  color: #ee9fbd;
+}
+
+
+/* =========================================================
+   POST LIST
+========================================================== */
+
+.post-list {
+  width: 100%;
+}
+
+
+.post-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  width: 100%;
+
+  padding:
+    12px
+    2px;
+
+  border-bottom:
+    1px solid #f1f1f1;
+
+  color: #555555;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    padding-left 0.2s ease;
+}
+
+
+.post-list-item:hover {
+  color: #ee9fbd;
+
+  padding-left: 5px;
+}
+
+
+.post-list-title {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 13px;
+
+  letter-spacing: 0.03em;
+}
+
+
+.post-list-date {
+  flex: 0 0 auto;
+
+  font-size: 11px;
+
+  letter-spacing: 0.05em;
+
+  color: #bbbbbb;
+}
+
+
+.post-empty {
+  padding-top: 30px;
+
+  text-align: center;
+
+  font-size: 10px;
+
+  letter-spacing: 0.05em;
+
+  color: #bbbbbb;
+}
+
+
+/* =========================================================
+   POST DETAIL
+========================================================== */
+
+.post-detail {
+  width: 100%;
+}
+
+
+.post-detail[hidden] {
+  display: none;
+}
+
+
+.post-detail-title {
+  margin:
+    0
+    0
+    10px;
+
+  font-size: 18px;
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.03em;
+
+  color: #444444;
+}
+
+
+.post-detail-date {
+  margin-bottom: 36px;
+
+  font-size: 11px;
+
+  letter-spacing: 0.05em;
+
+  color: #bbbbbb;
+}
+
+
+.post-detail-content {
+  padding-bottom: 60px;
+
+  font-size: 13px;
+
+  line-height: 1.9;
+
+  letter-spacing: 0.025em;
+
+  color: #555555;
+
+  white-space: normal;
+
+  word-break: keep-all;
+}
+
+
+/* =========================================================
+   POST MODE
+========================================================== */
+
+body.post-mode #loveEvent {
+  display: none;
+}
+
+
+body.post-mode #viewerArea {
+  pointer-events: none;
+}
+
+body.post-mode .site-footer {
+  display: none;
+}
+
+body.post-mode .menu-button,
+body.post-mode .menu-panel,
+body.post-mode .music-button {
+  z-index: 100;
+}
+
+
+/* =========================================================
+   POST BODY STYLE
+========================================================== */
+
+.post-body-paragraph {
+  white-space: pre-wrap;
+}
+
+
+.post-body-paragraph:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+.post-action,
+.post-dialogue {
+  font-size: inherit;
+
+  line-height: inherit;
+
+  letter-spacing: inherit;
+}
+
+
+/* =========================================================
+   INLINE EDITOR STYLES
+   실제 글 + 미리보기 공용
+========================================================== */
+
+
+.post-inline-highlight {
+  padding:
+    0
+    0.12em;
+
+  border-radius:
+    2px;
+
+  box-decoration-break:
+    clone;
+
+  -webkit-box-decoration-break:
+    clone;
+}
+
+
+/* =========================================================
+   POST DETAIL HEADING
+========================================================== */
+
+.post-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  width: 100%;
+
+  margin-bottom: 10px;
+}
+
+
+.post-detail-heading
+.post-detail-title {
+  flex: 1;
+
+  min-width: 0;
+
+  margin: 0;
+}
+
+
+/* =========================================================
+   EDIT / DELETE
+========================================================== */
+
+.post-detail-actions {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding-top: 5px;
+}
+
+
+.post-detail-actions[hidden] {
+  display: none;
+}
+
+
+.post-action-button {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.05em;
+
+  color: #bbbbbb;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-action-button:hover {
+  color: #777777;
+}
+
+
+.post-delete-button:hover {
+  color: #ee9fbd;
+}
+
+
+/* =========================================================
+   RELATED POSTS
+========================================================== */
+
+.post-related {
+  width: 100%;
+
+  margin-top: 56px;
+
+  padding-top: 24px;
+
+  border-top:
+    1px solid #eeeeee;
+}
+
+
+.post-related-title {
+  margin-bottom: 12px;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  line-height: 1.4;
+
+  letter-spacing: 0.10em;
+
+  color: #999999;
+}
+
+
+.post-related-list {
+  width: 100%;
+}
+
+
+.post-related-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  width: 100%;
+
+  padding:
+    8px
+    1px;
+
+  color: #777777;
+
+  text-decoration: none;
+
+  border-bottom:
+    1px solid #f5f5f5;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    padding-left 0.2s ease;
+}
+
+
+.post-related-item:hover {
+  padding-left: 4px;
+
+  color: #ee9fbd;
+}
+
+
+.post-related-item-title {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 10.5px;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.025em;
+}
+
+
+.post-related-item-date {
+  flex: 0 0 auto;
+
+  font-size: 9px;
+
+  letter-spacing: 0.04em;
+
+  color: #c2c2c2;
+}
+
+
+.post-related-item.current {
+  color: #c5c5c5;
+
+  cursor: default;
+
+  pointer-events: none;
+}
+
+
+.post-related-item.current
+.post-related-item-title::before {
+  content: "♡";
+
+  margin-right: 6px;
+
+  color: #e7b3c7;
+}
+
+
+.post-related-empty {
+  padding:
+    8px
+    0;
+
+  font-size: 9px;
+
+  letter-spacing: 0.04em;
+
+  color: #c0c0c0;
+}
+
+
+/* =========================================================
+   POST EDITOR
+========================================================== */
+
+.post-editor {
+  width: 100%;
+}
+
+
+.post-editor[hidden] {
+  display: none;
+}
+
+
+/* =========================================================
+   EDITOR FIELD
+========================================================== */
+
+.post-editor-field {
+  width: 100%;
+
+  margin-bottom: 24px;
+}
+
+
+.post-editor-field > label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  letter-spacing: 0.10em;
+
+  color: #999999;
+}
+
+/* =========================================================
+   INPUT / SELECT
+========================================================== */
+
+.post-editor-input {
+  width: 100%;
+
+  min-height: 38px;
+
+  padding:
+    8px
+    10px;
+
+  border:
+    1px solid #eeeeee;
+
+  border-radius: 0;
+
+  outline: none;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 12px;
+  font-weight: 400;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.025em;
+
+  color: #555555;
+
+  transition:
+    border-color 0.2s ease;
+}
+
+
+.post-editor-input:focus {
+  border-color: #e6bdcc;
+}
+
+
+/* =========================================================
+   EDITOR TOOLBAR
+========================================================== */
+
+.post-editor-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap:
+    8px
+    18px;
+
+  width: 100%;
+
+  margin-bottom: 9px;
+
+  padding:
+    8px
+    10px;
+
+  border:
+    1px solid #eeeeee;
+
+  background:
+    rgba(
+      250,
+      250,
+      250,
+      0.55
+    );
+}
+
+
+.post-editor-tool-group {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 24px;
+}
+
+
+.post-editor-tool-label {
+  margin-right: 2px;
+
+  font-size: 8px;
+  font-weight: 500;
+
+  line-height: 1;
+
+  letter-spacing: 0.10em;
+
+  color: #b3b3b3;
+
+  user-select: none;
+}
+
+
+/* =========================================================
+   TOOL BUTTON
+========================================================== */
+
+.post-editor-tool-button {
+  padding:
+    4px
+    6px;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  line-height: 1;
+
+  letter-spacing: 0.025em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-editor-tool-button:hover {
+  color: #555555;
+}
+
+
+.post-editor-tool-button.active,
+.post-editor-tool-button[aria-pressed="true"] {
+  color: #d980a2;
+
+  background:
+    #fff5f8;
+}
+
+
+/* =========================================================
+   PRESET SELECT
+========================================================== */
+
+.post-editor-preset-select {
+  padding:
+    3px
+    6px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.025em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  max-width: 120px;
+}
+
+
+.post-editor-tool-button.clear {
+  color: #bbbbbb;
+}
+
+
+.post-editor-tool-button.clear:hover {
+  color: #888888;
+}
+
+
+
+/* =========================================================
+   HIGHLIGHT CONTROLS
+========================================================== */
+
+.post-highlight-preset-button,
+.post-highlight-custom-control {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  min-height: 24px;
+
+  padding:
+    3px
+    5px;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+
+  line-height: 1;
+
+  letter-spacing: 0.025em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-highlight-preset-button:hover,
+.post-highlight-custom-control:hover {
+  color: #555555;
+}
+
+
+.post-highlight-preset-button.active {
+  color: #d980a2;
+
+  background:
+    #fff5f8;
+}
+
+
+/* =========================================================
+   HIGHLIGHT SWATCH
+========================================================== */
+
+.post-highlight-swatch {
+  display: block;
+
+  width: 13px;
+  height: 13px;
+
+  flex:
+    0
+    0
+    13px;
+
+  border:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.07
+    );
+
+  border-radius: 50%;
+
+  background:
+    #f4dce6;
+
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+
+.post-highlight-preset-button:hover
+.post-highlight-swatch,
+.post-highlight-custom-control:hover
+.post-highlight-swatch {
+  transform:
+    scale(1.08);
+}
+
+
+/* =========================================================
+   CUSTOM COLOR INPUT
+
+   실제 input은 숨기고
+   label을 누르면 컬러피커가 열림.
+========================================================== */
+
+.post-highlight-color-input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   RICH TEXT EDITOR
+========================================================== */
+
+.post-editor-richtext {
+  display: block;
+
+  width: 100%;
+  min-height: 420px;
+
+  padding:
+    12px
+    10px;
+
+  border:
+    1px solid #eeeeee;
+
+  border-radius: 0;
+
+  outline: none;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 12px;
+  font-weight: 400;
+
+  line-height: 1.8;
+
+  letter-spacing: 0.015em;
+
+  color: #555555;
+
+  white-space: pre-wrap;
+
+  word-break: keep-all;
+  overflow-wrap: break-word;
+
+  caret-color: #555555;
+
+  transition:
+    border-color 0.2s ease;
+}
+
+
+.post-editor-richtext:focus {
+  border-color: #e6bdcc;
+}
+
+
+.post-editor-richtext:empty::before {
+  content: attr(data-placeholder);
+
+  color: #c5c5c5;
+
+  pointer-events: none;
+}
+
+
+.post-editor-richtext > div,
+.post-editor-richtext > p {
+  margin: 0;
+}
+
+
+/* 하이라이트는 편집창에서도 바로 보임 */
+
+.post-editor-richtext
+.post-inline-highlight {
+  padding:
+    0
+    0.12em;
+
+  border-radius: 2px;
+
+  box-decoration-break: clone;
+
+  -webkit-box-decoration-break: clone;
+}
+
+
+/* 드래그 선택 표시 */
+
+.post-editor-richtext::selection,
+.post-editor-richtext *::selection {
+  background:
+    rgba(
+      238,
+      159,
+      189,
+      0.22
+    );
+}
+
+
+.post-editor-field > label,
+.post-editor-content-label {
+  display: block;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  letter-spacing: 0.10em;
+
+  color: #999999;
+}
+
+
+.post-editor-field > label {
+  margin-bottom: 8px;
+}
+
+
+/* CONTENT + 안내문 */
+
+.post-editor-content-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  width: 100%;
+
+  margin-bottom: 8px;
+}
+
+
+.post-editor-content-label {
+  flex: 0 0 auto;
+}
+
+
+.post-editor-message {
+  min-width: 0;
+
+  margin: 0;
+
+  text-align: right;
+
+  font-size: 8px;
+
+  line-height: 1.4;
+
+  letter-spacing: 0.03em;
+
+  color: #df8eac;
+}
+
+/* =========================================================
+   PREVIEW TOGGLE
+   데스크톱에서는 숨김.
+========================================================== */
+
+.post-editor-preview-toggle {
+  display: none;
+}
+
+
+/* =========================================================
+   PREVIEW SECTION
+   DESKTOP
+========================================================== */
+
+.post-editor-preview-section {
+  width: 100%;
+
+  margin-top: 38px;
+
+  padding-top: 20px;
+
+  border-top:
+    1px solid #eeeeee;
+}
+
+
+/*
+  데스크톱에서는 overlay 필요 없음.
+*/
+
+.post-editor-preview-backdrop {
+  display: none;
+}
+
+
+.post-editor-preview-drag-handle {
+  display: none;
+}
+
+
+.post-editor-preview-sheet {
+  width: 100%;
+}
+
+
+/* =========================================================
+   PREVIEW HEADER
+========================================================== */
+
+.post-editor-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+
+.post-editor-preview-header-left {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.post-editor-preview-label {
+  font-size: 9px;
+  font-weight: 500;
+
+  letter-spacing: 0.10em;
+
+  color: #999999;
+}
+
+
+/* =========================================================
+   TITLE / SOURCE VISIBILITY TOGGLE
+
+   프리뷰(및 export)에서 제목/출처를 잠깐 껐다 켜서
+   확인해볼 수 있는 세션 한정 스위치.
+   실제 QUOTE 프리셋 설정은 건드리지 않음.
+========================================================== */
+
+.post-editor-preview-visibility-controls {
+  display: flex;
+
+  gap: 6px;
+}
+
+
+.post-editor-preview-visibility-toggle {
+  padding: 3px 9px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: #bbbbbb;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.04em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-editor-preview-visibility-toggle[aria-pressed="true"] {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+.post-editor-preview-visibility-toggle[aria-pressed="false"] {
+  color: #cccccc;
+
+  text-decoration: line-through;
+}
+
+
+/*
+  ratio 트리거는 on/off가 아니라 "펼침/접힘"이라
+  취소선을 쓰지 않음(꺼짐 = 그냥 접힌 상태).
+*/
+
+.post-editor-preview-ratio-trigger[aria-pressed="false"] {
+  color: #bbbbbb;
+
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   SUBROW (source position 등, 조건부로 펼쳐지는 한 줄)
+========================================================== */
+
+.post-editor-preview-subrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+
+.post-editor-preview-subrow[hidden] {
+  display: none;
+}
+
+
+.post-editor-preview-subrow-label {
+  color: #cccccc;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+
+  letter-spacing: 0.04em;
+}
+
+
+/* =========================================================
+   RATIO CONTROLS
+========================================================== */
+
+.post-editor-preview-ratio-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+
+.post-editor-preview-ratio-controls[hidden] {
+  display: none;
+}
+
+
+.post-editor-preview-ratio-button {
+  padding: 3px 9px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: #bbbbbb;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.04em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-editor-preview-ratio-button[aria-pressed="true"] {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+.post-editor-preview-ratio-custom-inputs {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+}
+
+
+.post-editor-preview-ratio-custom-input {
+  width: 34px;
+
+  padding: 3px 4px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #666666;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+
+  text-align: center;
+}
+
+
+.post-editor-preview-ratio-custom-sep {
+  color: #cccccc;
+
+  font-size: 9px;
+}
+
+
+.post-editor-preview-close {
+  display: none;
+
+  padding: 2px 4px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #aaaaaa;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   PREVIEW STAGE
+========================================================== */
+
+.post-editor-preview-stage {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  width: 100%;
+
+  padding:
+    10px
+    0
+    6px;
+
+  overflow: hidden;
+}
+
+
+/*
+  JS가 실제 Vibe 프리셋을 읽어서
+  아래 CSS 변수들을 넣어줄 예정.
+
+  예:
+  --post-preview-aspect: 4 / 5
+  --post-preview-page-width: 1080
+  --post-preview-page-height: 1350
+
+  여기서는 비율을 결정하지 않음.
+*/
+
+.post-editor-preview-pages {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+/* =========================================================
+   PREVIEW PAGE
+========================================================== */
+
+.post-editor-preview-page {
+  position: relative;
+
+  box-sizing: border-box;
+
+  /*
+    페이지 나누기 계산이 PC/모바일에서 항상 동일하도록
+    실제 레이아웃 너비는 화면 크기와 무관하게 항상 520px로 고정.
+    좁은 화면에서는 JS(applyEditorPreviewScale)가
+    이 520px 캔버스를 통째로 축소해서 보여줌.
+  */
+
+  width: 520px;
+
+  aspect-ratio:
+    var(
+      --post-preview-aspect,
+      4 / 5
+    );
+
+-webkit-text-size-adjust: 100%;
+text-size-adjust: 100%;
+
+  min-height: 0;
+
+  padding:
+    var(
+      --post-preview-padding-y,
+      34px
+    )
+    var(
+      --post-preview-padding-x,
+      30px
+    );
+
+  border:
+    1px solid #eeeeee;
+
+  background: #ffffff;
+
+  overflow: hidden;
+
+  box-shadow:
+    0
+    4px
+    20px
+    rgba(
+      0,
+      0,
+      0,
+      0.035
+    );
+
+      flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+.post-editor-preview-page[hidden] {
+  display: none !important;
+}
+
+
+/* =========================================================
+   PREVIEW TITLE
+========================================================== */
+
+.post-editor-preview-title {
+  margin-bottom:
+    var(
+      --post-preview-title-gap,
+      22px
+    );
+
+  font-size: 16px;
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.03em;
+
+  color: #444444;
+
+  word-break: keep-all;
+}
+
+
+/* =========================================================
+   PREVIEW CONTENT
+========================================================== */
+
+.post-editor-preview-content {
+  width: 100%;
+
+  font-size: 13px;
+  font-weight: 400;
+
+  line-height: 1.9;
+
+  letter-spacing: 0.025em;
+
+  color: #555555;
+
+  white-space: normal;
+
+  word-break: keep-all;
+}
+
+
+.post-editor-preview-content
+.post-body-paragraph {
+  white-space: pre-wrap;
+}
+
+
+/*
+  자동 페이지 계산할 때
+  한 페이지 밖 내용이 절대로 삐져나오지 않게.
+*/
+
+.post-editor-preview-page {
+  contain: layout paint;
+}
+
+/* =========================================================
+   PAGE BREAK BUTTON
+========================================================== */
+
+.post-editor-page-group {
+  margin-left: auto;
+}
+
+
+.post-editor-tool-button.page-break {
+  color: #a9a9a9;
+}
+
+
+.post-editor-tool-button.page-break:hover {
+  color: #d980a2;
+
+  background: #fff5f8;
+}
+
+
+/* =========================================================
+   PAGE BREAK MARKER
+   에디터 안에서만 보이는 구분선
+========================================================== */
+
+.post-editor-page-break {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin:
+    18px
+    0;
+
+  color: #c4a6b2;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 8px;
+
+  line-height: 1;
+
+  letter-spacing: 0.10em;
+
+  user-select: none;
+}
+
+
+.post-editor-page-break::before,
+.post-editor-page-break::after {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+
+  background: #eeeeee;
+}
+
+
+.post-editor-page-break::before {
+  margin-right: 8px;
+}
+
+
+.post-editor-page-break::after {
+  margin-left: 8px;
+}
+
+
+/* =========================================================
+   PREVIEW PAGINATION
+========================================================== */
+
+.post-editor-preview-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+
+  min-height: 28px;
+
+  margin-top: 12px;
+}
+
+
+.post-editor-preview-pagination[hidden] {
+  display: none;
+}
+
+
+.post-editor-preview-page-button {
+  width: 24px;
+  height: 24px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 18px;
+  font-weight: 300;
+
+  line-height: 1;
+
+  color: #aaaaaa;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-editor-preview-page-button:hover {
+  color: #df8eac;
+}
+
+
+.post-editor-preview-page-button:disabled {
+  color: #dddddd;
+
+  cursor: default;
+}
+
+
+.post-editor-preview-page-indicator {
+  min-width: 42px;
+
+  text-align: center;
+
+  font-size: 9px;
+
+  letter-spacing: 0.07em;
+
+  color: #aaaaaa;
+}
+
+/* =========================================================
+   PREVIEW ACTION / DIALOGUE
+========================================================== */
+
+.post-editor-preview-content
+.post-action {
+  color: #888888;
+}
+
+
+.post-editor-preview-content
+.post-dialogue {
+  color: inherit;
+}
+
+
+/* =========================================================
+   EDITOR BUTTONS
+========================================================== */
+
+.post-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 22px;
+}
+
+
+.post-editor-button {
+  min-width: 54px;
+
+  padding:
+    7px
+    10px;
+
+  border:
+    1px solid #e8e8e8;
+
+  border-radius: 0;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.06em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+.post-editor-button:hover {
+  color: #666666;
+
+  border-color: #dddddd;
+}
+
+
+.post-editor-button.save:hover {
+  color: #d985a5;
+
+  border-color: #e8c1d0;
+
+  background: #fffafb;
+}
+
+.post-editor-button.export {
+  color: #888888;
+}
+
+
+.post-editor-button.export:hover {
+  color: #ee9fbd;
+
+  border-color: #e8c1d0;
+
+  background: #fffafb;
+}
+
+.post-editor-button:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+}
+
+
+
+/* =========================================================
+   EDITOR MODE
+========================================================== */
+
+body.post-editor-mode
+.post-header {
+  margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   POSTS FOOTER
+   게시글/카테고리/에디터 맨 마지막
+========================================================== */
+
+.post-site-footer {
+  flex: 0 0 auto;
+
+  width: 100%;
+
+  margin:
+    auto
+    auto
+    0;
+
+  padding:
+    70px
+    0
+    max(
+      8px,
+      env(safe-area-inset-bottom)
+    );
+
+  text-align: center;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  color: #c7c7c7;
+}
+
+.post-today-count {
+  margin-bottom: 5px;
+
+  font-size: 9px;
+
+  letter-spacing: 0.08em;
+}
+
+
+.post-copyright {
+  font-size: 8px;
+
+  letter-spacing: 0.07em;
+
+  color: #d0d0d0;
+}
+
+
