@@ -110,10 +110,25 @@
       ></div>
 
 
+      <!--
+        HTML 모드 글은 폭이 고정된 마크업(카톡 대화창 재현 등)일
+        때가 많아서, 화면보다 넓으면 postDetailContent 전체를
+        축소(scale)해서 화면 안에 들어오게 한다(posts-view.js의
+        fitHtmlPostContentToViewport). wrap은 그 축소된 실제
+        높이만큼만 자리를 차지하게 하는 용도.
+      -->
+
       <div
-        class="post-detail-content"
-        id="postDetailContent"
-      ></div>
+        class="post-detail-content-wrap"
+        id="postDetailContentWrap"
+      >
+
+        <div
+          class="post-detail-content"
+          id="postDetailContent"
+        ></div>
+
+      </div>
 
 
 

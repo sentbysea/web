@@ -251,6 +251,11 @@
 }
 
 
+.post-detail-content-wrap {
+  overflow: hidden;
+}
+
+
 .post-detail-content {
   padding-bottom: 60px;
 
@@ -265,6 +270,17 @@
   white-space: normal;
 
   word-break: keep-all;
+}
+
+
+/*
+  HTML 모드 글이 화면보다 넓을 때 posts-view.js가
+  transform: scale()로 축소한다. transform-origin은
+  JS에서 항상 top left로 맞춘다.
+*/
+
+.post-detail-content.is-html-content {
+  transform-origin: top left;
 }
 
 

@@ -1014,15 +1014,45 @@ async function openPostPage(
       postDetailContent
     ) {
 
+      postDetailContent.classList.add(
+        "is-html-content"
+      );
+
+
       postDetailContent.innerHTML =
         post.content ||
         "";
+
+
+      /*
+        붙여넣은 HTML이 화면 폭이 고정된 마크업(카톡 대화창
+        재현 등)이면 화면보다 넓어져서 잘리거나 깨져 보인다.
+        실제 크기를 측정해서 화면에 맞게 축소한다.
+      */
+
+      requestAnimationFrame(
+        fitHtmlPostContentToViewport
+      );
 
     }
 
   }
 
   else {
+
+    if (
+      postDetailContent
+    ) {
+
+      postDetailContent.classList.remove(
+        "is-html-content"
+      );
+
+    }
+
+
+    resetHtmlPostContentFit();
+
 
     await loadPostStylePreset();
 

@@ -181,6 +181,22 @@ async function exportEditorPreviewAsImages() {
 
 
   /*
+    폰트가 아직 로드 중일 때 캡처하면 대체(fallback) 폰트로
+    측정된 줄바꿈/자간이 실제 폰트 적용 후와 달라져서 텍스트가
+    겹치는 등 깨진 이미지가 나올 수 있다. 이미 로드됐으면
+    즉시 resolve되니 비용은 거의 없다.
+  */
+
+  if (
+    document.fonts?.ready
+  ) {
+
+    await document.fonts.ready;
+
+  }
+
+
+  /*
     ★ export 버튼은 프리뷰 패널 밖(에디터 하단)에 있어서,
     모바일에서는 프리뷰 시트를 한 번도 열지 않고도
     바로 export를 누를 수 있다.
@@ -505,6 +521,18 @@ async function exportEditorPreviewAsImages() {
 
           page.hidden =
             false;
+
+
+          /*
+            hidden 해제 직후 바로 캡처하면 레이아웃/폰트가
+            아직 안정되기 전이라 텍스트가 겹쳐 보이는 등
+            깨진 이미지가 나올 수 있다(데스크톱 루프와
+            동일하게 안정화 시간을 준다).
+          */
+
+          await waitForExport(
+            30
+          );
 
 
           try {

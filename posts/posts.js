@@ -117,6 +117,11 @@ const postDetailDate =
     "postDetailDate"
   );
 
+const postDetailContentWrap =
+  document.getElementById(
+    "postDetailContentWrap"
+  );
+
 const postDetailContent =
   document.getElementById(
     "postDetailContent"
