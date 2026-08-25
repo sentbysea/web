@@ -535,6 +535,82 @@ async function exportEditorPreviewAsImages() {
   }
 
 
+  /*
+    ★ 캔버스 카드용 확대/축소 transform은 항상 페이지의 부모인
+    postEditorPreviewPages(데스크톱 scale, 모바일
+    translate+scale/핀치줌 둘 다)에 걸려 있다. html2canvas는
+    캡처 대상 엘리먼트만 독립적으로 그리는 게 아니라 조상의
+    스타일까지 그대로 반영해서 다시 그리기 때문에, 이 transform이
+    남아있으면 좌표 계산이 꼬여서 텍스트가 겹치거나 밀려 보인다
+    (직접 재현/확인함 — export가 계속 깨졌던 진짜 원인).
+    캡처 직전에만 걷어내고 캡처 후 그대로 복원한다.
+  */
+
+  function stripAncestorTransformsForCapture(
+    element
+  ) {
+
+    const affected =
+      [];
+
+    let node =
+      element.parentElement;
+
+
+    while (node) {
+
+      const inlineTransform =
+        node.style.transform;
+
+
+      if (
+        inlineTransform &&
+        inlineTransform !==
+          "none"
+      ) {
+
+        affected.push(
+          {
+            node,
+            value:
+              inlineTransform
+          }
+        );
+
+
+        node.style.transform =
+          "none";
+
+      }
+
+
+      node =
+        node.parentElement;
+
+    }
+
+
+    return affected;
+
+  }
+
+
+  function restoreAncestorTransformsAfterCapture(
+    affected
+  ) {
+
+    affected.forEach(
+      entry => {
+
+        entry.node.style.transform =
+          entry.value;
+
+      }
+    );
+
+  }
+
+
   async function captureVisiblePageAsBlob(
     page,
     pageWidth,
@@ -544,6 +620,12 @@ async function exportEditorPreviewAsImages() {
     bakeHighlightSpansForCapture(
       page
     );
+
+
+    const strippedTransforms =
+      stripAncestorTransformsForCapture(
+        page
+      );
 
 
     let canvas;
@@ -599,6 +681,11 @@ async function exportEditorPreviewAsImages() {
 
       restoreHighlightSpansAfterCapture(
         page
+      );
+
+
+      restoreAncestorTransformsAfterCapture(
+        strippedTransforms
       );
 
     }

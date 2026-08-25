@@ -984,6 +984,11 @@ body.post-mode .music-button {
    RICH TEXT EDITOR
 ========================================================== */
 
+.post-editor-html-textarea[hidden] {
+  display: none;
+}
+
+
 .post-editor-richtext,
 .post-editor-html-textarea {
   display: block;
