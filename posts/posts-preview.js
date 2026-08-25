@@ -635,46 +635,6 @@ function renderEditorPreviewPages(
 
 
   /*
-    ★★★ 임시 디버그 (원인 파악되면 제거) ★★★
-    실제로 페이지에 적용된 padding과 CSS 변수 원본값을
-    화면에 바로 보이게 표시.
-  */
-
-  if (current.title) {
-
-    const computedStyle =
-      window.getComputedStyle(
-        current.page
-      );
-
-    current.title.textContent +=
-      ` [DBG pad:${
-        computedStyle.padding
-      } varY:${
-        computedStyle.getPropertyValue(
-          "--post-preview-padding-y"
-        )
-      } varX:${
-        computedStyle.getPropertyValue(
-          "--post-preview-padding-x"
-        )
-      } raw:${
-        JSON.stringify(
-          {
-            padding:
-              settings.padding,
-            v:
-              settings.verticalPadding,
-            h:
-              settings.horizontalPadding
-          }
-        )
-      }]`;
-
-  }
-
-
-  /*
     새로운 페이지 생성
   */
 
