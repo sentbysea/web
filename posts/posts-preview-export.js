@@ -397,6 +397,99 @@ async function exportEditorPreviewAsImages() {
   */
 
   /*
+    ★ html2canvas는 CSS 커스텀 프로퍼티(변수, var(--foo))를
+    지원하지 않는다(공식적으로 알려진 제약). 우리 페이지의
+    padding(--post-preview-padding-y/x)과 제목 아래 여백
+    (--post-preview-title-gap)이 전부 이 방식으로 지정되어
+    있어서, 화면(브라우저 렌더링)에서는 정확히 계산되어 잘
+    보이지만 html2canvas로 캡처하면 그 값을 못 읽어서
+    0으로 그려진다 — export만 하면 여백이 다 사라지고
+    텍스트가 가장자리에 딱 붙어 나오던 진짜 원인이다.
+
+    캡처 직전에 실제 계산된(getComputedStyle) 픽셀 값을
+    인라인 스타일로 그대로 박아넣으면 html2canvas가
+    var() 없이도 정확한 값을 읽을 수 있다. 캡처 후에는
+    원래 인라인 스타일 상태로 되돌린다.
+  */
+
+  function bakeCssVarStylesForCapture(
+    page
+  ) {
+
+    const affected =
+      [];
+
+
+    const pageComputed =
+      window.getComputedStyle(
+        page
+      );
+
+    affected.push(
+      {
+        node: page,
+        prop: "padding",
+        previousValue:
+          page.style.padding
+      }
+    );
+
+    page.style.padding =
+      pageComputed.padding;
+
+
+    const title =
+      page.querySelector(
+        ".post-editor-preview-title"
+      );
+
+    if (title) {
+
+      const titleComputed =
+        window.getComputedStyle(
+          title
+        );
+
+      affected.push(
+        {
+          node: title,
+          prop:
+            "marginBottom",
+          previousValue:
+            title.style.marginBottom
+        }
+      );
+
+      title.style.marginBottom =
+        titleComputed.marginBottom;
+
+    }
+
+
+    return affected;
+
+  }
+
+
+  function restoreCssVarStylesAfterCapture(
+    affected
+  ) {
+
+    affected.forEach(
+      entry => {
+
+        entry.node.style[
+          entry.prop
+        ] =
+          entry.previousValue;
+
+      }
+    );
+
+  }
+
+
+  /*
     ★ html2canvas는 "여러 줄에 걸쳐 줄바꿈되는, 배경색이 있는
     인라인 span"(우리의 하이라이트)을 렌더링할 때 텍스트가
     사라지거나 다른 줄과 겹쳐 보이는 알려진 버그가 있다
@@ -628,6 +721,12 @@ async function exportEditorPreviewAsImages() {
       );
 
 
+    const bakedCssVarStyles =
+      bakeCssVarStylesForCapture(
+        page
+      );
+
+
     let canvas;
 
     try {
@@ -686,6 +785,11 @@ async function exportEditorPreviewAsImages() {
 
       restoreAncestorTransformsAfterCapture(
         strippedTransforms
+      );
+
+
+      restoreCssVarStylesAfterCapture(
+        bakedCssVarStyles
       );
 
     }
