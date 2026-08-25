@@ -84,6 +84,82 @@ function downloadDataUrl(
 }
 
 
+/*
+  클립보드 복사도 공유도 안 되는 환경(카카오톡/인스타그램 인앱
+  브라우저 등)의 마지막 수단: 새 탭에 이미지를 직접 열어서
+  길게 눌러 저장하게 한다. <a download>는 이런 인앱 웹뷰에서
+  조용히 씹히는 경우가 많아서, 최소한 "화면에 보이기라도" 하는
+  이 방법이 훨씬 안정적이다. 새 탭이 막히면(팝업 차단 등)
+  마지막으로 다운로드 링크를 시도한다.
+*/
+
+function openExportedImageOrDownload(
+  file
+) {
+
+  const url =
+    URL.createObjectURL(
+      file
+    );
+
+  const opened =
+    window.open(
+      url,
+      "_blank"
+    );
+
+
+  if (opened) {
+
+    showPostEditorMessage(
+      "이미지를 길게 눌러 저장하세요 ♡"
+    );
+
+  }
+
+  else {
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+    link.href =
+      url;
+
+    link.download =
+      file.name;
+
+    document.body.appendChild(
+      link
+    );
+
+    link.click();
+
+    link.remove();
+
+
+    showPostEditorMessage(
+      "saved ♡"
+    );
+
+  }
+
+
+  setTimeout(
+    () => {
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    60000
+  );
+
+}
+
+
 async function exportEditorPreviewAsImages() {
 
   if (
@@ -134,11 +210,15 @@ async function exportEditorPreviewAsImages() {
   let sectionForcedForExport =
     false;
 
-  if (
-    sectionForExport &&
-    !wasSectionOpenBeforeExport &&
-    isMobilePostEditor()
-  ) {
+  function forceOpenSectionIfNeeded() {
+
+    if (
+      !sectionForExport ||
+      wasSectionOpenBeforeExport ||
+      !isMobilePostEditor()
+    ) {
+      return;
+    }
 
     /*
       "is-open"은 모바일 미디어쿼리에서만 display:none을
@@ -243,6 +323,405 @@ async function exportEditorPreviewAsImages() {
   }
 
 
+  const isMobileExport =
+    isMobilePostEditor();
+
+
+  /*
+    한 페이지를 html2canvas로 캡처해서 PNG Blob으로 만든다.
+    모바일 클립보드 경로와, 그 폴백(공유/새탭) 양쪽에서
+    재사용한다.
+  */
+
+  async function captureVisiblePageAsBlob(
+    page,
+    pageWidth,
+    pageHeight
+  ) {
+
+    const desiredWidth =
+      Math.max(
+        pageWidth,
+        Number(
+          postStyleSettings
+            ?.exportWidth
+        ) || pageWidth * 2
+      );
+
+
+    const exportScale =
+      desiredWidth /
+      pageWidth;
+
+
+    const canvas =
+      await window.html2canvas(
+        page,
+        {
+          backgroundColor:
+            null,
+
+          useCORS:
+            true,
+
+          scale:
+            exportScale,
+
+          width:
+            pageWidth,
+
+          height:
+            pageHeight,
+
+          windowWidth:
+            pageWidth,
+
+          windowHeight:
+            pageHeight,
+
+          logging:
+            false
+        }
+      );
+
+
+    const blob =
+      await new Promise(
+        resolve => {
+
+          canvas.toBlob(
+            resolve,
+            "image/png",
+            1
+          );
+
+        }
+      );
+
+
+    if (!blob) {
+
+      throw new Error(
+        "PNG 생성 실패"
+      );
+
+    }
+
+
+    return blob;
+
+  }
+
+
+  /*
+    ★ 모바일: 클립보드에 "즉시" 쓰기를 등록하고, 실제 이미지를
+    만드는 무거운 작업(html2canvas 등)은 그 안에서 나중에
+    끝낸다.
+
+    navigator.clipboard.write([new ClipboardItem({...})])는
+    ClipboardItem의 값으로 아직 완료되지 않은 Promise를 받아도,
+    write() 호출 자체가 사용자 클릭(user activation) 시점에
+    이루어졌다면 그 Promise가 나중에 resolve될 때 정상적으로
+    써주도록 스펙에 정의되어 있다.
+
+    반대로 먼저 await로 html2canvas를 다 끝내고 나서
+    clipboard.write를 호출하면, 그 사이(특히 모바일 브라우저)
+    "사용자 제스처가 아직 유효하다"는 상태가 만료돼서
+    클립보드 쓰기 자체가 조용히 거부되는 경우가 많다 —
+    이게 바로 모바일 export가 "눌러도 반응 없음"이었던
+    근본 원인으로 보인다.
+  */
+
+  if (
+    isMobileExport &&
+    navigator.clipboard?.write &&
+    window.ClipboardItem
+  ) {
+
+    if (
+      postEditorExportButton
+    ) {
+
+      postEditorExportButton.disabled =
+        true;
+
+      postEditorExportButton.textContent =
+        "...";
+
+    }
+
+
+    showPostEditorMessage(
+      "이미지 만드는 중..."
+    );
+
+
+    const capturePromise =
+      (
+        async () => {
+
+          forceOpenSectionIfNeeded();
+
+
+          updateEditorPreview();
+
+
+          await waitForExport(
+            80
+          );
+
+
+          const previewPages =
+            Array.from(
+              document.querySelectorAll(
+                ".post-editor-preview-page"
+              )
+            );
+
+
+          if (
+            previewPages.length === 0
+          ) {
+
+            throw new Error(
+              "내보낼 미리보기가 없습니다."
+            );
+
+          }
+
+
+          const page =
+            previewPages[
+              editorPreviewPageIndex
+            ] ||
+            previewPages[
+              previewPages.length - 1
+            ];
+
+
+          const wasHidden =
+            page.hidden;
+
+
+          page.hidden =
+            false;
+
+
+          try {
+
+            const ratio =
+              getPostPreviewRatio(
+                postStyleSettings ||
+                {}
+              );
+
+
+            const pageWidth =
+              520;
+
+
+            const pageHeight =
+              Math.round(
+                pageWidth *
+                (
+                  ratio.height /
+                  ratio.width
+                )
+              );
+
+
+            return await captureVisiblePageAsBlob(
+              page,
+              pageWidth,
+              pageHeight
+            );
+
+          } finally {
+
+            page.hidden =
+              wasHidden;
+
+          }
+
+        }
+      )();
+
+
+    try {
+
+      await navigator.clipboard.write(
+        [
+          new ClipboardItem(
+            {
+              "image/png":
+                capturePromise
+            }
+          )
+        ]
+      );
+
+
+      showPostEditorMessage(
+        "copied ♡"
+      );
+
+    } catch (clipboardError) {
+
+      console.warn(
+        "clipboard copy failed:",
+        clipboardError
+      );
+
+
+      try {
+
+        const blob =
+          await capturePromise;
+
+        const fileName =
+          `${
+            getExportBaseFileName()
+          }-${
+            editorPreviewPageIndex + 1
+          }.png`;
+
+        const file =
+          new File(
+            [blob],
+            fileName,
+            {
+              type:
+                "image/png"
+            }
+          );
+
+
+        if (
+          navigator.share &&
+          navigator.canShare &&
+          navigator.canShare(
+            {
+              files:
+                [file]
+            }
+          )
+        ) {
+
+          try {
+
+            await navigator.share(
+              {
+                files:
+                  [file],
+
+                title:
+                  getExportBaseFileName()
+              }
+            );
+
+
+            showPostEditorMessage(
+              "ready 1 page ♡"
+            );
+
+          } catch (shareError) {
+
+            if (
+              shareError?.name ===
+              "AbortError"
+            ) {
+
+              showPostEditorMessage(
+                ""
+              );
+
+            }
+
+            else {
+
+              console.warn(
+                "share failed:",
+                shareError
+              );
+
+
+              openExportedImageOrDownload(
+                file
+              );
+
+            }
+
+          }
+
+        }
+
+        else {
+
+          openExportedImageOrDownload(
+            file
+          );
+
+        }
+
+      } catch (captureError) {
+
+        console.error(
+          "preview export error:",
+          captureError
+        );
+
+
+        showPostEditorMessage(
+          "이미지 저장 실패: " +
+          (
+            captureError?.message ||
+            "알 수 없는 오류"
+          )
+        );
+
+      }
+
+    } finally {
+
+      if (
+        postEditorExportButton
+      ) {
+
+        postEditorExportButton.disabled =
+          false;
+
+        postEditorExportButton.textContent =
+          "export";
+
+      }
+
+
+      showEditorPreviewPage(
+        editorPreviewPageIndex,
+        {
+          resetZoom: false
+        }
+      );
+
+
+      restoreForcedExportSection();
+
+    }
+
+
+    return;
+
+  }
+
+
+  /*
+    데스크톱(또는 클립보드 API 자체가 없는 환경): 기존처럼
+    전체 페이지를 순서대로 PNG로 만들어서 한꺼번에 다운로드한다.
+  */
+
+  forceOpenSectionIfNeeded();
+
+
   updateEditorPreview();
 
 
@@ -292,44 +771,6 @@ async function exportEditorPreviewAsImages() {
   );
 
 
-  /*
-    모바일은 현재 보고 있는 페이지 하나만
-    클립보드로 복사하면 되므로, 그 한 페이지만 렌더링한다
-    (화면에 없는 페이지까지 전부 캡처할 필요가 없음).
-
-    데스크톱은 기존처럼 전체 페이지를 PNG로 저장한다.
-  */
-
-  const isMobileExport =
-    isMobilePostEditor();
-
-  const pagesToExport =
-    isMobileExport
-      ? [
-          {
-            page:
-              previewPages[
-                editorPreviewPageIndex
-              ],
-            pageNumber:
-              editorPreviewPageIndex +
-              1
-          }
-        ]
-      : previewPages.map(
-          (
-            page,
-            index
-          ) => (
-            {
-              page,
-              pageNumber:
-                index + 1
-            }
-          )
-        );
-
-
   const exportFiles =
     [];
 
@@ -341,16 +782,13 @@ async function exportEditorPreviewAsImages() {
 
 
     for (
-      let i = 0;
-      i < pagesToExport.length;
-      i += 1
+      let index = 0;
+      index < previewPages.length;
+      index += 1
     ) {
 
-      const {
-        page,
-        pageNumber
-      } =
-        pagesToExport[i];
+      const page =
+        previewPages[index];
 
 
       /*
@@ -372,155 +810,41 @@ async function exportEditorPreviewAsImages() {
 
 
       const ratio =
-  getPostPreviewRatio(
-    postStyleSettings ||
-    {}
-  );
-
-
-const pageWidth =
-  520;
-
-
-const pageHeight =
-  Math.round(
-    pageWidth *
-    (
-      ratio.height /
-      ratio.width
-    )
-  );
-
-
-      /*
-        ★ 화면에 실제로 보이는 그 페이지 요소를 그대로 캡처한다.
-        (복제본을 만들어 document.body로 옮기지 않음 —
-        그러면 padding 등 CSS 변수 상속 체인이 끊겨서
-        프리뷰와 결과물이 달라질 수 있기 때문)
-
-        html2canvas가 aspect-ratio를 잘못 계산하는 문제만
-        피하기 위해, 캡처 직전에 실제 계산된 높이를
-        숫자로 잠깐 고정했다가 캡처 후 원상복구한다.
-      */
-
-      const previousInlineHeight =
-        page.style.height;
-
-      const previousInlineAspectRatio =
-        page.style.aspectRatio;
-
-
-      page.style.height =
-        `${pageHeight}px`;
-
-      page.style.aspectRatio =
-        "auto";
-
-
-      await waitForExport(
-        30
-      );
-
-
-      /*
-        QUOTE의 exportWidth가 있으면
-        그 폭에 맞춰 PNG 해상도 결정.
-
-        없으면 화면 프리뷰의 2배.
-      */
-
-      const desiredWidth =
-        Math.max(
-          pageWidth,
-          Number(
-            postStyleSettings
-              ?.exportWidth
-          ) || pageWidth * 2
+        getPostPreviewRatio(
+          postStyleSettings ||
+          {}
         );
 
 
-      const exportScale =
-        desiredWidth /
-        pageWidth;
+      const pageWidth =
+        520;
 
 
-      let canvas;
+      const pageHeight =
+        Math.round(
+          pageWidth *
+          (
+            ratio.height /
+            ratio.width
+          )
+        );
+
+
+      let blob;
 
       try {
 
-        canvas =
-          await window.html2canvas(
+        blob =
+          await captureVisiblePageAsBlob(
             page,
-            {
-              backgroundColor:
-                null,
-
-              useCORS:
-                true,
-
-              scale:
-                exportScale,
-
-              width:
-                pageWidth,
-
-              height:
-                pageHeight,
-
-              windowWidth:
-                pageWidth,
-
-              windowHeight:
-                pageHeight,
-
-              logging:
-                false
-            }
+            pageWidth,
+            pageHeight
           );
 
       } finally {
 
-        /*
-          캡처 성공/실패와 무관하게 페이지를
-          항상 원래 상태로 되돌린다.
-        */
-
-        page.style.height =
-          previousInlineHeight;
-
-        page.style.aspectRatio =
-          previousInlineAspectRatio;
-
-
         page.hidden =
           wasHidden;
-
-      }
-
-
-      /*
-        canvas → PNG Blob
-      */
-
-      const blob =
-        await new Promise(
-          resolve => {
-
-            canvas.toBlob(
-              resolve,
-              "image/png",
-              1
-            );
-
-          }
-        );
-
-
-      if (!blob) {
-
-        throw new Error(
-          "PNG 생성 실패"
-        );
 
       }
 
@@ -529,7 +853,7 @@ const pageHeight =
         `${
           baseFileName
         }-${
-          pageNumber
+          index + 1
         }.png`;
 
 
@@ -564,210 +888,6 @@ const pageHeight =
       }
     );
 
-
-    /*
-      모바일: 현재 페이지 이미지를 클립보드로 바로 복사.
-      다른 앱(메시지, 갤러리 등)에 바로 붙여넣기 할 수 있어서
-      기존 공유 시트보다 훨씬 안정적으로 동작한다.
-    */
-
-    if (
-      isMobileExport &&
-      navigator.clipboard?.write &&
-      window.ClipboardItem
-    ) {
-
-      try {
-
-        await navigator.clipboard.write(
-          [
-            new ClipboardItem(
-              {
-                "image/png":
-                  exportFiles[0]
-              }
-            )
-          ]
-        );
-
-
-        showPostEditorMessage(
-          "copied ♡"
-        );
-
-
-        return;
-
-      } catch (clipboardError) {
-
-        console.warn(
-          "clipboard copy failed:",
-          clipboardError
-        );
-
-      }
-
-    }
-
-
-    /*
-      클립보드 복사를 못 쓰는 모바일 환경:
-      공유 시트로 대체(iPhone / iPad 등).
-    */
-
-    if (
-      isMobileExport &&
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare({
-        files:
-          exportFiles
-      })
-    ) {
-
-      try {
-
-        await navigator.share({
-          files:
-            exportFiles,
-
-          title:
-            getExportBaseFileName()
-        });
-
-
-        showPostEditorMessage(
-          `ready ${exportFiles.length} page`
-          +
-          `${
-            exportFiles.length > 1
-              ? "s"
-              : ""
-          } ♡`
-        );
-
-
-        return;
-
-      } catch (shareError) {
-
-        /*
-          사용자가 공유창을 그냥 닫은 경우에는
-          오류 팝업 띄우지 않음.
-        */
-
-        if (
-          shareError?.name ===
-          "AbortError"
-        ) {
-
-          showPostEditorMessage(
-            ""
-          );
-
-
-          return;
-
-        }
-
-
-        console.warn(
-          "share failed:",
-          shareError
-        );
-
-      }
-
-    }
-
-
-    /*
-      클립보드/공유가 전부 안 되는 모바일 환경(카카오톡/인스타그램
-      인앱 브라우저 등)의 마지막 수단: 새 탭에 이미지를 직접 열어서
-      길게 눌러 저장하게 한다. <a download>는 이런 인앱 웹뷰에서
-      조용히 씹히는 경우가 많아서, 최소한 "화면에 보이기라도" 하는
-      이 방법이 훨씬 안정적이다.
-    */
-
-    if (isMobileExport) {
-
-      const file =
-        exportFiles[0];
-
-      const url =
-        URL.createObjectURL(
-          file
-        );
-
-      const opened =
-        window.open(
-          url,
-          "_blank"
-        );
-
-
-      if (opened) {
-
-        showPostEditorMessage(
-          "이미지를 길게 눌러 저장하세요 ♡"
-        );
-
-      }
-
-      else {
-
-        /*
-          새 탭 열기가 막힌 경우(팝업 차단 등)에만
-          마지막으로 다운로드 링크를 시도.
-        */
-
-        const link =
-          document.createElement(
-            "a"
-          );
-
-        link.href =
-          url;
-
-        link.download =
-          file.name;
-
-        document.body.appendChild(
-          link
-        );
-
-        link.click();
-
-        link.remove();
-
-
-        showPostEditorMessage(
-          `saved ♡`
-        );
-
-      }
-
-
-      setTimeout(
-        () => {
-
-          URL.revokeObjectURL(
-            url
-          );
-
-        },
-        60000
-      );
-
-
-      return;
-
-    }
-
-
-    /*
-      PC: 일반 PNG 다운로드.
-    */
 
     exportFiles.forEach(
       file => {
