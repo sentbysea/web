@@ -970,14 +970,19 @@ function applyPostBodyStyles(
     "#555555";
 
 
+  /*
+    ★ 예전에는 최소 13px로 강제했었는데, 그러면 사용자가
+    admin-quote에서 일부러 작게(예: 9px) 설정해도 무시되고
+    항상 13px로 나왔다 — admin-quote 프리뷰 쪽엔 이런 강제
+    최소값이 없어서 두 프리뷰가 서로 다르게 보이던 원인 중
+    하나. 설정값을 그대로 쓰도록 제거.
+  */
+
   container.style.fontSize =
     `${
-      Math.max(
-        13,
-        Number(
-          settings.bodySize
-        ) || 13
-      )
+      Number(
+        settings.bodySize
+      ) || 16
     }px`;
 
 
@@ -1123,6 +1128,70 @@ function renderStyledPostContentInto(
 
     }
   );
+
+
+  /*
+    ★ 위 blocks(:scope > div, :scope > p)는 예전 legacy
+    콘텐츠에만 있고, 이 에디터는 Enter를 눌러도 <div>/<p>가
+    아니라 <br>만 생긴다(posts.js 참고) — 그래서 실제로
+    작성한 글에는 paragraphSpacing/indent가 적용될 대상
+    자체가 없어서 admin-quote 미리보기와 달리 문단 간격이
+    통째로 사라져 보였다.
+
+    연속된 <br> 두 개(=Enter 두 번, 즉 빈 줄로 문단을
+    나눈 지점)를 문단 경계로 보고 그 자리에 paragraphSpacing
+    만큼 여백을 준다. <br>은 인라인 요소라 margin/height가
+    안 먹으므로 display:block으로 바꿔서 적용한다.
+  */
+
+  const paragraphSpacing =
+    Number(
+      settings.paragraphSpacing
+    ) || 0;
+
+
+  if (
+    paragraphSpacing > 0
+  ) {
+
+    const childNodes =
+      Array.from(
+        container.childNodes
+      );
+
+
+    childNodes.forEach(
+      (
+        node,
+        index
+      ) => {
+
+        const previous =
+          childNodes[
+            index - 1
+          ];
+
+        if (
+          node.nodeType ===
+            Node.ELEMENT_NODE &&
+          node.nodeName ===
+            "BR" &&
+          previous?.nodeName ===
+            "BR"
+        ) {
+
+          node.style.display =
+            "block";
+
+          node.style.height =
+            `${paragraphSpacing}px`;
+
+        }
+
+      }
+    );
+
+  }
 
 
   applyActionDialogueStyles(
