@@ -278,12 +278,18 @@
 
 /*
   HTML 모드 글이 화면보다 넓을 때 posts-view.js가
-  transform: scale()로 축소한다. transform-origin은
-  JS에서 항상 top left로 맞춘다.
+  transform: scale()로 축소한다.
+
+  origin을 top left로 하면 축소된 결과물이 원본 박스의
+  왼쪽 위 구석에 붙어버려서, wrap의 justify-content:center가
+  그 "원본 크기 박스"를 중앙에 둬도 실제 보이는 이미지는
+  왼쪽으로 치우쳐 보인다. top center로 축소축을 잡아야
+  결과물의 중심이 박스 중심(=wrap 중심)과 일치해서
+  진짜 가운데 정렬이 된다.
 */
 
 .post-detail-content.is-html-content {
-  transform-origin: top left;
+  transform-origin: top center;
 }
 
 
@@ -1242,11 +1248,14 @@ body.post-mode .music-button {
 .post-editor-message {
   min-width: 0;
 
-  margin: 0;
+  margin:
+    10px
+    0
+    0;
 
-  text-align: right;
+  text-align: center;
 
-  font-size: 8px;
+  font-size: 10px;
 
   line-height: 1.4;
 
