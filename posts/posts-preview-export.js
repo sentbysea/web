@@ -396,56 +396,212 @@ async function exportEditorPreviewAsImages() {
     재사용한다.
   */
 
+  /*
+    ★ html2canvas는 "여러 줄에 걸쳐 줄바꿈되는, 배경색이 있는
+    인라인 span"(우리의 하이라이트)을 렌더링할 때 텍스트가
+    사라지거나 다른 줄과 겹쳐 보이는 알려진 버그가 있다
+    (직접 재현/확인함). 캡처 직전에만 하이라이트 span의
+    글자 하나하나를 개별 span으로 재감싸서 배경색을 주면
+    이 버그를 피해갈 수 있다 — 캡처가 끝나면 즉시 원래
+    구조로 되돌린다.
+  */
+
+  function bakeHighlightSpansForCapture(
+    container
+  ) {
+
+    const highlightSpans =
+      container.querySelectorAll(
+        ".post-inline-highlight"
+      );
+
+
+    highlightSpans.forEach(
+      span => {
+
+        const bg =
+          span.style.backgroundColor;
+
+
+        if (!bg) {
+          return;
+        }
+
+
+        span.setAttribute(
+          "data-original-html",
+          span.innerHTML
+        );
+
+
+        span.setAttribute(
+          "data-original-bg",
+          bg
+        );
+
+
+        const chars =
+          Array.from(
+            span.textContent
+          );
+
+
+        const wrapped =
+          chars
+            .map(
+              char => {
+
+                if (
+                  char === "\n"
+                ) {
+                  return char;
+                }
+
+
+                const safe =
+                  char
+                    .replace(
+                      /&/g,
+                      "&amp;"
+                    )
+                    .replace(
+                      /</g,
+                      "&lt;"
+                    )
+                    .replace(
+                      />/g,
+                      "&gt;"
+                    );
+
+
+                return `<span style="background-color:${bg};display:inline;color:inherit;font:inherit;letter-spacing:inherit;">${safe}</span>`;
+
+              }
+            )
+            .join(
+              ""
+            );
+
+
+        span.innerHTML =
+          wrapped;
+
+
+        span.style.backgroundColor =
+          "transparent";
+
+      }
+    );
+
+  }
+
+
+  function restoreHighlightSpansAfterCapture(
+    container
+  ) {
+
+    container
+      .querySelectorAll(
+        ".post-inline-highlight[data-original-html]"
+      )
+      .forEach(
+        span => {
+
+          span.innerHTML =
+            span.getAttribute(
+              "data-original-html"
+            );
+
+
+          span.style.backgroundColor =
+            span.getAttribute(
+              "data-original-bg"
+            ) ||
+            "";
+
+
+          span.removeAttribute(
+            "data-original-html"
+          );
+
+
+          span.removeAttribute(
+            "data-original-bg"
+          );
+
+        }
+      );
+
+  }
+
+
   async function captureVisiblePageAsBlob(
     page,
     pageWidth,
     pageHeight
   ) {
 
-    const desiredWidth =
-      Math.max(
-        pageWidth,
-        Number(
-          postStyleSettings
-            ?.exportWidth
-        ) || pageWidth * 2
+    bakeHighlightSpansForCapture(
+      page
+    );
+
+
+    let canvas;
+
+    try {
+
+      const desiredWidth =
+        Math.max(
+          pageWidth,
+          Number(
+            postStyleSettings
+              ?.exportWidth
+          ) || pageWidth * 2
+        );
+
+
+      const exportScale =
+        desiredWidth /
+        pageWidth;
+
+
+      canvas =
+        await window.html2canvas(
+          page,
+          {
+            backgroundColor:
+              null,
+
+            useCORS:
+              true,
+
+            scale:
+              exportScale,
+
+            width:
+              pageWidth,
+
+            height:
+              pageHeight,
+
+            windowWidth:
+              pageWidth,
+
+            windowHeight:
+              pageHeight,
+
+            logging:
+              false
+          }
+        );
+
+    } finally {
+
+      restoreHighlightSpansAfterCapture(
+        page
       );
 
-
-    const exportScale =
-      desiredWidth /
-      pageWidth;
-
-
-    const canvas =
-      await window.html2canvas(
-        page,
-        {
-          backgroundColor:
-            null,
-
-          useCORS:
-            true,
-
-          scale:
-            exportScale,
-
-          width:
-            pageWidth,
-
-          height:
-            pageHeight,
-
-          windowWidth:
-            pageWidth,
-
-          windowHeight:
-            pageHeight,
-
-          logging:
-            false
-        }
-      );
+    }
 
 
     const blob =

@@ -284,6 +284,17 @@ async function hidePostAreaCurtain() {
 async function prepareEditorUI() {
 
   /*
+    ★ 방어적 재동기화: editorContentMode 값 자체는 맞아도
+    hidden 처리가 어떤 이유로든 어긋나 있을 수 있으니,
+    에디터를 열 때마다 항상 한 번 더 강제로 맞춘다.
+  */
+
+  setEditorContentMode(
+    editorContentMode
+  );
+
+
+  /*
     Vibe는 에디터 열 때마다 다시 읽음.
 
     QUOTE에서 색을 바꾼 뒤
