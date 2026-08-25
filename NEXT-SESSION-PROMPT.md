@@ -1,30 +1,17 @@
-web-main 프로젝트에서 이어서 작업할 두 가지가 있어.
+이 프로젝트(바이브.me, Supabase 백엔드 정적 사이트) 이어서 작업할게.
 
-1. 발췌 이미지 부분 선택 기능
-   지금은 프리뷰/export가 항상 본문 전체를 발췌해서 캔버스에 렌더링해.
-   여기에 "본문 중 원하는 일부분만 골라서 발췌"하는 기능을 추가하고 싶어.
-   - 기본 동작(전체 발췌)은 그대로 유지, 부분 선택은 추가 옵션으로.
-   - 아직 결정 못한 것: 이 선택을 에디터에서 하게 할지(예: 리치 에디터에서
-     텍스트 드래그로 선택) 프리뷰에서 하게 할지(예: 렌더링된 캔버스 위에서
-     직접 범위 지정). 프리뷰 쪽이 더 나을 것 같다는 감이 있지만 확정은 아님 —
-     장단점 비교해서 방향부터 같이 정하고 시작해줘.
-   - 관련 파일: posts/posts-preview.js (renderEditorPreviewPages,
-     createEditorPreviewPage), posts/posts-editor.js (getRichEditorHTML),
-     posts/posts.html (에디터 툴바), posts/posts.js.
-   - 페이지 분할(PAGE BREAK)/페이지네이션 로직과 "부분 선택"이 어떻게
-     상호작용해야 할지도 같이 고민 필요.
+## 오늘(지난 세션) 마무리된 것 — 재확인 불필요
+- 에디터 프리뷰/발췌(export) 여러 버그 근본 원인 찾아서 고침: html2canvas가 여러 줄 하이라이트 배경을 못 그리는 버그, 부모 확대/축소 transform이 캡처에 그대로 반영되던 버그, html2canvas가 CSS 변수(var())를 아예 못 읽어서 padding/제목 여백이 캡처 시에만 사라지던 버그.
+- 모바일 클립보드 복사 export(user gesture 만료 문제) 수정, 데스크톱 다운로드는 그대로 유지.
+- OOC(독자에게 안 보이는 메모) 필드 추가, HTML 모드(글 전체를 raw HTML로 작성/출력) 추가 — 둘 다 OOC 버튼 옆에 나란히, HTML 모드 토글 시 hidden 처리 안 되던 CSS 우선순위 버그도 고침.
+- HTML 모드 글이 화면보다 넓을 때 자동 축소 + 가운데 정렬.
+- admin-quote 프리셋 활성화(is_active) 기능, 실제 글/발췌 연동 확인 완료.
+- 본문 폰트 최소 13px 강제하던 코드 제거, `<br>` 기반 에디터 콘텐츠에 문단 간격(paragraphSpacing)이 전혀 안 먹던 버그 수정 — admin-quote 미리보기와 실제 에디터 프리뷰가 다르게 보이던 핵심 원인이었음.
+- 캐시 문제 방지용 cache-busting 쿼리 파라미터 추가.
 
-2. [버그] admin-quote 프리셋이 실제 게시글 화면에는 제대로 안 먹는 것 같음
-   목표는 admin-quote에서 설정한 QUOTE 프리셋(postStyleSettings)이
-   (a) 실제 발행된 게시글 상세 화면(.post-detail-content, 독자가 보는 화면)과
-   (b) 에디터 프리뷰/export 캔버스(.post-editor-preview-content)
-   양쪽에 동일하게 반영되는 것이었는데, 실제 게시글 쪽에서 문단 모양이나
-   자간 같은 게 제대로 반영이 안 되는 느낌이야. 원인부터 조사해줘.
-   - 확인할 것: .post-detail-content가 렌더링되는 코드 경로(posts-view.js)가
-     프리뷰 쪽에서 쓰는 스타일 적용 함수(posts-style.js의
-     applyPostBodyStyles / renderStyledPostContentInto 등)를 실제로
-     똑같이 타는지, 아니면 다르거나 불완전한 경로로 렌더링되는지.
-   - 재현: 아무 게시글이나 열어서 문단 간격/자간이 admin-quote 프리셋
-     설정값과 다르게 보이는지 직접 비교.
+## 오늘 못 끝낸 것 — 이어서 할 것
+1. **출처(source) 텍스트가 export 이미지에서 가끔 명조체로 나오는 문제.** Chromium/WebKit 데스크톱 환경에서는 재현을 못 했음(실제 모바일 사파리나 카카오톡 인앱 브라우저 특유의 폰트 fallback 문제로 추정). 방어책으로 title/body/source에 `font-family: "Pretendard", sans-serif`를 명시적으로 인라인 지정하기로 했는데 아직 적용 안 함 — `posts/posts-preview.js`의 `applyPreviewTitleStyle`, `posts/posts-style.js`의 `applyPostBodyStyles`, `posts/posts-preview.js`의 `createPreviewSource`에 추가하면 됨.
 
-먼저 원인/설계 방향을 파악해서 설명해주고, 내가 동의하면 그 다음에 구현해줘.
+2. **발췌 이미지 부분 선택 기능** (아직 설계도 안 한 상태). 지금은 프리뷰/export가 항상 본문 전체를 발췌함 — 본문 중 원하는 부분만 골라서 발췌하는 기능 추가 희망. 기본 동작(전체 발췌)은 유지, 부분 선택은 추가 옵션으로. 에디터에서 드래그 선택할지, 프리뷰 캔버스 위에서 직접 범위 지정할지 아직 미정 — 장단점 비교해서 방향부터 같이 정하고 시작. 관련 파일: `posts/posts-preview.js` (renderEditorPreviewPages, createEditorPreviewPage), `posts/posts-editor.js` (getRichEditorHTML), `posts/posts.html` (에디터 툴바), `posts/posts.js`. 페이지 분할(PAGE BREAK) 로직과 "부분 선택"이 어떻게 상호작용해야 할지도 같이 고민 필요.
+
+먼저 1번부터 마저 처리하고, 그 다음 2번은 설계 방향부터 논의해서 정하자.
