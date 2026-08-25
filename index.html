@@ -495,6 +495,17 @@
 
     async function loadPostsModule() {
 
+      /*
+        ★ 모바일 브라우저(특히 인앱 웹뷰)가 posts.html/*.js를
+        너무 적극적으로 캐싱해서, 새로 배포해도 예전 코드가
+        계속 실행되는 문제가 있었다. 매 로드마다 값이 바뀌는
+        쿼리스트링을 붙여서 항상 최신 파일을 받아오게 한다.
+      */
+
+      const cacheBuster =
+        Date.now();
+
+
       const postsMount =
         document.getElementById(
           "postsMount"
@@ -514,7 +525,7 @@
 
         const response =
           await fetch(
-            "./posts/posts.html"
+            `./posts/posts.html?v=${cacheBuster}`
           );
 
 
@@ -590,7 +601,7 @@
 
 
           dependencyScript.src =
-            src;
+            `${src}?v=${cacheBuster}`;
 
 
           await new Promise(
@@ -621,7 +632,7 @@
 
 
         postsScript.src =
-          "./posts/posts.js";
+          `./posts/posts.js?v=${cacheBuster}`;
 
 
         postsScript.onload =
