@@ -2071,6 +2071,7 @@ button {
   display: grid;
 
   grid-template-columns:
+    auto
     1fr
     28px;
 
@@ -2094,6 +2095,67 @@ button {
 .quote-preset-item.active {
   background:
     #fffafb;
+}
+
+
+.quote-preset-item.is-live {
+  background:
+    #fff5f8;
+}
+
+
+
+/* 실제 글에 적용되는 프리셋으로 지정하는 버튼 */
+
+.quote-preset-activate {
+  display: block;
+
+  padding:
+    5px 8px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 999px;
+
+  background:
+    transparent;
+
+  color:
+    #bbbbbb;
+
+  font-size: 8px;
+
+  letter-spacing:
+    0.03em;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.quote-preset-activate:hover:not(:disabled) {
+  color: #e39ab5;
+
+  border-color: #f0d3de;
+}
+
+
+.quote-preset-activate:disabled {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+
+  cursor: default;
 }
 
 

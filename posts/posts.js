@@ -71,6 +71,27 @@ const postArea =
     "postArea"
   );
 
+
+/*
+  글 읽기 화면은 window가 아니라 #postArea 안에서
+  자체적으로 스크롤되므로, 메뉴/음악 버튼 숨김 함수
+  (script.js, 전역)를 여기서도 그대로 호출해준다.
+*/
+
+postArea?.addEventListener(
+  "scroll",
+  () => {
+
+    updateFixedButtonsOnScroll?.(
+      postArea.scrollTop
+    );
+
+  },
+  {
+    passive: true
+  }
+);
+
 const postPageTitle =
   document.getElementById(
     "postPageTitle"
@@ -226,6 +247,31 @@ const postEditorClearStyle =
 const postEditorPresetSelect =
   document.getElementById(
     "postEditorPresetSelect"
+  );
+
+const postEditorFloatingMenu =
+  document.getElementById(
+    "postEditorFloatingMenu"
+  );
+
+const postEditorFloatingHighlightPreset =
+  document.getElementById(
+    "postEditorFloatingHighlightPreset"
+  );
+
+const postEditorFloatingPresetSwatch =
+  document.getElementById(
+    "postEditorFloatingPresetSwatch"
+  );
+
+const postEditorFloatingCustomColor =
+  document.getElementById(
+    "postEditorFloatingCustomColor"
+  );
+
+const postEditorFloatingCustomSwatch =
+  document.getElementById(
+    "postEditorFloatingCustomSwatch"
   );
 
   const postEditorCustomControl =
@@ -1675,6 +1721,254 @@ postEditorCustomColor
       applyEditorHighlight(
         postEditorCustomColor.value
       );
+
+    }
+  );
+
+
+
+/* =========================================================
+   MOBILE FLOATING HIGHLIGHT MENU
+
+   본문에서 텍스트를 선택하면(주로 모바일 롱프레스),
+   위에 있는 고정 툴바까지 갈 필요 없이 선택 영역
+   바로 옆에 하이라이트 버튼이 뜨게 한다.
+   고정 툴바는 그대로 유지(둘 다 사용 가능).
+========================================================== */
+
+function hideEditorFloatingMenu() {
+
+  if (postEditorFloatingMenu) {
+
+    postEditorFloatingMenu.hidden =
+      true;
+
+  }
+
+}
+
+
+function positionEditorFloatingMenu(
+  rect
+) {
+
+  if (!postEditorFloatingMenu) {
+    return;
+  }
+
+
+  postEditorFloatingMenu.hidden =
+    false;
+
+
+  const menuRect =
+    postEditorFloatingMenu.getBoundingClientRect();
+
+
+  const gap =
+    8;
+
+
+  let top =
+    rect.top -
+    menuRect.height -
+    gap;
+
+
+  if (top < gap) {
+
+    top =
+      rect.bottom +
+      gap;
+
+  }
+
+
+  let left =
+    rect.left +
+    rect.width / 2 -
+    menuRect.width / 2;
+
+
+  left =
+    Math.max(
+      gap,
+      Math.min(
+        left,
+        window.innerWidth -
+          menuRect.width -
+          gap
+      )
+    );
+
+
+  postEditorFloatingMenu.style.top =
+    `${top}px`;
+
+
+  postEditorFloatingMenu.style.left =
+    `${left}px`;
+
+}
+
+
+function syncEditorFloatingMenu() {
+
+  if (
+    !postEditorFloatingMenu ||
+    !isMobilePostEditor()
+  ) {
+
+    hideEditorFloatingMenu();
+
+    return;
+
+  }
+
+
+  const selection =
+    window.getSelection();
+
+
+  if (
+    !selection ||
+    selection.isCollapsed ||
+    selection.rangeCount === 0
+  ) {
+
+    hideEditorFloatingMenu();
+
+    return;
+
+  }
+
+
+  const range =
+    selection.getRangeAt(0);
+
+
+  if (
+    !nodeIsInsideEditor(
+      range.commonAncestorContainer
+    )
+  ) {
+
+    hideEditorFloatingMenu();
+
+    return;
+
+  }
+
+
+  const rect =
+    range.getBoundingClientRect();
+
+
+  if (
+    rect.width === 0 &&
+    rect.height === 0
+  ) {
+
+    hideEditorFloatingMenu();
+
+    return;
+
+  }
+
+
+  positionEditorFloatingMenu(
+    rect
+  );
+
+}
+
+
+document.addEventListener(
+  "selectionchange",
+  syncEditorFloatingMenu
+);
+
+
+postEditorContent
+  ?.addEventListener(
+    "scroll",
+    hideEditorFloatingMenu
+  );
+
+
+postArea
+  ?.addEventListener(
+    "scroll",
+    hideEditorFloatingMenu
+  );
+
+
+[
+  postEditorFloatingHighlightPreset
+].forEach(
+  button => {
+
+    button
+      ?.addEventListener(
+        "pointerdown",
+        event => {
+
+          captureEditorSelectionBeforeToolbar();
+
+          event.preventDefault();
+
+        }
+      );
+
+  }
+);
+
+
+postEditorFloatingHighlightPreset
+  ?.addEventListener(
+    "click",
+    () => {
+
+      applyEditorHighlight(
+        getPresetHighlightColor()
+      );
+
+    }
+  );
+
+
+document
+  .querySelector(
+    'label[for="postEditorFloatingCustomColor"]'
+  )
+  ?.addEventListener(
+    "pointerdown",
+    () => {
+
+      captureEditorSelectionBeforeToolbar();
+
+    }
+  );
+
+
+postEditorFloatingCustomColor
+  ?.addEventListener(
+    "input",
+    updateCustomHighlightSwatch
+  );
+
+
+postEditorFloatingCustomColor
+  ?.addEventListener(
+    "change",
+    () => {
+
+      applyEditorHighlight(
+        postEditorFloatingCustomColor.value
+      );
+
+
+      updateCustomHighlightSwatch();
 
     }
   );

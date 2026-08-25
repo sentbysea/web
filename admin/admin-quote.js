@@ -2146,6 +2146,57 @@ function renderQuotePresets(
       }
 
 
+      if (
+        preset.is_active
+      ) {
+
+        item.classList.add(
+          "is-live"
+        );
+
+      }
+
+
+      /* ACTIVATE (실제 프리뷰/게시글에 반영될 프리셋으로 지정) */
+
+      const activateButton =
+        document.createElement(
+          "button"
+        );
+
+
+      activateButton.type =
+        "button";
+
+
+      activateButton.className =
+        "quote-preset-activate";
+
+
+      activateButton.disabled =
+        Boolean(
+          preset.is_active
+        );
+
+
+      activateButton.textContent =
+        preset.is_active
+          ? "사용 중"
+          : "사용 중으로 설정";
+
+
+      activateButton.addEventListener(
+        "click",
+        async () => {
+
+          await activateQuotePreset(
+            preset.id
+          );
+
+        }
+      );
+
+
       /* LOAD */
 
       const loadButton =
@@ -2235,6 +2286,7 @@ function renderQuotePresets(
 
 
       item.append(
+        activateButton,
         loadButton,
         deleteButton
       );
@@ -2290,7 +2342,7 @@ async function loadQuotePresets() {
         "quote_presets"
       )
       .select(
-        "id, name, settings, updated_at"
+        "id, name, settings, updated_at, is_active"
       )
       .eq(
         "user_id",
@@ -2614,6 +2666,123 @@ async function deleteQuotePreset(
 
   showQuoteMessage(
     "deleted ♡",
+    true
+  );
+
+
+  await loadQuotePresets();
+
+}
+
+
+/* =========================================================
+   ACTIVATE PRESET
+
+   "사용 중"으로 지정한 프리셋이 실제 발행된 글
+   (posts-style.js의 loadPostStylePreset)에도 그대로 적용됨.
+   한 유저당 하나만 사용 중일 수 있으므로, 지정한 것만 켜고
+   나머지는 전부 끈다.
+========================================================== */
+
+async function activateQuotePreset(
+  presetId
+) {
+
+  const {
+    data: userData,
+    error: userError
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+
+  if (
+    userError ||
+    !userData.user
+  ) {
+    return;
+  }
+
+
+  const {
+    error: clearError
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .update(
+        {
+          is_active: false
+        }
+      )
+      .eq(
+        "user_id",
+        userData.user.id
+      );
+
+
+  if (clearError) {
+
+    console.error(
+      "quote preset activate(clear) error:",
+      clearError
+    );
+
+
+    showQuoteMessage(
+      "적용에 실패했습니다."
+    );
+
+
+    return;
+
+  }
+
+
+  const {
+    error: setError
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .update(
+        {
+          is_active: true
+        }
+      )
+      .eq(
+        "id",
+        presetId
+      )
+      .eq(
+        "user_id",
+        userData.user.id
+      );
+
+
+  if (setError) {
+
+    console.error(
+      "quote preset activate(set) error:",
+      setError
+    );
+
+
+    showQuoteMessage(
+      "적용에 실패했습니다."
+    );
+
+
+    return;
+
+  }
+
+
+  showQuoteMessage(
+    "이 프리셋이 실제 글에도 적용됩니다 ♡",
     true
   );
 

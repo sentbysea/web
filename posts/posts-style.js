@@ -14,6 +14,48 @@
 
 async function loadPostStylePreset() {
 
+  /*
+    admin-quote에서 "사용 중"으로 지정해둔 프리셋이 있으면
+    그걸 최우선으로 쓰고, 없으면(한 번도 지정 안 한 경우)
+    기존처럼 이름이 "Vibe"인 프리셋으로 폴백한다.
+  */
+
+  const {
+    data: activeData,
+    error: activeError
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .select(
+        "settings"
+      )
+      .eq(
+        "is_active",
+        true
+      )
+      .maybeSingle();
+
+
+  if (
+    !activeError &&
+    activeData
+  ) {
+
+    postStyleSettings =
+      activeData.settings ||
+      {};
+
+
+    updatePresetHighlightSwatch();
+
+
+    return postStyleSettings;
+
+  }
+
+
   const {
     data,
     error
@@ -270,12 +312,26 @@ function getSafeHighlightColor(
 
 function updatePresetHighlightSwatch() {
 
+  const presetColor =
+    getPresetHighlightColor();
+
+
   if (
     postEditorPresetSwatch
   ) {
 
     postEditorPresetSwatch.style.background =
-      getPresetHighlightColor();
+      presetColor;
+
+  }
+
+
+  if (
+    postEditorFloatingPresetSwatch
+  ) {
+
+    postEditorFloatingPresetSwatch.style.background =
+      presetColor;
 
   }
 
@@ -295,10 +351,36 @@ function updateCustomHighlightSwatch() {
   }
 
 
-  postEditorCustomSwatch.style.background =
+  const color =
     getSafeHighlightColor(
       postEditorCustomColor.value
     );
+
+
+  postEditorCustomSwatch.style.background =
+    color;
+
+
+  if (
+    postEditorFloatingCustomSwatch
+  ) {
+
+    postEditorFloatingCustomSwatch.style.background =
+      color;
+
+  }
+
+
+  if (
+    postEditorFloatingCustomColor &&
+    postEditorFloatingCustomColor.value !==
+      postEditorCustomColor.value
+  ) {
+
+    postEditorFloatingCustomColor.value =
+      postEditorCustomColor.value;
+
+  }
 
 }
 

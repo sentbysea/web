@@ -577,6 +577,66 @@ const loveRain =
 
 
 /* =========================================================
+   상단 고정 버튼(메뉴/음악) 스크롤 시 숨김
+
+   글을 읽을 때 텍스트를 가리지 않도록 아래로 스크롤하면
+   숨기고, 위로 스크롤하거나 맨 위 근처로 오면 다시 보여준다.
+   posts.js도 글 읽기 화면(#postArea)의 자체 스크롤에서
+   이 함수를 그대로 호출한다(전역 함수로 공유).
+========================================================== */
+
+let lastFixedButtonScrollTop =
+  0;
+
+function updateFixedButtonsOnScroll(
+  scrollTop
+) {
+
+  const scrollingDown =
+    scrollTop >
+    lastFixedButtonScrollTop;
+
+  const pastThreshold =
+    scrollTop > 24;
+
+  const shouldHide =
+    scrollingDown &&
+    pastThreshold;
+
+
+  menuButton?.classList.toggle(
+    "is-scroll-hidden",
+    shouldHide
+  );
+
+  musicButton?.classList.toggle(
+    "is-scroll-hidden",
+    shouldHide
+  );
+
+
+  lastFixedButtonScrollTop =
+    scrollTop;
+
+}
+
+
+window.addEventListener(
+  "scroll",
+  () => {
+
+    updateFixedButtonsOnScroll(
+      window.scrollY
+    );
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+/* =========================================================
    메뉴
 ========================================================== */
 

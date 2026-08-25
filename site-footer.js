@@ -293,11 +293,21 @@ document.addEventListener(
       "is-entering"
     );
 
+    const isOnAdminPage =
+      window.location.pathname.includes(
+        "/admin/"
+      );
+
+    const destination =
+      isOnAdminPage
+        ? "../"
+        : "/admin/";
+
     window.setTimeout(
       () => {
 
         window.location.href =
-          "/admin/";
+          destination;
 
       },
       350

@@ -382,6 +382,56 @@
           data-placeholder="본문을 입력하세요."
         ></div>
 
+
+        <!-- =================================================
+             MOBILE: 텍스트 선택 시 근처에 뜨는
+             하이라이트 메뉴 (긴 상단 툴바를 안 봐도 되게)
+        ================================================== -->
+
+        <div
+          class="post-editor-floating-menu"
+          id="postEditorFloatingMenu"
+          hidden
+        >
+
+          <button
+            class="post-highlight-preset-button"
+            id="postEditorFloatingHighlightPreset"
+            type="button"
+            title="preset highlight"
+          >
+
+            <span
+              class="post-highlight-swatch"
+              id="postEditorFloatingPresetSwatch"
+            ></span>
+
+          </button>
+
+
+          <label
+            class="post-highlight-custom-control"
+            for="postEditorFloatingCustomColor"
+          >
+
+            <span
+              class="post-highlight-swatch"
+              id="postEditorFloatingCustomSwatch"
+            ></span>
+
+          </label>
+
+
+          <input
+            id="postEditorFloatingCustomColor"
+            class="post-highlight-color-input"
+            type="color"
+            value="#f4dce6"
+            aria-label="커스텀 하이라이트 색상 선택"
+          >
+
+        </div>
+
       </div>
 
 
@@ -488,6 +538,46 @@
                 </button>
 
 
+                <!-- =============================================
+                     SOURCE POSITION (source가 켜져 있을 때만
+                     "source" 버튼 옆에 펼쳐짐)
+                ============================================== -->
+
+                <div
+                  class="post-editor-preview-subrow"
+                  id="postEditorPreviewSourcePositionRow"
+                  hidden
+                >
+
+                  <span class="post-editor-preview-subrow-label">
+                    position
+                  </span>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    id="postEditorPreviewSourcePositionFlow"
+                    type="button"
+                    data-position="flow"
+                    aria-pressed="true"
+                  >
+                    flow
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    id="postEditorPreviewSourcePositionFixed"
+                    type="button"
+                    data-position="fixed"
+                    aria-pressed="false"
+                  >
+                    fixed
+                  </button>
+
+                </div>
+
+
                 <button
                   class="post-editor-preview-visibility-toggle post-editor-preview-ratio-trigger"
                   id="postEditorPreviewRatioTrigger"
@@ -498,6 +588,101 @@
                 >
                   ratio
                 </button>
+
+
+                <!-- =============================================
+                     RATIO ("ratio" 버튼을 눌러야 그 옆에 펼쳐짐)
+                ============================================== -->
+
+                <div
+                  class="post-editor-preview-ratio-controls"
+                  id="postEditorPreviewRatioControls"
+                  hidden
+                >
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="4:5"
+                    aria-pressed="false"
+                  >
+                    4:5
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="4:6"
+                    aria-pressed="false"
+                  >
+                    4:6
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="1:1"
+                    aria-pressed="false"
+                  >
+                    1:1
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="4:3"
+                    aria-pressed="false"
+                  >
+                    4:3
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="custom"
+                    aria-pressed="false"
+                  >
+                    custom
+                  </button>
+
+
+                  <div
+                    class="post-editor-preview-ratio-custom-inputs"
+                    id="postEditorPreviewRatioCustomInputs"
+                    hidden
+                  >
+
+                    <input
+                      class="post-editor-preview-ratio-custom-input"
+                      id="postEditorPreviewRatioCustomWidth"
+                      type="number"
+                      inputmode="numeric"
+                      min="1"
+                      value="4"
+                      aria-label="가로 비율"
+                    >
+
+                    <span class="post-editor-preview-ratio-custom-sep">
+                      :
+                    </span>
+
+                    <input
+                      class="post-editor-preview-ratio-custom-input"
+                      id="postEditorPreviewRatioCustomHeight"
+                      type="number"
+                      inputmode="numeric"
+                      min="1"
+                      value="5"
+                      aria-label="세로 비율"
+                    >
+
+                  </div>
+
+                </div>
 
               </div>
 
@@ -512,142 +697,6 @@
             >
               ×
             </button>
-
-          </div>
-
-
-
-          <!-- =================================================
-               SOURCE POSITION (source가 켜져 있을 때만 펼쳐짐)
-          ================================================== -->
-
-          <div
-            class="post-editor-preview-subrow"
-            id="postEditorPreviewSourcePositionRow"
-            hidden
-          >
-
-            <span class="post-editor-preview-subrow-label">
-              position
-            </span>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              id="postEditorPreviewSourcePositionFlow"
-              type="button"
-              data-position="flow"
-              aria-pressed="true"
-            >
-              flow
-            </button>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              id="postEditorPreviewSourcePositionFixed"
-              type="button"
-              data-position="fixed"
-              aria-pressed="false"
-            >
-              fixed
-            </button>
-
-          </div>
-
-
-
-          <!-- =================================================
-               RATIO (ratio 버튼을 눌러야 펼쳐짐)
-          ================================================== -->
-
-          <div
-            class="post-editor-preview-ratio-controls"
-            id="postEditorPreviewRatioControls"
-            hidden
-          >
-
-            <button
-              class="post-editor-preview-ratio-button"
-              type="button"
-              data-ratio="4:5"
-              aria-pressed="false"
-            >
-              4:5
-            </button>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              type="button"
-              data-ratio="4:6"
-              aria-pressed="false"
-            >
-              4:6
-            </button>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              type="button"
-              data-ratio="1:1"
-              aria-pressed="false"
-            >
-              1:1
-            </button>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              type="button"
-              data-ratio="4:3"
-              aria-pressed="false"
-            >
-              4:3
-            </button>
-
-
-            <button
-              class="post-editor-preview-ratio-button"
-              type="button"
-              data-ratio="custom"
-              aria-pressed="false"
-            >
-              custom
-            </button>
-
-
-            <div
-              class="post-editor-preview-ratio-custom-inputs"
-              id="postEditorPreviewRatioCustomInputs"
-              hidden
-            >
-
-              <input
-                class="post-editor-preview-ratio-custom-input"
-                id="postEditorPreviewRatioCustomWidth"
-                type="number"
-                inputmode="numeric"
-                min="1"
-                value="4"
-                aria-label="가로 비율"
-              >
-
-              <span class="post-editor-preview-ratio-custom-sep">
-                :
-              </span>
-
-              <input
-                class="post-editor-preview-ratio-custom-input"
-                id="postEditorPreviewRatioCustomHeight"
-                type="number"
-                inputmode="numeric"
-                min="1"
-                value="5"
-                aria-label="세로 비율"
-              >
-
-            </div>
 
           </div>
 
