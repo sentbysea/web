@@ -216,25 +216,43 @@
 
 
       <!-- ===================================================
-           OOC
+           OOC + HTML MODE
 
-           독자에게는 보이지 않는 메모/설정 노트.
+           OOC: 독자에게는 보이지 않는 메모/설정 노트.
            본문과 완전히 분리된 별도 필드(ooc_content)로
            저장되어서, 뷰어 쪽에서 아예 안 가져오면
            절대 노출되지 않는다.
+
+           HTML: 누르면 아래 CONTENT의 리치텍스트 에디터가
+           통째로 사라지고 raw HTML textarea만 나온다.
       ==================================================== -->
 
       <div class="post-editor-field post-editor-ooc-field">
 
-        <button
-          type="button"
-          class="post-editor-ooc-toggle"
-          id="postEditorOOCToggle"
-          aria-expanded="false"
-          aria-controls="postEditorOOC"
-        >
-          OOC
-        </button>
+        <div class="post-editor-ooc-html-row">
+
+          <button
+            type="button"
+            class="post-editor-ooc-toggle"
+            id="postEditorOOCToggle"
+            aria-expanded="false"
+            aria-controls="postEditorOOC"
+          >
+            OOC
+          </button>
+
+
+          <button
+            type="button"
+            class="post-editor-content-mode-toggle"
+            id="postEditorHtmlModeToggle"
+            aria-pressed="false"
+            title="HTML로 직접 작성 (뷰어에서 그대로 출력됨)"
+          >
+            HTML
+          </button>
+
+        </div>
 
 
         <textarea
@@ -255,27 +273,12 @@
       <div class="post-editor-field">
 
 
-        <!-- CONTENT + MODE + MESSAGE -->
+        <!-- CONTENT + MESSAGE -->
 
         <div class="post-editor-content-heading">
 
-          <div class="post-editor-content-heading-left">
-
-            <div class="post-editor-content-label">
-              CONTENT
-            </div>
-
-
-            <button
-              type="button"
-              class="post-editor-content-mode-toggle"
-              id="postEditorHtmlModeToggle"
-              aria-pressed="false"
-              title="HTML로 직접 작성 (뷰어에서 그대로 출력됨)"
-            >
-              HTML
-            </button>
-
+          <div class="post-editor-content-label">
+            CONTENT
           </div>
 
 

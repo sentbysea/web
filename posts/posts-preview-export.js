@@ -344,6 +344,53 @@ async function exportEditorPreviewAsImages() {
 
 
   /*
+    ★ 이미 프리뷰가 열려서 페이지가 그려져 있으면 그걸 그대로
+    쓴다. 여기서 매번 updateEditorPreview()로 다시 그리면
+    "지금 보고 있던 그 화면"이 아니라 방금 새로 만든 DOM을
+    캡처하게 되고, 그 재생성 도중(레이아웃/폰트가 아직 안정
+    되기 전) 캡처가 겹쳐서 텍스트가 깨져 보이는 원인이 됐다.
+
+    페이지가 아예 없을 때(모바일에서 프리뷰를 한 번도 안 열고
+    export부터 누른 경우)만 새로 그린다.
+  */
+
+  async function ensurePreviewPagesRendered() {
+
+    let previewPages =
+      Array.from(
+        document.querySelectorAll(
+          ".post-editor-preview-page"
+        )
+      );
+
+
+    if (
+      previewPages.length > 0
+    ) {
+
+      return previewPages;
+
+    }
+
+
+    updateEditorPreview();
+
+
+    await waitForExport(
+      80
+    );
+
+
+    return Array.from(
+      document.querySelectorAll(
+        ".post-editor-preview-page"
+      )
+    );
+
+  }
+
+
+  /*
     한 페이지를 html2canvas로 캡처해서 PNG Blob으로 만든다.
     모바일 클립보드 경로와, 그 폴백(공유/새탭) 양쪽에서
     재사용한다.
@@ -479,20 +526,8 @@ async function exportEditorPreviewAsImages() {
           forceOpenSectionIfNeeded();
 
 
-          updateEditorPreview();
-
-
-          await waitForExport(
-            80
-          );
-
-
           const previewPages =
-            Array.from(
-              document.querySelectorAll(
-                ".post-editor-preview-page"
-              )
-            );
+            await ensurePreviewPagesRendered();
 
 
           if (
@@ -750,20 +785,8 @@ async function exportEditorPreviewAsImages() {
   forceOpenSectionIfNeeded();
 
 
-  updateEditorPreview();
-
-
-  await waitForExport(
-    100
-  );
-
-
   const previewPages =
-    Array.from(
-      document.querySelectorAll(
-        ".post-editor-preview-page"
-      )
-    );
+    await ensurePreviewPagesRendered();
 
 
   if (

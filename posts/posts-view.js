@@ -1665,6 +1665,24 @@ async function openPostEditor(
   else {
 
     /*
+      ★ 다른 글(특히 HTML 모드 글)을 편집하다가 넘어오면
+      이 textarea에 그 글의 내용이 그대로 남아있을 수
+      있어서, 리치텍스트 글을 열 때는 명시적으로 비운다.
+      (setEditorContentMode가 hidden 처리는 해도 값 자체를
+      지우진 않기 때문에 방어적으로 필요.)
+    */
+
+    if (
+      postEditorHtmlContent
+    ) {
+
+      postEditorHtmlContent.value =
+        "";
+
+    }
+
+
+    /*
       저장된 rich HTML 또는
       예전 legacy 문법을
       에디터에 실제 스타일로 복원.

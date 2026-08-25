@@ -252,6 +252,9 @@
 
 
 .post-detail-content-wrap {
+  display: flex;
+  justify-content: center;
+
   overflow: hidden;
 }
 
@@ -1117,7 +1120,11 @@ body.post-mode .music-button {
 }
 
 
-.post-editor-content-heading-left {
+/*
+  OOC / HTML 토글 버튼이 나란히 놓이는 줄.
+*/
+
+.post-editor-ooc-html-row {
   display: flex;
   align-items: center;
 
