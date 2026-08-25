@@ -188,6 +188,31 @@ const postEditorContent =
     "postEditorContent"
   );
 
+const postEditorOOCToggle =
+  document.getElementById(
+    "postEditorOOCToggle"
+  );
+
+const postEditorOOC =
+  document.getElementById(
+    "postEditorOOC"
+  );
+
+const postEditorHtmlModeToggle =
+  document.getElementById(
+    "postEditorHtmlModeToggle"
+  );
+
+const postEditorRichtextMode =
+  document.getElementById(
+    "postEditorRichtextMode"
+  );
+
+const postEditorHtmlContent =
+  document.getElementById(
+    "postEditorHtmlContent"
+  );
+
 const postEditorCancelButton =
   document.getElementById(
     "postEditorCancelButton"
@@ -455,6 +480,16 @@ let currentPostView =
 
 let currentEditorMode =
   null;
+
+
+/*
+  "richtext"(기본) 또는 "html".
+  html이면 리치텍스트 에디터/툴바/프리뷰(발췌) 대신
+  raw HTML textarea 하나만 쓴다.
+*/
+
+let editorContentMode =
+  "richtext";
 
 let editorSourcePostId =
   null;
@@ -2007,6 +2042,30 @@ postEditorPresetSelect
 
 
 /* =========================================================
+   OOC
+========================================================== */
+
+postEditorOOCToggle
+  ?.addEventListener(
+    "click",
+    toggleEditorOOC
+  );
+
+
+
+/* =========================================================
+   HTML MODE
+========================================================== */
+
+postEditorHtmlModeToggle
+  ?.addEventListener(
+    "click",
+    toggleEditorContentMode
+  );
+
+
+
+/* =========================================================
    PREVIEW OPEN / CLOSE
 ========================================================== */
 
@@ -2429,18 +2488,38 @@ postEditorSaveButton
           .trim();
 
 
+      const isHtmlMode =
+        editorContentMode ===
+        "html";
+
+
       /*
-        ★ textarea.value가 아니라
-        sanitized rich HTML 저장
+        HTML 모드면 sanitize를 거치지 않은 raw HTML을
+        그대로 저장한다(뷰어에서도 그대로 출력하는 게
+        이 모드의 목적이므로). 아니면 기존처럼
+        textarea.value가 아니라 sanitized rich HTML 저장.
       */
 
       const content =
-        getRichEditorHTML();
+        isHtmlMode
+          ? postEditorHtmlContent
+              ?.value ||
+            ""
+          : getRichEditorHTML();
 
 
       const plainText =
-        getRichEditorPlainText()
-          .trim();
+        isHtmlMode
+          ? content.trim()
+          : getRichEditorPlainText()
+              .trim();
+
+
+      const oocContent =
+        postEditorOOC
+          ?.value
+          .trim() ||
+        null;
 
 
       if (!title) {
@@ -2501,6 +2580,14 @@ postEditorSaveButton
               title,
 
               content,
+
+              content_type:
+                isHtmlMode
+                  ? "html"
+                  : "richtext",
+
+              ooc_content:
+                oocContent,
 
               updated_at:
                 new Date()
@@ -2580,6 +2667,14 @@ postEditorSaveButton
             title,
 
             content,
+
+            content_type:
+              isHtmlMode
+                ? "html"
+                : "richtext",
+
+            ooc_content:
+              oocContent,
 
             updated_at:
               new Date()

@@ -166,7 +166,8 @@
   }
 
 
-  .post-editor-richtext {
+  .post-editor-richtext,
+  .post-editor-html-textarea {
     min-height:
       calc(
         100dvh

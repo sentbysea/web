@@ -201,18 +201,66 @@
 
 
       <!-- ===================================================
+           OOC
+
+           독자에게는 보이지 않는 메모/설정 노트.
+           본문과 완전히 분리된 별도 필드(ooc_content)로
+           저장되어서, 뷰어 쪽에서 아예 안 가져오면
+           절대 노출되지 않는다.
+      ==================================================== -->
+
+      <div class="post-editor-field post-editor-ooc-field">
+
+        <button
+          type="button"
+          class="post-editor-ooc-toggle"
+          id="postEditorOOCToggle"
+          aria-expanded="false"
+          aria-controls="postEditorOOC"
+        >
+          OOC
+        </button>
+
+
+        <textarea
+          id="postEditorOOC"
+          class="post-editor-input post-editor-ooc-textarea"
+          placeholder="독자에게는 보이지 않는 메모입니다."
+          hidden
+        ></textarea>
+
+      </div>
+
+
+
+      <!-- ===================================================
            CONTENT
       ==================================================== -->
 
       <div class="post-editor-field">
 
 
-        <!-- CONTENT + MESSAGE -->
+        <!-- CONTENT + MODE + MESSAGE -->
 
         <div class="post-editor-content-heading">
 
-          <div class="post-editor-content-label">
-            CONTENT
+          <div class="post-editor-content-heading-left">
+
+            <div class="post-editor-content-label">
+              CONTENT
+            </div>
+
+
+            <button
+              type="button"
+              class="post-editor-content-mode-toggle"
+              id="postEditorHtmlModeToggle"
+              aria-pressed="false"
+              title="HTML로 직접 작성 (뷰어에서 그대로 출력됨)"
+            >
+              HTML
+            </button>
+
           </div>
 
 
@@ -223,6 +271,33 @@
 
         </div>
 
+
+
+        <!-- =================================================
+             HTML MODE
+
+             켜면 리치텍스트 에디터 대신 이 textarea에
+             HTML을 직접 작성. 저장 시 그대로(sanitize 없이)
+             content에 들어가고, 뷰어에서도 그대로 출력된다.
+             이 모드에서는 발췌 프리뷰/export가 의미 없으므로
+             (posts.js에서) 그 버튼들도 함께 숨긴다.
+        ================================================== -->
+
+        <textarea
+          id="postEditorHtmlContent"
+          class="post-editor-input post-editor-html-textarea"
+          placeholder="여기에 HTML을 직접 작성하세요."
+          spellcheck="false"
+          hidden
+        ></textarea>
+
+
+
+        <!-- =================================================
+             RICHTEXT MODE (기존 툴바 + 리치텍스트 에디터)
+        ================================================== -->
+
+        <div id="postEditorRichtextMode">
 
 
         <!-- =================================================
@@ -431,6 +506,9 @@
           >
 
         </div>
+
+        </div>
+        <!-- /#postEditorRichtextMode -->
 
       </div>
 

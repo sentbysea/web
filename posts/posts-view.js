@@ -940,6 +940,7 @@ async function openPostPage(
         user_id,
         title,
         content,
+        content_type,
         created_at
         `
       )
@@ -999,13 +1000,39 @@ async function openPostPage(
     );
 
 
-  await loadPostStylePreset();
+  if (
+    post.content_type ===
+    "html"
+  ) {
+
+    /*
+      HTML 모드 글: sanitize/스타일 프리셋 없이
+      저장된 HTML을 그대로 출력(HTML 뷰어처럼 보여주는 용도).
+    */
+
+    if (
+      postDetailContent
+    ) {
+
+      postDetailContent.innerHTML =
+        post.content ||
+        "";
+
+    }
+
+  }
+
+  else {
+
+    await loadPostStylePreset();
 
 
-  renderStyledPostContent(
-    post.content || "",
-    postStyleSettings || {}
-  );
+    renderStyledPostContent(
+      post.content || "",
+      postStyleSettings || {}
+    );
+
+  }
 
 
   let categoryName =
@@ -1375,6 +1402,24 @@ async function openNewPostEditor(
   clearRichEditor();
 
 
+  resetEditorOOC();
+
+
+  if (
+    postEditorHtmlContent
+  ) {
+
+    postEditorHtmlContent.value =
+      "";
+
+  }
+
+
+  setEditorContentMode(
+    "richtext"
+  );
+
+
   await loadPostEditorCategories(
     categoryId
   );
@@ -1426,7 +1471,9 @@ async function openPostEditor(
         user_id,
         category_id,
         title,
-        content
+        content,
+        content_type,
+        ooc_content
         `
       )
       .eq(
@@ -1533,15 +1580,71 @@ async function openPostEditor(
     "";
 
 
-  /*
-    저장된 rich HTML 또는
-    예전 legacy 문법을
-    에디터에 실제 스타일로 복원.
-  */
+  if (
+    postEditorOOC
+  ) {
 
-  setRichEditorContent(
-    post.content || ""
+    postEditorOOC.value =
+      post.ooc_content ||
+      "";
+
+
+    postEditorOOC.hidden =
+      !post.ooc_content;
+
+
+    postEditorOOCToggle
+      ?.setAttribute(
+        "aria-expanded",
+        String(
+          Boolean(
+            post.ooc_content
+          )
+        )
+      );
+
+  }
+
+
+  const isHtmlPost =
+    post.content_type ===
+    "html";
+
+
+  setEditorContentMode(
+    isHtmlPost
+      ? "html"
+      : "richtext"
   );
+
+
+  if (isHtmlPost) {
+
+    if (
+      postEditorHtmlContent
+    ) {
+
+      postEditorHtmlContent.value =
+        post.content ||
+        "";
+
+    }
+
+  }
+
+  else {
+
+    /*
+      저장된 rich HTML 또는
+      예전 legacy 문법을
+      에디터에 실제 스타일로 복원.
+    */
+
+    setRichEditorContent(
+      post.content || ""
+    );
+
+  }
 
 
   await prepareEditorUI();

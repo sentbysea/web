@@ -965,7 +965,8 @@ body.post-mode .music-button {
    RICH TEXT EDITOR
 ========================================================== */
 
-.post-editor-richtext {
+.post-editor-richtext,
+.post-editor-html-textarea {
   display: block;
 
   width: 100%;
@@ -1097,6 +1098,147 @@ body.post-mode .music-button {
 
 .post-editor-content-label {
   flex: 0 0 auto;
+}
+
+
+.post-editor-content-heading-left {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+/*
+  CONTENT 옆의 "HTML" 모드 전환 버튼.
+  누르면 리치텍스트 에디터 대신 raw HTML textarea로 바뀐다.
+*/
+
+.post-editor-content-mode-toggle {
+  padding:
+    2px 8px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: #bbbbbb;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 8px;
+  font-weight: 400;
+
+  letter-spacing: 0.04em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.post-editor-content-mode-toggle[aria-pressed="true"] {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+/*
+  HTML로 직접 작성하는 textarea.
+  코드처럼 보이게 monospace + 줄바꿈 유지.
+*/
+
+.post-editor-html-textarea {
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+
+  white-space: pre;
+
+  resize: vertical;
+}
+
+
+/* =========================================================
+   OOC
+
+   독자에게는 보이지 않는 메모. 본문과 구분되게
+   살짝 다른(옅은 노란빛) 배경을 쓴다.
+========================================================== */
+
+.post-editor-ooc-field {
+  margin-bottom: 16px;
+}
+
+
+.post-editor-ooc-toggle {
+  padding:
+    4px 10px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: #bbbbbb;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  letter-spacing: 0.08em;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.post-editor-ooc-toggle[aria-expanded="true"] {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+.post-editor-ooc-textarea {
+  margin-top: 8px;
+
+  min-height: 90px;
+
+  background: #fffdf5;
+
+  resize: vertical;
 }
 
 
