@@ -90,7 +90,12 @@ async function exportEditorPreviewAsImages() {
     !window.html2canvas
   ) {
 
-    alert(
+    /*
+      alert()는 카카오톡/인스타그램 인앱 브라우저 같은 웹뷰에서
+      무시되거나 막히는 경우가 있어서, 화면 안 메시지로 대신 표시.
+    */
+
+    showPostEditorMessage(
       "이미지 변환 기능을 불러오지 못했습니다."
     );
 
@@ -258,7 +263,7 @@ async function exportEditorPreviewAsImages() {
     previewPages.length === 0
   ) {
 
-    alert(
+    showPostEditorMessage(
       "내보낼 미리보기가 없습니다."
     );
 
@@ -677,8 +682,91 @@ const pageHeight =
 
 
     /*
-      PC, 또는 위 방법이 전부 실패한 모바일 환경:
-      일반 PNG 다운로드.
+      클립보드/공유가 전부 안 되는 모바일 환경(카카오톡/인스타그램
+      인앱 브라우저 등)의 마지막 수단: 새 탭에 이미지를 직접 열어서
+      길게 눌러 저장하게 한다. <a download>는 이런 인앱 웹뷰에서
+      조용히 씹히는 경우가 많아서, 최소한 "화면에 보이기라도" 하는
+      이 방법이 훨씬 안정적이다.
+    */
+
+    if (isMobileExport) {
+
+      const file =
+        exportFiles[0];
+
+      const url =
+        URL.createObjectURL(
+          file
+        );
+
+      const opened =
+        window.open(
+          url,
+          "_blank"
+        );
+
+
+      if (opened) {
+
+        showPostEditorMessage(
+          "이미지를 길게 눌러 저장하세요 ♡"
+        );
+
+      }
+
+      else {
+
+        /*
+          새 탭 열기가 막힌 경우(팝업 차단 등)에만
+          마지막으로 다운로드 링크를 시도.
+        */
+
+        const link =
+          document.createElement(
+            "a"
+          );
+
+        link.href =
+          url;
+
+        link.download =
+          file.name;
+
+        document.body.appendChild(
+          link
+        );
+
+        link.click();
+
+        link.remove();
+
+
+        showPostEditorMessage(
+          `saved ♡`
+        );
+
+      }
+
+
+      setTimeout(
+        () => {
+
+          URL.revokeObjectURL(
+            url
+          );
+
+        },
+        60000
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      PC: 일반 PNG 다운로드.
     */
 
     exportFiles.forEach(
@@ -750,12 +838,11 @@ const pageHeight =
 
 
     showPostEditorMessage(
-      "이미지 저장 실패"
-    );
-
-
-    alert(
-      "이미지 저장 중 오류가 발생했습니다."
+      "이미지 저장 실패: " +
+      (
+        error?.message ||
+        "알 수 없는 오류"
+      )
     );
 
 

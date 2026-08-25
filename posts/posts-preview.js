@@ -234,6 +234,39 @@ function createEditorPreviewPage(
 
 
   /*
+    ★ 높이를 CSS aspect-ratio에만 맡기지 않고 픽셀로 직접 고정.
+
+    aspect-ratio는 "콘텐츠가 넘쳐도 박스 자체는 커지면 안 된다"는
+    규칙에 의존하는데, 이게 일부 모바일 브라우저에서 완전히
+    지켜지지 않으면(박스가 콘텐츠 따라 같이 늘어나면) overflow
+    감지(scrollHeight > clientHeight)가 아예 걸리지 않아서
+    본문이 하단 padding/출처 자리를 침범하게 된다.
+    너비/높이를 둘 다 숫자로 고정하면 aspect-ratio는 자동으로
+    무시되므로(CSS 스펙상 두 값이 다 definite하면 적용 안 됨),
+    페이지 높이가 항상 확실하게 고정된다.
+  */
+
+  const pageRatio =
+    getPostPreviewRatio(
+      settings
+    );
+
+
+  const pageHeight =
+    Math.round(
+      520 *
+      (
+        pageRatio.height /
+        pageRatio.width
+      )
+    );
+
+
+  page.style.height =
+    `${pageHeight}px`;
+
+
+  /*
     QUOTE의 세로 정렬.
   */
 
