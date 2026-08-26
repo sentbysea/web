@@ -160,3 +160,105 @@ function toggleEditorContentMode() {
   );
 
 }
+
+
+
+/* =========================================================
+   VISIBILITY (공개 / 비밀글 / 비공개)
+
+   editorPostVisibility 상태는 posts.js에 있음.
+   저장(save) 시점에 posts.js가 이 값을 읽어서
+   posts.visibility에 반영하고, "secret"이고 비밀번호
+   입력칸이 비어있지 않으면 set_post_secret_password RPC를
+   호출한다.
+========================================================== */
+
+function setEditorVisibility(
+  mode
+) {
+
+  editorPostVisibility =
+    mode === "secret" ||
+    mode === "private"
+      ? mode
+      : "public";
+
+
+  postEditorSecretToggle
+    ?.setAttribute(
+      "aria-pressed",
+      String(
+        editorPostVisibility ===
+        "secret"
+      )
+    );
+
+
+  postEditorPrivateToggle
+    ?.setAttribute(
+      "aria-pressed",
+      String(
+        editorPostVisibility ===
+        "private"
+      )
+    );
+
+
+  if (
+    postEditorSecretPassword
+  ) {
+
+    postEditorSecretPassword.hidden =
+      editorPostVisibility !==
+      "secret";
+
+  }
+
+}
+
+
+function toggleEditorSecret() {
+
+  setEditorVisibility(
+    editorPostVisibility ===
+    "secret"
+      ? "public"
+      : "secret"
+  );
+
+}
+
+
+function toggleEditorPrivate() {
+
+  setEditorVisibility(
+    editorPostVisibility ===
+    "private"
+      ? "public"
+      : "private"
+  );
+
+}
+
+
+function resetEditorVisibility() {
+
+  setEditorVisibility(
+    "public"
+  );
+
+
+  editorPostHadSecretPassword =
+    false;
+
+
+  if (
+    postEditorSecretPassword
+  ) {
+
+    postEditorSecretPassword.value =
+      "";
+
+  }
+
+}

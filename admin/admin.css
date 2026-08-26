@@ -1641,7 +1641,16 @@ button {
 
   width: 100%;
 
-  max-width: 390px;
+  /*
+    실제 글쓰기 에디터 프리뷰(.post-editor-preview-page)의
+    권위 있는 authoring 너비가 520px로 고정돼 있어서
+    (posts.css 참고), 폰트 px 설정값이 그 캔버스 기준으로
+    맞춰진다. 여기서 캔버스 너비가 다르면(예전엔 390px)
+    같은 px 값이라도 실제 글쓰기 프리뷰보다 훨씬 커
+    보이므로 반드시 520px로 맞춘다.
+  */
+
+  max-width: 520px;
 
   aspect-ratio:
     1 / 1;
@@ -1939,7 +1948,7 @@ button {
     width:
       min(
         100%,
-        360px
+        520px
       );
 
     max-width: none;

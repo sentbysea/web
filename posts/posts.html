@@ -131,6 +131,53 @@
       </div>
 
 
+      <!-- ===================================================
+           SECRET GATE
+
+           비밀글을 주인이 아닌 사람이 열었을 때, 본문
+           대신 이게 보임. 비밀번호는 get_secret_post_content
+           RPC로 DB에서만 대조된다(posts-view.js).
+      ==================================================== -->
+
+      <form
+        class="post-secret-gate"
+        id="postSecretGate"
+        hidden
+      >
+
+        <div class="post-secret-gate-icon">
+          🔒
+        </div>
+
+        <div class="post-secret-gate-label">
+          비밀글입니다
+        </div>
+
+        <input
+          class="post-secret-gate-input"
+          id="postSecretGateInput"
+          type="password"
+          inputmode="text"
+          autocomplete="off"
+          placeholder="비밀번호"
+        >
+
+        <button
+          class="post-secret-gate-button"
+          id="postSecretGateSubmit"
+          type="submit"
+        >
+          확인
+        </button>
+
+        <div
+          class="post-secret-gate-message"
+          id="postSecretGateMessage"
+        ></div>
+
+      </form>
+
+
 
       <!-- ===================================================
            RELATED POSTS
@@ -252,6 +299,29 @@
             HTML
           </button>
 
+
+          <button
+            type="button"
+            class="post-editor-content-mode-toggle post-editor-visibility-toggle"
+            id="postEditorSecretToggle"
+            aria-pressed="false"
+            aria-controls="postEditorSecretPassword"
+            title="비밀글: 목록엔 제목만 보이고, 비밀번호를 맞혀야 본문이 열립니다"
+          >
+            🔒 비밀글
+          </button>
+
+
+          <button
+            type="button"
+            class="post-editor-content-mode-toggle post-editor-visibility-toggle"
+            id="postEditorPrivateToggle"
+            aria-pressed="false"
+            title="비공개: 목록에도 보이지 않고, 나만 볼 수 있습니다"
+          >
+            🙈 비공개
+          </button>
+
         </div>
 
 
@@ -261,6 +331,17 @@
           placeholder="독자에게는 보이지 않는 메모입니다."
           hidden
         ></textarea>
+
+
+        <input
+          id="postEditorSecretPassword"
+          class="post-editor-input post-editor-secret-password-input"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          placeholder="비밀글 비밀번호 (4자 이상 · 비워두면 기존 비밀번호 유지)"
+          hidden
+        >
 
       </div>
 

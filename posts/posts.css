@@ -259,6 +259,11 @@
 }
 
 
+.post-detail-content-wrap[hidden] {
+  display: none;
+}
+
+
 .post-detail-content {
   padding-bottom: 60px;
 
@@ -290,6 +295,135 @@
 
 .post-detail-content.is-html-content {
   transform-origin: top center;
+}
+
+
+/* =========================================================
+   SECRET GATE
+
+   비밀글을 주인이 아닌 사람이 열었을 때 본문 대신 보이는
+   비밀번호 입력 폼.
+========================================================== */
+
+.post-secret-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    70px
+    20px
+    90px;
+
+  text-align: center;
+}
+
+
+.post-secret-gate[hidden] {
+  display: none;
+}
+
+
+.post-secret-gate-icon {
+  font-size: 22px;
+
+  opacity: 0.55;
+}
+
+
+.post-secret-gate-label {
+  margin-bottom: 6px;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  letter-spacing: 0.04em;
+
+  color: #999999;
+}
+
+
+.post-secret-gate-input {
+  width: 100%;
+  max-width: 220px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #eeeeee;
+  border-radius: 0;
+
+  outline: none;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 16px;
+
+  text-align: center;
+
+  color: #555555;
+
+  transition: border-color 0.2s ease;
+}
+
+
+.post-secret-gate-input:focus {
+  border-color: #e6bdcc;
+}
+
+
+.post-secret-gate-button {
+  margin-top: 4px;
+
+  padding: 8px 22px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  letter-spacing: 0.05em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.post-secret-gate-button:hover {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+.post-secret-gate-message {
+  min-height: 12px;
+
+  font-size: 10px;
+
+  letter-spacing: 0.02em;
+
+  color: #d98080;
 }
 
 
@@ -1137,6 +1271,7 @@ body.post-mode .music-button {
 
 .post-editor-ooc-html-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 
   gap: 8px;
@@ -1242,6 +1377,18 @@ body.post-mode .music-button {
   background: #fffdf5;
 
   resize: vertical;
+}
+
+
+/*
+  비밀글 비밀번호 입력창. OOC와 겹치지 않게 살짝 다른
+  (옅은 분홍빛) 배경으로 구분.
+*/
+
+.post-editor-secret-password-input {
+  margin-top: 8px;
+
+  background: #fff8fa;
 }
 
 

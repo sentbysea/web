@@ -561,6 +561,7 @@ async function savePost() {
 
 
   const {
+    data: insertedPost,
     error
   } =
     await supabaseClient
@@ -580,23 +581,56 @@ async function savePost() {
         title:
           title,
 
-        content:
-          content,
-
         updated_at:
           new Date()
             .toISOString()
 
-      });
+      })
+      .select(
+        "id"
+      )
+      .single();
+
+
+  /*
+    본문(content)은 posts가 아니라 post_contents 테이블에
+    따로 저장됨 — 비밀글의 "제목은 목록에 보이되 본문만
+    숨기기"를 DB RLS로 구현하려고 분리함(posts/posts.js의
+    savePostContentAndSecret, supabase/migrations/*_secret_
+    private_posts.sql 참고). 이 패널엔 비밀글 옵션이 없어서
+    항상 public으로 저장됨.
+  */
+
+  const contentError =
+    error ||
+    !insertedPost ?
+      null :
+      (
+        await supabaseClient
+          .from(
+            "post_contents"
+          )
+          .insert({
+
+            post_id:
+              insertedPost.id,
+
+            content:
+              content
+
+          })
+      ).error;
 
 
   if (
-    error
+    error ||
+    contentError
   ) {
 
     console.error(
       "post save error:",
-      error
+      error ||
+      contentError
     );
 
 

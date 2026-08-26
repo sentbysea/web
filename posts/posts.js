@@ -127,6 +127,26 @@ const postDetailContent =
     "postDetailContent"
   );
 
+const postSecretGate =
+  document.getElementById(
+    "postSecretGate"
+  );
+
+const postSecretGateInput =
+  document.getElementById(
+    "postSecretGateInput"
+  );
+
+const postSecretGateSubmit =
+  document.getElementById(
+    "postSecretGateSubmit"
+  );
+
+const postSecretGateMessage =
+  document.getElementById(
+    "postSecretGateMessage"
+  );
+
 const postBackButton =
   document.getElementById(
     "postBackButton"
@@ -206,6 +226,21 @@ const postEditorOOC =
 const postEditorHtmlModeToggle =
   document.getElementById(
     "postEditorHtmlModeToggle"
+  );
+
+const postEditorSecretToggle =
+  document.getElementById(
+    "postEditorSecretToggle"
+  );
+
+const postEditorPrivateToggle =
+  document.getElementById(
+    "postEditorPrivateToggle"
+  );
+
+const postEditorSecretPassword =
+  document.getElementById(
+    "postEditorSecretPassword"
   );
 
 const postEditorRichtextMode =
@@ -500,6 +535,27 @@ let editorSourcePostId =
   null;
 
 
+/*
+  "public"(기본) / "secret"(비밀글) / "private"(비공개).
+  postEditorSecretToggle / postEditorPrivateToggle 두 버튼이
+  이 값 하나를 서로 배타적으로 바꾼다.
+*/
+
+let editorPostVisibility =
+  "public";
+
+
+/*
+  글을 열었을 때 이미 secret이었는지(=이미 저장된
+  비밀번호 해시가 있는지). 저장 시 "secret인데 비밀번호
+  칸이 비어있음"을 에러로 볼지(신규) 아니면 기존 비밀번호
+  유지로 볼지(이미 있던 비밀글) 구분하는 데 씀.
+*/
+
+let editorPostHadSecretPassword =
+  false;
+
+
 let postStyleSettings =
   null;
 
@@ -783,6 +839,18 @@ postRelatedList
       );
 
     }
+  );
+
+
+
+/* =========================================================
+   SECRET GATE
+========================================================== */
+
+postSecretGate
+  ?.addEventListener(
+    "submit",
+    handleSecretGateSubmit
   );
 
 
@@ -2071,6 +2139,25 @@ postEditorHtmlModeToggle
 
 
 /* =========================================================
+   VISIBILITY (비밀글 / 비공개)
+========================================================== */
+
+postEditorSecretToggle
+  ?.addEventListener(
+    "click",
+    toggleEditorSecret
+  );
+
+
+postEditorPrivateToggle
+  ?.addEventListener(
+    "click",
+    toggleEditorPrivate
+  );
+
+
+
+/* =========================================================
    PREVIEW OPEN / CLOSE
 ========================================================== */
 
@@ -2464,6 +2551,91 @@ postEditorExportButton
   );
 
 /* =========================================================
+   SAVE HELPERS
+
+   본문(content/ooc_content)은 posts가 아니라 post_contents
+   테이블에 저장됨(비밀글의 "제목은 목록에 보이되 본문만
+   숨기기"를 DB RLS로 구현하려고 분리함 — 자세한 설명은
+   supabase/migrations/*_secret_private_posts.sql 참고).
+
+   비밀번호는 평문을 절대 posts 테이블에 직접 쓰지 않고,
+   set_post_secret_password RPC(DB 안에서 bcrypt 해시로
+   변환)를 통해서만 저장한다.
+========================================================== */
+
+async function savePostContentAndSecret(
+  postId,
+  content,
+  oocContent,
+  visibility,
+  secretPassword
+) {
+
+  const {
+    error: contentError
+  } =
+    await supabaseClient
+      .from(
+        "post_contents"
+      )
+      .upsert(
+        {
+          post_id:
+            postId,
+
+          content,
+
+          ooc_content:
+            oocContent
+        },
+        {
+          onConflict:
+            "post_id"
+        }
+      );
+
+
+  if (contentError) {
+    return contentError;
+  }
+
+
+  if (
+    visibility ===
+      "secret" &&
+    secretPassword
+  ) {
+
+    const {
+      error: passwordError
+    } =
+      await supabaseClient
+        .rpc(
+          "set_post_secret_password",
+          {
+            p_post_id:
+              postId,
+
+            p_password:
+              secretPassword
+          }
+        );
+
+
+    if (passwordError) {
+      return passwordError;
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+
+/* =========================================================
    SAVE
 ========================================================== */
 
@@ -2549,6 +2721,43 @@ postEditorSaveButton
       }
 
 
+      const secretPassword =
+        postEditorSecretPassword
+          ?.value
+          .trim() ||
+        "";
+
+
+      if (
+        editorPostVisibility ===
+          "secret" &&
+        !secretPassword &&
+        !editorPostHadSecretPassword
+      ) {
+
+        showPostEditorMessage(
+          "비밀글 비밀번호를 입력해주세요."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        secretPassword &&
+        secretPassword.length < 4
+      ) {
+
+        showPostEditorMessage(
+          "비밀번호는 4자 이상이어야 합니다."
+        );
+
+        return;
+
+      }
+
+
       postEditorSaveButton.disabled =
         true;
 
@@ -2584,15 +2793,25 @@ postEditorSaveButton
 
               title,
 
-              content,
-
               content_type:
                 isHtmlMode
                   ? "html"
                   : "richtext",
 
-              ooc_content:
-                oocContent,
+              visibility:
+                editorPostVisibility,
+
+              /*
+                secret을 벗어나면 예전 해시는 지운다
+                (다시 secret으로 바꾸면 새 비밀번호를
+                반드시 입력하게 되므로).
+              */
+
+              secret_password_hash:
+                editorPostVisibility ===
+                "secret"
+                  ? undefined
+                  : null,
 
               updated_at:
                 new Date()
@@ -2608,6 +2827,19 @@ postEditorSaveButton
             );
 
 
+        const contentSaveError =
+          error ||
+          (
+            await savePostContentAndSecret(
+              savedId,
+              content,
+              oocContent,
+              editorPostVisibility,
+              secretPassword
+            )
+          );
+
+
         postEditorSaveButton.disabled =
           false;
 
@@ -2616,10 +2848,10 @@ postEditorSaveButton
           "save";
 
 
-        if (error) {
+        if (contentSaveError) {
 
           console.error(
-            error
+            contentSaveError
           );
 
 
@@ -2671,15 +2903,13 @@ postEditorSaveButton
 
             title,
 
-            content,
-
             content_type:
               isHtmlMode
                 ? "html"
                 : "richtext",
 
-            ooc_content:
-              oocContent,
+            visibility:
+              editorPostVisibility,
 
             updated_at:
               new Date()
@@ -2689,6 +2919,19 @@ postEditorSaveButton
             "id"
           )
           .single();
+
+
+      const contentSaveError =
+        error ||
+        !data ?
+          error :
+          await savePostContentAndSecret(
+            data.id,
+            content,
+            oocContent,
+            editorPostVisibility,
+            secretPassword
+          );
 
 
       postEditorSaveButton.disabled =
@@ -2701,11 +2944,13 @@ postEditorSaveButton
 
       if (
         error ||
-        !data
+        !data ||
+        contentSaveError
       ) {
 
         console.error(
-          error
+          error ||
+          contentSaveError
         );
 
 

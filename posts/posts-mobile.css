@@ -117,10 +117,21 @@
   }
 
 
-  .post-editor-input {
-    min-height: 38px;
+  /*
+    iOS Safari는 포커스되는 입력 요소의 font-size가
+    16px보다 작으면 페이지를 강제로 확대한다. viewport
+    meta로 막는 방식(maximum-scale=1 등)은 pinch zoom
+    자체를 죽여버리므로 쓰지 않고, 대신 여기서 실제
+    입력 요소의 font-size를 16px로 올려서 확대가 애초에
+    발동하지 않게 한다. 프리뷰/실제 게시글 출력 쪽은
+    별도 클래스(post-editor-preview-*, post-detail-*)라
+    영향 없음.
+  */
 
-    font-size: 12px;
+  .post-editor-input {
+    min-height: 40px;
+
+    font-size: 16px;
   }
 
 
@@ -184,9 +195,15 @@
 
     overflow-y: auto;
 
-    font-size: 12px;
+    /*
+      iOS Safari 자동 확대 방지용 최소값(위 .post-editor-input
+      주석 참고). line-height를 데스크톱(1.8)보다 살짝 좁혀서
+      16px 글자가 세로로 과하게 커 보이지 않도록 보정.
+    */
 
-    line-height: 1.75;
+    font-size: 16px;
+
+    line-height: 1.55;
   }
 
 

@@ -695,7 +695,8 @@ async function openCategoryPage(
         `
         id,
         title,
-        created_at
+        created_at,
+        visibility
         `
       )
       .eq(
@@ -787,8 +788,13 @@ async function openCategoryPage(
 
 
       title.textContent =
-        post.title ||
-        "untitled";
+        getPostVisibilityPrefix(
+          post.visibility
+        ) +
+        (
+          post.title ||
+          "untitled"
+        );
 
 
       const date =
@@ -936,6 +942,26 @@ async function openPostPage(
   }
 
 
+  if (
+    postSecretGate
+  ) {
+
+    postSecretGate.hidden =
+      true;
+
+  }
+
+
+  if (
+    postDetailContentWrap
+  ) {
+
+    postDetailContentWrap.hidden =
+      false;
+
+  }
+
+
   const {
     data: post,
     error
@@ -950,8 +976,8 @@ async function openPostPage(
         category_id,
         user_id,
         title,
-        content,
         content_type,
+        visibility,
         created_at
         `
       )
@@ -1001,8 +1027,13 @@ async function openPostPage(
 
 
   postDetailTitle.textContent =
-    post.title ||
-    "untitled";
+    getPostVisibilityPrefix(
+      post.visibility
+    ) +
+    (
+      post.title ||
+      "untitled"
+    );
 
 
   postDetailDate.textContent =
@@ -1011,66 +1042,70 @@ async function openPostPage(
     );
 
 
+  const viewer =
+    await getSignedInUser();
+
+
+  const isOwnerViewing =
+    Boolean(
+      viewer &&
+      viewer.id ===
+        post.user_id
+    );
+
+
   if (
-    post.content_type ===
-    "html"
+    post.visibility ===
+      "secret" &&
+    !isOwnerViewing
   ) {
 
     /*
-      HTML 모드 글: sanitize/스타일 프리셋 없이
-      저장된 HTML을 그대로 출력(HTML 뷰어처럼 보여주는 용도).
+      비밀번호를 맞히기 전엔 본문을 아예 서버에 요청하지도
+      않는다(post_contents는 RLS로 어차피 막혀있지만,
+      요청 자체를 안 보내는 게 더 깔끔함).
     */
 
-    if (
-      postDetailContent
-    ) {
-
-      postDetailContent.classList.add(
-        "is-html-content"
-      );
-
-
-      postDetailContent.innerHTML =
-        post.content ||
-        "";
-
-
-      /*
-        붙여넣은 HTML이 화면 폭이 고정된 마크업(카톡 대화창
-        재현 등)이면 화면보다 넓어져서 잘리거나 깨져 보인다.
-        실제 크기를 측정해서 화면에 맞게 축소한다.
-      */
-
-      requestAnimationFrame(
-        fitHtmlPostContentToViewport
-      );
-
-    }
+    showPostSecretGate(
+      post.id,
+      post.content_type
+    );
 
   }
 
   else {
 
-    if (
-      postDetailContent
-    ) {
+    const {
+      data: postContent,
+      error: postContentError
+    } =
+      await supabaseClient
+        .from(
+          "post_contents"
+        )
+        .select(
+          "content"
+        )
+        .eq(
+          "post_id",
+          post.id
+        )
+        .maybeSingle();
 
-      postDetailContent.classList.remove(
-        "is-html-content"
+
+    if (postContentError) {
+
+      console.error(
+        postContentError
       );
 
     }
 
 
-    resetHtmlPostContentFit();
-
-
-    await loadPostStylePreset();
-
-
-    renderStyledPostContent(
-      post.content || "",
-      postStyleSettings || {}
+    await renderPostDetailBody(
+      post.content_type,
+      postContent?.content ||
+        ""
     );
 
   }
@@ -1141,6 +1176,317 @@ async function openPostPage(
     );
 
   }
+
+}
+
+
+
+/* =========================================================
+   POST BODY RENDER
+
+   openPostPage(공개/주인이 보는 secret,private)와
+   handleSecretGateSubmit(비밀번호 맞힌 뒤)에서 공통으로 씀.
+========================================================== */
+
+async function renderPostDetailBody(
+  contentType,
+  contentText
+) {
+
+  if (
+    contentType ===
+    "html"
+  ) {
+
+    /*
+      HTML 모드 글: sanitize/스타일 프리셋 없이
+      저장된 HTML을 그대로 출력(HTML 뷰어처럼 보여주는 용도).
+    */
+
+    if (
+      postDetailContent
+    ) {
+
+      postDetailContent.classList.add(
+        "is-html-content"
+      );
+
+
+      postDetailContent.innerHTML =
+        contentText ||
+        "";
+
+
+      /*
+        붙여넣은 HTML이 화면 폭이 고정된 마크업(카톡 대화창
+        재현 등)이면 화면보다 넓어져서 잘리거나 깨져 보인다.
+        실제 크기를 측정해서 화면에 맞게 축소한다.
+      */
+
+      requestAnimationFrame(
+        fitHtmlPostContentToViewport
+      );
+
+    }
+
+  }
+
+  else {
+
+    if (
+      postDetailContent
+    ) {
+
+      postDetailContent.classList.remove(
+        "is-html-content"
+      );
+
+    }
+
+
+    resetHtmlPostContentFit();
+
+
+    await loadPostStylePreset();
+
+
+    renderStyledPostContent(
+      contentText ||
+        "",
+      postStyleSettings ||
+        {}
+    );
+
+  }
+
+}
+
+
+
+/* =========================================================
+   SECRET GATE
+
+   비밀글을 주인이 아닌 사람이 열었을 때 본문 자리에 대신
+   보여주는 비밀번호 입력 폼. 비밀번호 대조는
+   get_secret_post_content RPC 안에서만(DB) 일어나므로
+   프론트 JS를 다 읽어도 우회할 방법이 없다.
+========================================================== */
+
+let secretGatePostId =
+  null;
+
+
+let secretGatePostContentType =
+  "richtext";
+
+
+function showPostSecretGate(
+  postId,
+  contentType
+) {
+
+  secretGatePostId =
+    postId;
+
+
+  secretGatePostContentType =
+    contentType;
+
+
+  if (
+    postDetailContentWrap
+  ) {
+
+    postDetailContentWrap.hidden =
+      true;
+
+  }
+
+
+  if (
+    postDetailContent
+  ) {
+
+    postDetailContent.textContent =
+      "";
+
+
+    postDetailContent.classList.remove(
+      "is-html-content"
+    );
+
+  }
+
+
+  if (
+    postSecretGateInput
+  ) {
+
+    postSecretGateInput.value =
+      "";
+
+  }
+
+
+  if (
+    postSecretGateMessage
+  ) {
+
+    postSecretGateMessage.textContent =
+      "";
+
+  }
+
+
+  if (
+    postSecretGate
+  ) {
+
+    postSecretGate.hidden =
+      false;
+
+  }
+
+
+  postSecretGateInput
+    ?.focus();
+
+}
+
+
+async function handleSecretGateSubmit(
+  event
+) {
+
+  event.preventDefault();
+
+
+  if (
+    !secretGatePostId
+  ) {
+    return;
+  }
+
+
+  const password =
+    postSecretGateInput
+      ?.value
+      .trim() ||
+    "";
+
+
+  if (!password) {
+
+    if (
+      postSecretGateMessage
+    ) {
+
+      postSecretGateMessage.textContent =
+        "비밀번호를 입력해주세요.";
+
+    }
+
+    return;
+
+  }
+
+
+  if (
+    postSecretGateSubmit
+  ) {
+
+    postSecretGateSubmit.disabled =
+      true;
+
+  }
+
+
+  if (
+    postSecretGateMessage
+  ) {
+
+    postSecretGateMessage.textContent =
+      "";
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .rpc(
+        "get_secret_post_content",
+        {
+          p_post_id:
+            secretGatePostId,
+
+          p_password:
+            password
+        }
+      );
+
+
+  if (
+    postSecretGateSubmit
+  ) {
+
+    postSecretGateSubmit.disabled =
+      false;
+
+  }
+
+
+  const row =
+    Array.isArray(data)
+      ? data[0]
+      : data;
+
+
+  if (
+    error ||
+    !row
+  ) {
+
+    if (
+      postSecretGateMessage
+    ) {
+
+      postSecretGateMessage.textContent =
+        "비밀번호가 일치하지 않습니다.";
+
+    }
+
+    return;
+
+  }
+
+
+  if (
+    postSecretGate
+  ) {
+
+    postSecretGate.hidden =
+      true;
+
+  }
+
+
+  if (
+    postDetailContentWrap
+  ) {
+
+    postDetailContentWrap.hidden =
+      false;
+
+  }
+
+
+  await renderPostDetailBody(
+    secretGatePostContentType,
+    row.content
+  );
 
 }
 
@@ -1236,7 +1582,8 @@ async function loadRelatedPosts(
         `
         id,
         title,
-        created_at
+        created_at,
+        visibility
         `
       )
       .eq(
@@ -1323,8 +1670,13 @@ async function loadRelatedPosts(
 
 
       title.textContent =
-        post.title ||
-        "untitled";
+        getPostVisibilityPrefix(
+          post.visibility
+        ) +
+        (
+          post.title ||
+          "untitled"
+        );
 
 
       const date =
@@ -1446,6 +1798,9 @@ async function openNewPostEditor(
   resetEditorOOC();
 
 
+  resetEditorVisibility();
+
+
   if (
     postEditorHtmlContent
   ) {
@@ -1512,9 +1867,8 @@ async function openPostEditor(
         user_id,
         category_id,
         title,
-        content,
         content_type,
-        ooc_content
+        visibility
         `
       )
       .eq(
@@ -1546,6 +1900,54 @@ async function openPostEditor(
     return;
 
   }
+
+
+  /*
+    본문(content/ooc_content)은 posts가 아니라
+    post_contents에 따로 있음(비밀글의 "제목은 보이되
+    본문만 숨기기"를 DB RLS로 구현하려고 분리함).
+    글 주인이라 위 소유권 검사를 이미 통과했으므로
+    바로 읽어올 수 있다.
+  */
+
+  const {
+    data: postContent,
+    error: postContentError
+  } =
+    await supabaseClient
+      .from(
+        "post_contents"
+      )
+      .select(
+        `
+        content,
+        ooc_content
+        `
+      )
+      .eq(
+        "post_id",
+        post.id
+      )
+      .maybeSingle();
+
+
+  if (postContentError) {
+
+    console.error(
+      postContentError
+    );
+
+  }
+
+
+  post.content =
+    postContent?.content ||
+    "";
+
+
+  post.ooc_content =
+    postContent?.ooc_content ||
+    "";
 
 
   currentPostView =
@@ -1619,6 +2021,33 @@ async function openPostEditor(
   postEditorTitle.value =
     post.title ||
     "";
+
+
+  setEditorVisibility(
+    post.visibility ||
+    "public"
+  );
+
+
+  editorPostHadSecretPassword =
+    post.visibility ===
+    "secret";
+
+
+  /*
+    비밀번호는 절대 다시 불러와서 보여주지 않음(애초에
+    해시라서 원문을 알 방법도 없음). 비워두면 "기존
+    비밀번호 유지"로 저장 시 처리된다.
+  */
+
+  if (
+    postEditorSecretPassword
+  ) {
+
+    postEditorSecretPassword.value =
+      "";
+
+  }
 
 
   if (
