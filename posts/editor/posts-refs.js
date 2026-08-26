@@ -8,8 +8,13 @@
    postsDependencyScripts 순서 참고).
 
    내용: 라우팅(buildPostRoute 등), 에디터/툴바/프리뷰
-   DOM 요소 참조, 프리뷰 페이지 상태, 날짜 포맷, 메뉴
-   열고닫기, 로그인 사용자 조회(getSignedInUser).
+   DOM 요소 참조(배너 관련 참조 포함).
+
+   상태 변수(current* 등)와 날짜 포맷/메뉴/로그인 조회
+   함수는 바로 다음에 로드되는 posts-state.js에 있음 —
+   이 파일이 너무 커져서(800줄+) 둘로 나눴을 뿐 사실상
+   한 파일처럼 취급하면 됨(둘 다 posts/editor/의 다른
+   파일들보다 먼저 로드돼야 함).
 
    실제 기능 로직(저장, 목록/상세, 리치에디터 이벤트,
    하이라이트/툴바, 페이지 이동 등)은 같은 폴더의 다른
@@ -170,6 +175,68 @@ const postAddButton =
   document.getElementById(
     "postAddButton"
   );
+
+
+const bannerEditToggleButton =
+  document.getElementById(
+    "bannerEditToggleButton"
+  );
+
+const bannerGrid =
+  document.getElementById(
+    "bannerGrid"
+  );
+
+const bannerEditor =
+  document.getElementById(
+    "bannerEditor"
+  );
+
+const bannerEditorHeading =
+  document.getElementById(
+    "bannerEditorHeading"
+  );
+
+const bannerEditorName =
+  document.getElementById(
+    "bannerEditorName"
+  );
+
+const bannerEditorUrl =
+  document.getElementById(
+    "bannerEditorUrl"
+  );
+
+const bannerEditorImageUrl =
+  document.getElementById(
+    "bannerEditorImageUrl"
+  );
+
+const bannerEditorPreview =
+  document.getElementById(
+    "bannerEditorPreview"
+  );
+
+const bannerEditorDelete =
+  document.getElementById(
+    "bannerEditorDelete"
+  );
+
+const bannerEditorCancel =
+  document.getElementById(
+    "bannerEditorCancel"
+  );
+
+const bannerEditorSave =
+  document.getElementById(
+    "bannerEditorSave"
+  );
+
+const bannerEditorMessage =
+  document.getElementById(
+    "bannerEditorMessage"
+  );
+
 
 const postDetailFontScale =
   document.getElementById(
@@ -482,239 +549,4 @@ const postEditorPreviewContent =
   document.getElementById(
     "postEditorPreviewContent"
   );
-
-  /* =========================================================
-   PAGED PREVIEW
-========================================================== */
-
-const postEditorPageBreak =
-  document.getElementById(
-    "postEditorPageBreak"
-  );
-
-
-const postEditorPreviewPages =
-  document.getElementById(
-    "postEditorPreviewPages"
-  );
-
-
-const postEditorPreviewPagination =
-  document.getElementById(
-    "postEditorPreviewPagination"
-  );
-
-
-const postEditorPreviewPrev =
-  document.getElementById(
-    "postEditorPreviewPrev"
-  );
-
-
-const postEditorPreviewNext =
-  document.getElementById(
-    "postEditorPreviewNext"
-  );
-
-
-const postEditorPreviewPageIndicator =
-  document.getElementById(
-    "postEditorPreviewPageIndicator"
-  );
-
-
-const categoryMenuLinks =
-  document.getElementById(
-    "categoryMenuLinks"
-  );
-
-
-
-/* =========================================================
-   STATE
-========================================================== */
-
-let currentPostCategoryId =
-  null;
-
-let currentPostId =
-  null;
-
-let currentPostOwnerId =
-  null;
-
-let currentPostView =
-  "home";
-
-
-let currentEditorMode =
-  null;
-
-
-/*
-  "richtext"(기본) 또는 "html".
-  html이면 리치텍스트 에디터/툴바/프리뷰(발췌) 대신
-  raw HTML textarea 하나만 쓴다.
-*/
-
-let editorContentMode =
-  "richtext";
-
-let editorSourcePostId =
-  null;
-
-
-/*
-  "public"(기본) / "secret"(비밀글) / "private"(비공개).
-  postEditorSecretToggle / postEditorPrivateToggle 두 버튼이
-  이 값 하나를 서로 배타적으로 바꾼다.
-*/
-
-let editorPostVisibility =
-  "public";
-
-
-/*
-  글을 열었을 때 이미 secret이었는지(=이미 저장된
-  비밀번호 해시가 있는지). 저장 시 "secret인데 비밀번호
-  칸이 비어있음"을 에러로 볼지(신규) 아니면 기존 비밀번호
-  유지로 볼지(이미 있던 비밀글) 구분하는 데 씀.
-*/
-
-let editorPostHadSecretPassword =
-  false;
-
-
-let postStyleSettings =
-  null;
-
-
-/*
-  contenteditable에서 마지막으로 잡은 선택영역.
-
-  툴바나 컬러피커를 눌렀을 때
-  선택이 풀리는 문제를 막기 위해 저장함.
-*/
-
-let savedEditorRange =
-  null;
-
-
-let postCurtainAnimation =
-  null;
-
-/* =========================================================
-   PREVIEW PAGE STATE
-========================================================== */
-
-let editorPreviewPages =
-  [];
-
-
-let editorPreviewPageIndex =
-  0;
-
-/* =========================================================
-   MOBILE PREVIEW SCALE
-
-   applyEditorPreviewScale
-
-   -> posts-preview.js 로 이동함.
-========================================================== */
-
-
-
-/* =========================================================
-   POST TRANSITION / POST TRANSITION OUT
-
-   showPostArea, hidePostAreaCurtain
-
-   -> posts-view.js 로 이동함.
-========================================================== */
-
-
-
-
-
-/* =========================================================
-   VIBE PRESET / HIGHLIGHT / ACTION-DIALOGUE / BODY STYLE / RENDER POST
-
-   loadPostStylePreset, getPresetHighlightColor,
-   getSafeHighlightColor, updatePresetHighlightSwatch,
-   updateCustomHighlightSwatch, replaceActionDialogueTextNode,
-   applyActionDialogueStyles, applyPostBodyStyles,
-   renderStyledPostContentInto, renderStyledPostContent
-
-   -> posts-style.js 로 이동함.
-
-   SAFE HTML (sanitizeRichNode 등) -> posts-sanitize.js 로 이동함.
-========================================================== */
-
-
-
-/* =========================================================
-   DATE
-
-   formatPostListDate / formatPostDetailDate
-
-   -> posts-format.js 로 이동함.
-========================================================== */
-
-
-
-/* =========================================================
-   MENU
-========================================================== */
-
-function closePostMenu() {
-
-  menuPanel?.classList.remove(
-    "open"
-  );
-
-
-  menuButton?.classList.remove(
-    "open"
-  );
-
-
-  menuButton?.setAttribute(
-    "aria-expanded",
-    "false"
-  );
-
-}
-
-
-
-/* =========================================================
-   AUTH
-========================================================== */
-
-async function getSignedInUser() {
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .auth
-      .getUser();
-
-
-  if (
-    error ||
-    !data?.user
-  ) {
-
-    return null;
-
-  }
-
-
-  return data.user;
-
-}
-
-
 

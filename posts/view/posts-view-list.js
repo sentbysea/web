@@ -96,7 +96,7 @@ async function openCategoryPage(
         "categories"
       )
       .select(
-        "id, name"
+        "id, name, type"
       )
       .eq(
         "id",
@@ -128,6 +128,11 @@ async function openCategoryPage(
     category.name;
 
 
+  currentPostCategoryType =
+    category.type ||
+    "post";
+
+
   await updatePostAddButton();
 
 
@@ -150,6 +155,41 @@ async function openCategoryPage(
     );
 
   }
+
+
+  if (
+    currentPostCategoryType ===
+    "banner"
+  ) {
+
+    if (postList) {
+
+      postList.hidden =
+        true;
+
+    }
+
+
+    await renderBannerCategory(
+      categoryId
+    );
+
+
+    return;
+
+  }
+
+
+  if (bannerGrid) {
+
+    bannerGrid.hidden =
+      true;
+
+  }
+
+
+  postList.hidden =
+    false;
 
 
   const {
@@ -256,14 +296,11 @@ async function openCategoryPage(
         "post-list-title";
 
 
-      title.textContent =
-        getPostVisibilityPrefix(
-          post.visibility
-        ) +
-        (
-          post.title ||
-          "untitled"
-        );
+      applyPostVisibilityTitle(
+        title,
+        post.visibility,
+        post.title
+      );
 
 
       const date =

@@ -412,14 +412,11 @@ async function loadRelatedPosts(
         "post-related-item-title";
 
 
-      title.textContent =
-        getPostVisibilityPrefix(
-          post.visibility
-        ) +
-        (
-          post.title ||
-          "untitled"
-        );
+      applyPostVisibilityTitle(
+        title,
+        post.visibility,
+        post.title
+      );
 
 
       const date =

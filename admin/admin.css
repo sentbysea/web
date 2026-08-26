@@ -738,6 +738,7 @@ button {
 
   grid-template-columns:
     1fr
+    auto
     auto;
 
   align-items: center;
@@ -749,6 +750,28 @@ button {
   border-bottom:
     1px solid
     #f1f1f1;
+}
+
+
+.category-type-select {
+  padding: 5px 6px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #888888;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 10px;
+
+  cursor: pointer;
 }
 
 
@@ -2584,92 +2607,6 @@ button {
   }
 
 }
-
-/* =========================================================
-   ADMIN → HOME HEART
-========================================================== */
-
-.admin-home-heart {
-  position: fixed;
-
-  top:
-    max(
-      18px,
-      env(safe-area-inset-top)
-    );
-
-  right:
-    max(
-      20px,
-      env(safe-area-inset-right)
-    );
-
-  z-index: 500;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 28px;
-  height: 28px;
-
-  color: #c9c9c9;
-
-  background: transparent;
-
-  border: 0;
-
-  font-family:
-    "Pretendard",
-    sans-serif;
-
-  font-size: 15px;
-
-  text-decoration: none;
-
-  cursor: pointer;
-
-  transition:
-    color 0.2s ease,
-    text-shadow 0.2s ease;
-
-  -webkit-tap-highlight-color:
-    transparent;
-}
-
-
-.admin-home-heart:hover {
-  color: #ee9fbd;
-
-  text-shadow:
-    0 0 6px
-    rgba(
-      238,
-      159,
-      189,
-      0.25
-    );
-}
-
-
-@media (max-width: 600px) {
-
-  .admin-home-heart {
-    top:
-      max(
-        12px,
-        env(safe-area-inset-top)
-      );
-
-    right:
-      max(
-        14px,
-        env(safe-area-inset-right)
-      );
-  }
-
-}
-
 
 /* =========================================================
    FOOTER (오늘 방문자 + copyright)

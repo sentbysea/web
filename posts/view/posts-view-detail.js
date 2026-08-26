@@ -208,14 +208,11 @@ async function openPostPage(
     null;
 
 
-  postDetailTitle.textContent =
-    getPostVisibilityPrefix(
-      post.visibility
-    ) +
-    (
-      post.title ||
-      "untitled"
-    );
+  applyPostVisibilityTitle(
+    postDetailTitle,
+    post.visibility,
+    post.title
+  );
 
 
   postDetailDate.textContent =

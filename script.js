@@ -969,9 +969,9 @@ function createLoveDrop() {
 
 
   const size =
-    10
+    8
     +
-    Math.random() * 12;
+    Math.random() * 10;
 
 
   const finalSize =
@@ -1176,273 +1176,6 @@ let inertiaFrame = null;
 
 
 /* =========================================================
-   부드러운 GLOW
-========================================================== */
-
-const BASE_GLOW = {
-
-  core: 0.58,
-
-  mid: 0.38,
-
-  outer: 0.20,
-
-  edge: 0.08
-
-};
-
-
-const MAX_GLOW = {
-
-  core: 0.72,
-
-  mid: 0.46,
-
-  outer: 0.22,
-
-  edge: 0.08
-
-};
-
-
-let currentGlow = {
-
-  core:
-    BASE_GLOW.core,
-
-  mid:
-    BASE_GLOW.mid,
-
-  outer:
-    BASE_GLOW.outer,
-
-  edge:
-    BASE_GLOW.edge
-
-};
-
-
-let targetGlow = {
-
-  core:
-    BASE_GLOW.core,
-
-  mid:
-    BASE_GLOW.mid,
-
-  outer:
-    BASE_GLOW.outer,
-
-  edge:
-    BASE_GLOW.edge
-
-};
-
-
-/* =========================================================
-   CSS에 GLOW 적용
-========================================================== */
-
-function applyGlow() {
-
-  document.documentElement
-    .style
-    .setProperty(
-      "--glow-core",
-      currentGlow.core
-    );
-
-
-  document.documentElement
-    .style
-    .setProperty(
-      "--glow-mid",
-      currentGlow.mid
-    );
-
-
-  document.documentElement
-    .style
-    .setProperty(
-      "--glow-outer",
-      currentGlow.outer
-    );
-
-
-  document.documentElement
-    .style
-    .setProperty(
-      "--glow-edge",
-      currentGlow.edge
-    );
-
-}
-
-
-/* =========================================================
-   GLOW 부드러운 애니메이션
-========================================================== */
-
-function animateGlow() {
-
-  const easing =
-    0.065;
-
-
-  currentGlow.core +=
-    (
-      targetGlow.core
-      -
-      currentGlow.core
-    )
-    *
-    easing;
-
-
-  currentGlow.mid +=
-    (
-      targetGlow.mid
-      -
-      currentGlow.mid
-    )
-    *
-    easing;
-
-
-  currentGlow.outer +=
-    (
-      targetGlow.outer
-      -
-      currentGlow.outer
-    )
-    *
-    easing;
-
-
-  currentGlow.edge +=
-    (
-      targetGlow.edge
-      -
-      currentGlow.edge
-    )
-    *
-    easing;
-
-
-  applyGlow();
-
-
-  requestAnimationFrame(
-    animateGlow
-  );
-
-}
-
-
-animateGlow();
-
-
-/* =========================================================
-   회전 속도 → GLOW 목표값
-========================================================== */
-
-function setGlowFromSpeed(
-  speed
-) {
-
-  let power =
-    Math.abs(speed);
-
-
-  if (power < 0.12) {
-
-    power =
-      0;
-
-  }
-
-
-  power =
-    Math.min(
-      1,
-      power * 0.42
-    );
-
-
-  power =
-    power * power;
-
-
-  targetGlow.core =
-    BASE_GLOW.core
-    +
-    (
-      MAX_GLOW.core
-      -
-      BASE_GLOW.core
-    )
-    *
-    power;
-
-
-  targetGlow.mid =
-    BASE_GLOW.mid
-    +
-    (
-      MAX_GLOW.mid
-      -
-      BASE_GLOW.mid
-    )
-    *
-    power;
-
-
-  targetGlow.outer =
-    BASE_GLOW.outer
-    +
-    (
-      MAX_GLOW.outer
-      -
-      BASE_GLOW.outer
-    )
-    *
-    power;
-
-
-  targetGlow.edge =
-    BASE_GLOW.edge
-    +
-    (
-      MAX_GLOW.edge
-      -
-      BASE_GLOW.edge
-    )
-    *
-    power;
-
-}
-
-
-/* GLOW 기본값 */
-
-function resetGlow() {
-
-  targetGlow.core =
-    BASE_GLOW.core;
-
-  targetGlow.mid =
-    BASE_GLOW.mid;
-
-  targetGlow.outer =
-    BASE_GLOW.outer;
-
-  targetGlow.edge =
-    BASE_GLOW.edge;
-
-}
-
-
-/* =========================================================
    관성 정지
 ========================================================== */
 
@@ -1562,11 +1295,6 @@ heartViewer.addEventListener(
       deltaTime;
 
 
-    setGlowFromSpeed(
-      velocityX * 2.2
-    );
-
-
     lastX =
       event.clientX;
 
@@ -1622,8 +1350,6 @@ heartViewer.addEventListener(
 
     stopRotationTracking();
 
-    resetGlow();
-
     if (!profileOpen) {
 
       heartViewer.autoRotate =
@@ -1673,9 +1399,6 @@ function startInertia() {
       }
 
 
-      resetGlow();
-
-
       return;
     }
 
@@ -1693,11 +1416,6 @@ function startInertia() {
 
     heartViewer.cameraOrbit =
       `${nextTheta}rad ${orbit.phi}rad ${orbit.radius}m`;
-
-
-    setGlowFromSpeed(
-      speed * 1.6
-    );
 
 
     speed *=
@@ -1730,8 +1448,6 @@ function openProfile() {
 
   stopRotationTracking();
 
-  resetGlow();
-
 
   profileOpen =
     true;
@@ -1752,9 +1468,6 @@ function openProfile() {
 
 
 function closeProfile() {
-
-  resetGlow();
-
 
   profileOpen =
     false;

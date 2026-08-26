@@ -445,7 +445,11 @@ categorySaveButton
                     .trim(),
 
                 sort_order:
-                  sortOrder
+                  sortOrder,
+
+                type:
+                  category.type ||
+                  "post"
 
               })
               .eq(
@@ -505,7 +509,11 @@ categorySaveButton
                   category.slug,
 
                 sort_order:
-                  sortOrder
+                  sortOrder,
+
+                type:
+                  category.type ||
+                  "post"
 
               });
 

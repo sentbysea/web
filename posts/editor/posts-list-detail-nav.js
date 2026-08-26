@@ -371,10 +371,69 @@ postAddButton
     "click",
     async () => {
 
+      if (
+        currentPostCategoryType ===
+        "banner"
+      ) {
+
+        openBannerForm();
+
+        return;
+
+      }
+
+
       await openNewPostEditor(
         currentPostCategoryId
       );
 
     }
+  );
+
+
+
+/* =========================================================
+   BANNER
+========================================================== */
+
+bannerEditToggleButton
+  ?.addEventListener(
+    "click",
+    toggleBannerEditMode
+  );
+
+
+bannerEditor
+  ?.addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+
+      saveBannerForm();
+
+    }
+  );
+
+
+bannerEditorCancel
+  ?.addEventListener(
+    "click",
+    closeBannerForm
+  );
+
+
+bannerEditorDelete
+  ?.addEventListener(
+    "click",
+    deleteBannerFromEditor
+  );
+
+
+bannerEditorImageUrl
+  ?.addEventListener(
+    "input",
+    updateBannerEditorPreview
   );
 

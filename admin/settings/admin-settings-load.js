@@ -341,7 +341,7 @@ async function loadCategories(
         "categories"
       )
       .select(
-        "id, name, slug, sort_order"
+        "id, name, slug, sort_order, type"
       )
       .eq(
         "user_id",
@@ -431,6 +431,66 @@ function renderCategories() {
 
           category.name =
             input.value;
+
+        }
+      );
+
+
+      const typeSelect =
+        document.createElement(
+          "select"
+        );
+
+
+      typeSelect.className =
+        "category-type-select";
+
+
+      [
+        {
+          value: "post",
+          label: "post"
+        },
+        {
+          value: "banner",
+          label: "banner"
+        }
+      ].forEach(
+        option => {
+
+          const optionElement =
+            document.createElement(
+              "option"
+            );
+
+
+          optionElement.value =
+            option.value;
+
+
+          optionElement.textContent =
+            option.label;
+
+
+          typeSelect.appendChild(
+            optionElement
+          );
+
+        }
+      );
+
+
+      typeSelect.value =
+        category.type ||
+        "post";
+
+
+      typeSelect.addEventListener(
+        "change",
+        () => {
+
+          category.type =
+            typeSelect.value;
 
         }
       );
@@ -556,6 +616,7 @@ function renderCategories() {
 
       item.append(
         input,
+        typeSelect,
         actions
       );
 
@@ -646,7 +707,10 @@ function addCategory() {
       `category-${Date.now()}`,
 
     sort_order:
-      categories.length + 1
+      categories.length + 1,
+
+    type:
+      "post"
 
   });
 

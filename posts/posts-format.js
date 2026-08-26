@@ -8,31 +8,72 @@
 /* =========================================================
    VISIBILITY
 
-   목록에서 제목 앞에 붙이는 자물쇠/비공개 아이콘.
-   public은 아무것도 안 붙임.
+   제목 앞에 붙이는 자물쇠/비공개 아이콘. public은 아무것도
+   안 붙음.
+
+   이모지를 그냥 텍스트로 이어붙이면 이모지 자체의 줄높이가
+   본문 글자보다 커서, 목록에서 비밀글/비공개 글만 유독
+   세로로 도드라져 보였다(줄바꿈 높이가 늘어남) — 그래서
+   문자열이 아니라 별도 span으로 넣고 CSS(post-visibility-icon)
+   에서 폰트 크기를 줄여서 맞춘다.
 ========================================================== */
 
-function getPostVisibilityPrefix(
-  visibility
+function applyPostVisibilityTitle(
+  titleElement,
+  visibility,
+  titleText
 ) {
 
   if (
+    !titleElement
+  ) {
+    return;
+  }
+
+
+  titleElement.textContent =
+    "";
+
+
+  const icon =
     visibility ===
     "secret"
-  ) {
-    return "🔒 ";
+      ? "🔒"
+      : visibility ===
+        "private"
+        ? "🙈"
+        : "";
+
+
+  if (icon) {
+
+    const iconSpan =
+      document.createElement(
+        "span"
+      );
+
+
+    iconSpan.className =
+      "post-visibility-icon";
+
+
+    iconSpan.textContent =
+      icon;
+
+
+    titleElement.appendChild(
+      iconSpan
+    );
+
   }
 
 
-  if (
-    visibility ===
-    "private"
-  ) {
-    return "🙈 ";
-  }
-
-
-  return "";
+  titleElement.appendChild(
+    document.createTextNode(
+      titleText ||
+      "untitled"
+    )
+  );
 
 }
 

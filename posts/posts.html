@@ -34,6 +34,17 @@
 
 
       <button
+        class="banner-edit-toggle-button"
+        id="bannerEditToggleButton"
+        type="button"
+        aria-label="배너 편집"
+        hidden
+      >
+        edit
+      </button>
+
+
+      <button
         class="post-add-button"
         id="postAddButton"
         type="button"
@@ -55,6 +66,111 @@
       class="post-list"
       id="postList"
     ></div>
+
+
+    <!-- =====================================================
+         BANNER 카테고리
+
+         posts-view-banner.js 참고. 글 목록 대신 이게 보임.
+    ====================================================== -->
+
+    <div
+      class="banner-grid"
+      id="bannerGrid"
+      hidden
+    ></div>
+
+
+    <form
+      class="banner-editor"
+      id="bannerEditor"
+      hidden
+    >
+
+      <div class="banner-editor-heading">
+        <span id="bannerEditorHeading">
+          ADD BANNER
+        </span>
+      </div>
+
+      <div class="banner-editor-field">
+        <label for="bannerEditorName">
+          NAME
+        </label>
+        <input
+          id="bannerEditorName"
+          type="text"
+          autocomplete="off"
+          placeholder="사이트/지인 이름"
+        >
+      </div>
+
+      <div class="banner-editor-field">
+        <label for="bannerEditorUrl">
+          URL
+        </label>
+        <input
+          id="bannerEditorUrl"
+          type="url"
+          autocomplete="off"
+          placeholder="https://..."
+        >
+      </div>
+
+      <div class="banner-editor-field">
+        <label for="bannerEditorImageUrl">
+          BANNER IMAGE URL
+        </label>
+        <input
+          id="bannerEditorImageUrl"
+          type="url"
+          autocomplete="off"
+          placeholder="https://..."
+        >
+      </div>
+
+      <img
+        class="banner-editor-preview"
+        id="bannerEditorPreview"
+        alt=""
+        hidden
+      >
+
+      <div class="banner-editor-actions">
+
+        <button
+          type="button"
+          class="banner-editor-delete"
+          id="bannerEditorDelete"
+          hidden
+        >
+          delete
+        </button>
+
+        <button
+          type="button"
+          class="banner-editor-cancel"
+          id="bannerEditorCancel"
+        >
+          cancel
+        </button>
+
+        <button
+          type="submit"
+          class="banner-editor-save"
+          id="bannerEditorSave"
+        >
+          save
+        </button>
+
+      </div>
+
+      <div
+        class="banner-editor-message"
+        id="bannerEditorMessage"
+      ></div>
+
+    </form>
 
 
 
