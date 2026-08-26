@@ -1829,7 +1829,10 @@
             </div>
 
 
-            <div class="quote-preview-stage">
+            <div
+              class="quote-preview-stage"
+              id="quotePreviewStage"
+            >
 
               <div
                 class="quote-preview-canvas"
@@ -2172,9 +2175,27 @@
   ></script>
 
   <script src="./admin.js"></script>
-  <script src="./admin-settings.js"></script>
+  <script src="./admin-session.js"></script>
+  <script src="./settings/admin-settings-load.js"></script>
+  <script src="./settings/admin-settings-save.js"></script>
   <script src="./admin-posts.js"></script>
-  <script src="./admin-quote.js"></script>
+  <script src="./admin-posts-save.js"></script>
+
+  <!--
+    옛 admin-quote.js(2900줄+)를 기능별로 쪼갠 파일들.
+    admin-quote-refs.js가 DOM 참조/상태를 담고 있어서 반드시
+    이 그룹의 맨 처음, admin-quote-preset-crud.js가 실제
+    초기 실행부라 반드시 맨 마지막이어야 함.
+  -->
+  <script src="./quote/admin-quote-refs.js"></script>
+  <script src="./quote/admin-quote-accordion.js"></script>
+  <script src="./quote/admin-quote-ratio-parser.js"></script>
+  <script src="./quote/admin-quote-preview-update.js"></script>
+  <script src="./quote/admin-quote-live-inputs.js"></script>
+  <script src="./quote/admin-quote-apply-preset.js"></script>
+  <script src="./quote/admin-quote-preset-list.js"></script>
+  <script src="./quote/admin-quote-preset-crud.js"></script>
+
   <script src="../site-footer.js"></script>
 
 

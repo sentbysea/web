@@ -1,0 +1,451 @@
+/* =========================================================
+   POSTS - PREVIEW EXPORT: CAPTURE HELPERS
+
+   posts-preview-export.js에서 분리됨(파일이 너무 커져서
+   나눔). 전부 인자로만 동작하는 순수 함수라(클로저로 붙잡는
+   지역변수 없음) 그대로 최상위로 옮겼다.
+
+   내용: html2canvas가 못 읽는 CSS 변수(padding 등)를 캡처
+   직전에 실제 값으로 임시 치환/복원, 여러 줄 하이라이트가
+   깨지는 html2canvas 버그를 피하려고 글자 단위로 임시
+   재감싸기/복원, 조상 확대축소 transform 임시 제거/복원,
+   페이지 한 장을 실제로 캡처해서 PNG Blob으로 만들기
+   (captureVisiblePageAsBlob).
+
+   exportEditorPreviewAsImages() 등은
+   posts-preview-export.js에 있음(같은 페이지에서 함께
+   로드되어야 함).
+========================================================== */
+
+
+/*
+  한 페이지를 html2canvas로 캡처해서 PNG Blob으로 만든다.
+  모바일 클립보드 경로와, 그 폴백(공유/새탭) 양쪽에서
+  재사용한다.
+*/
+
+/*
+  ★ html2canvas는 CSS 커스텀 프로퍼티(변수, var(--foo))를
+  지원하지 않는다(공식적으로 알려진 제약). 우리 페이지의
+  padding(--post-preview-padding-y/x)과 제목 아래 여백
+  (--post-preview-title-gap)이 전부 이 방식으로 지정되어
+  있어서, 화면(브라우저 렌더링)에서는 정확히 계산되어 잘
+  보이지만 html2canvas로 캡처하면 그 값을 못 읽어서
+  0으로 그려진다 — export만 하면 여백이 다 사라지고
+  텍스트가 가장자리에 딱 붙어 나오던 진짜 원인이다.
+
+  캡처 직전에 실제 계산된(getComputedStyle) 픽셀 값을
+  인라인 스타일로 그대로 박아넣으면 html2canvas가
+  var() 없이도 정확한 값을 읽을 수 있다. 캡처 후에는
+  원래 인라인 스타일 상태로 되돌린다.
+*/
+
+function bakeCssVarStylesForCapture(
+  page
+) {
+
+  const affected =
+    [];
+
+
+  const pageComputed =
+    window.getComputedStyle(
+      page
+    );
+
+  affected.push(
+    {
+      node: page,
+      prop: "padding",
+      previousValue:
+        page.style.padding
+    }
+  );
+
+  page.style.padding =
+    pageComputed.padding;
+
+
+  const title =
+    page.querySelector(
+      ".post-editor-preview-title"
+    );
+
+  if (title) {
+
+    const titleComputed =
+      window.getComputedStyle(
+        title
+      );
+
+    affected.push(
+      {
+        node: title,
+        prop:
+          "marginBottom",
+        previousValue:
+          title.style.marginBottom
+      }
+    );
+
+    title.style.marginBottom =
+      titleComputed.marginBottom;
+
+  }
+
+
+  return affected;
+
+}
+
+
+function restoreCssVarStylesAfterCapture(
+  affected
+) {
+
+  affected.forEach(
+    entry => {
+
+      entry.node.style[
+        entry.prop
+      ] =
+        entry.previousValue;
+
+    }
+  );
+
+}
+
+
+/*
+  ★ html2canvas는 "여러 줄에 걸쳐 줄바꿈되는, 배경색이 있는
+  인라인 span"(우리의 하이라이트)을 렌더링할 때 텍스트가
+  사라지거나 다른 줄과 겹쳐 보이는 알려진 버그가 있다
+  (직접 재현/확인함). 캡처 직전에만 하이라이트 span의
+  글자 하나하나를 개별 span으로 재감싸서 배경색을 주면
+  이 버그를 피해갈 수 있다 — 캡처가 끝나면 즉시 원래
+  구조로 되돌린다.
+*/
+
+function bakeHighlightSpansForCapture(
+  container
+) {
+
+  const highlightSpans =
+    container.querySelectorAll(
+      ".post-inline-highlight"
+    );
+
+
+  highlightSpans.forEach(
+    span => {
+
+      const bg =
+        span.style.backgroundColor;
+
+
+      if (!bg) {
+        return;
+      }
+
+
+      span.setAttribute(
+        "data-original-html",
+        span.innerHTML
+      );
+
+
+      span.setAttribute(
+        "data-original-bg",
+        bg
+      );
+
+
+      const chars =
+        Array.from(
+          span.textContent
+        );
+
+
+      const wrapped =
+        chars
+          .map(
+            char => {
+
+              if (
+                char === "\n"
+              ) {
+                return char;
+              }
+
+
+              const safe =
+                char
+                  .replace(
+                    /&/g,
+                    "&amp;"
+                  )
+                  .replace(
+                    /</g,
+                    "&lt;"
+                  )
+                  .replace(
+                    />/g,
+                    "&gt;"
+                  );
+
+
+              return `<span style="background-color:${bg};display:inline;color:inherit;font:inherit;letter-spacing:inherit;">${safe}</span>`;
+
+            }
+          )
+          .join(
+            ""
+          );
+
+
+      span.innerHTML =
+        wrapped;
+
+
+      span.style.backgroundColor =
+        "transparent";
+
+    }
+  );
+
+}
+
+
+function restoreHighlightSpansAfterCapture(
+  container
+) {
+
+  container
+    .querySelectorAll(
+      ".post-inline-highlight[data-original-html]"
+    )
+    .forEach(
+      span => {
+
+        span.innerHTML =
+          span.getAttribute(
+            "data-original-html"
+          );
+
+
+        span.style.backgroundColor =
+          span.getAttribute(
+            "data-original-bg"
+          ) ||
+          "";
+
+
+        span.removeAttribute(
+          "data-original-html"
+        );
+
+
+        span.removeAttribute(
+          "data-original-bg"
+        );
+
+      }
+    );
+
+}
+
+
+/*
+  ★ 캔버스 카드용 확대/축소 transform은 항상 페이지의 부모인
+  postEditorPreviewPages(데스크톱 scale, 모바일
+  translate+scale/핀치줌 둘 다)에 걸려 있다. html2canvas는
+  캡처 대상 엘리먼트만 독립적으로 그리는 게 아니라 조상의
+  스타일까지 그대로 반영해서 다시 그리기 때문에, 이 transform이
+  남아있으면 좌표 계산이 꼬여서 텍스트가 겹치거나 밀려 보인다
+  (직접 재현/확인함 — export가 계속 깨졌던 진짜 원인).
+  캡처 직전에만 걷어내고 캡처 후 그대로 복원한다.
+*/
+
+function stripAncestorTransformsForCapture(
+  element
+) {
+
+  const affected =
+    [];
+
+  let node =
+    element.parentElement;
+
+
+  while (node) {
+
+    const inlineTransform =
+      node.style.transform;
+
+
+    if (
+      inlineTransform &&
+      inlineTransform !==
+        "none"
+    ) {
+
+      affected.push(
+        {
+          node,
+          value:
+            inlineTransform
+        }
+      );
+
+
+      node.style.transform =
+        "none";
+
+    }
+
+
+    node =
+      node.parentElement;
+
+  }
+
+
+  return affected;
+
+}
+
+
+function restoreAncestorTransformsAfterCapture(
+  affected
+) {
+
+  affected.forEach(
+    entry => {
+
+      entry.node.style.transform =
+        entry.value;
+
+    }
+  );
+
+}
+
+
+async function captureVisiblePageAsBlob(
+  page,
+  pageWidth,
+  pageHeight
+) {
+
+  bakeHighlightSpansForCapture(
+    page
+  );
+
+
+  const strippedTransforms =
+    stripAncestorTransformsForCapture(
+      page
+    );
+
+
+  const bakedCssVarStyles =
+    bakeCssVarStylesForCapture(
+      page
+    );
+
+
+  let canvas;
+
+  try {
+
+    const desiredWidth =
+      Math.max(
+        pageWidth,
+        Number(
+          postStyleSettings
+            ?.exportWidth
+        ) || pageWidth * 2
+      );
+
+
+    const exportScale =
+      desiredWidth /
+      pageWidth;
+
+
+    canvas =
+      await window.html2canvas(
+        page,
+        {
+          backgroundColor:
+            null,
+
+          useCORS:
+            true,
+
+          scale:
+            exportScale,
+
+          width:
+            pageWidth,
+
+          height:
+            pageHeight,
+
+          windowWidth:
+            pageWidth,
+
+          windowHeight:
+            pageHeight,
+
+          logging:
+            false
+        }
+      );
+
+  } finally {
+
+    restoreHighlightSpansAfterCapture(
+      page
+    );
+
+
+    restoreAncestorTransformsAfterCapture(
+      strippedTransforms
+    );
+
+
+    restoreCssVarStylesAfterCapture(
+      bakedCssVarStyles
+    );
+
+  }
+
+
+  const blob =
+    await new Promise(
+      resolve => {
+
+        canvas.toBlob(
+          resolve,
+          "image/png",
+          1
+        );
+
+      }
+    );
+
+
+  if (!blob) {
+
+    throw new Error(
+      "PNG 생성 실패"
+    );
+
+  }
+
+
+  return blob;
+
+}

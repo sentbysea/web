@@ -1613,7 +1613,12 @@ button {
 
   width: 100%;
 
-  min-height: 420px;
+  /*
+    높이는 JS(applyQuotePreviewScale, admin/quote/admin-quote-preview-update.js)가
+    실제 축소된 캔버스 크기에 맞춰 직접 지정함
+    (post-editor-preview-stage와 동일한 방식) — 여기서
+    min-height를 고정해두면 그 계산과 어긋난다.
+  */
 
   padding: 26px;
 
@@ -1639,18 +1644,18 @@ button {
 
   align-items: stretch;
 
-  width: 100%;
-
   /*
-    실제 글쓰기 에디터 프리뷰(.post-editor-preview-page)의
-    권위 있는 authoring 너비가 520px로 고정돼 있어서
-    (posts.css 참고), 폰트 px 설정값이 그 캔버스 기준으로
-    맞춰진다. 여기서 캔버스 너비가 다르면(예전엔 390px)
-    같은 px 값이라도 실제 글쓰기 프리뷰보다 훨씬 커
-    보이므로 반드시 520px로 맞춘다.
+    실제 글쓰기 에디터 프리뷰(.post-editor-preview-page)와
+    똑같이 "항상 520px로 레이아웃한 다음, 안 맞으면 JS가
+    transform: scale()로 통째로 축소"하는 방식으로 통일함.
+    예전처럼 width: 100%(CSS가 알아서 줄어듦)로 두면, 좁은
+    화면에서 글자가 줄바꿈만 될 뿐 폰트 자체는 안 작아져서
+    실제 에디터 프리뷰(글자 자체가 작아짐)랑 결과물이
+    달라 보였음 — 그래서 반드시 고정폭 + JS scale이어야 함.
+    실제 축소는 admin-quote-preview-update.js의 applyQuotePreviewScale().
   */
 
-  max-width: 520px;
+  width: 520px;
 
   aspect-ratio:
     1 / 1;
@@ -1938,21 +1943,11 @@ button {
 
 
   .quote-preview-stage {
-    min-height: 0;
-
     padding: 18px;
   }
 
 
   .quote-preview-canvas {
-    width:
-      min(
-        100%,
-        520px
-      );
-
-    max-width: none;
-
     padding: 36px;
   }
 
