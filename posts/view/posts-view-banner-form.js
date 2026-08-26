@@ -207,7 +207,6 @@ async function saveBannerForm() {
 
 
   if (
-    !name ||
     !url ||
     !imageUrl
   ) {
@@ -217,7 +216,7 @@ async function saveBannerForm() {
     ) {
 
       bannerEditorMessage.textContent =
-        "이름 / url / 이미지 url을 모두 입력해주세요.";
+        "url / 이미지 url을 입력해주세요.";
 
     }
 

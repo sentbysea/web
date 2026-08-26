@@ -81,6 +81,16 @@ async function openNewPostEditor(
   }
 
 
+  if (
+    bannerEditToggleButton
+  ) {
+
+    bannerEditToggleButton.hidden =
+      true;
+
+  }
+
+
   postPageTitle.textContent =
     "NEW POST";
 
@@ -301,6 +311,16 @@ async function openPostEditor(
   if (postAddButton) {
 
     postAddButton.hidden =
+      true;
+
+  }
+
+
+  if (
+    bannerEditToggleButton
+  ) {
+
+    bannerEditToggleButton.hidden =
       true;
 
   }

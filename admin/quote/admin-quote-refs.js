@@ -143,6 +143,11 @@ const quoteTitleSpacing =
    BODY
 ========================================================== */
 
+const quoteBodyFont =
+  document.getElementById(
+    "quoteBodyFont"
+  );
+
 const quoteTextColor =
   document.getElementById(
     "quoteTextColor"

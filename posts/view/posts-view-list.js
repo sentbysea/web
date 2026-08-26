@@ -188,6 +188,49 @@ async function openCategoryPage(
   }
 
 
+  if (bannerEditor) {
+
+    bannerEditor.hidden =
+      true;
+
+  }
+
+
+  if (
+    bannerEditToggleButton
+  ) {
+
+    bannerEditToggleButton.hidden =
+      true;
+
+  }
+
+
+  postListEditModeOn =
+    false;
+
+
+  selectedPostIdsForDelete =
+    new Set();
+
+
+  if (
+    postListSelectBar
+  ) {
+
+    postListSelectBar.hidden =
+      true;
+
+  }
+
+
+  postListEditToggleButton
+    ?.setAttribute(
+      "aria-pressed",
+      "false"
+    );
+
+
   postList.hidden =
     false;
 
@@ -241,13 +284,38 @@ async function openCategoryPage(
   }
 
 
+  currentCategoryPosts =
+    posts ||
+    [];
+
+
+  renderPostListItems();
+
+}
+
+
+
+/* =========================================================
+   POST LIST 렌더
+
+   글 목록 편집(선택 삭제) 모드 여부에 따라 아이템을
+   <a>(눌러서 글로 이동) 또는 <div>(눌러서 체크 토글)로
+   그린다. 실제 선택/삭제 동작은 posts-view-list-select.js.
+========================================================== */
+
+function renderPostListItems() {
+
+  if (!postList) {
+    return;
+  }
+
+
   postList.innerHTML =
     "";
 
 
   if (
-    !posts ||
-    posts.length === 0
+    currentCategoryPosts.length === 0
   ) {
 
     postList.innerHTML =
@@ -263,74 +331,89 @@ async function openCategoryPage(
   }
 
 
-  posts.forEach(
+  currentCategoryPosts.forEach(
     post => {
 
-      const item =
-        document.createElement(
-          "a"
-        );
-
-
-      item.className =
-        "post-list-item";
-
-
-      item.href =
-        buildPostRoute(
-          `/post/${post.id}`
-        );
-
-
-      item.dataset.postId =
-        post.id;
-
-
-      const title =
-        document.createElement(
-          "span"
-        );
-
-
-      title.className =
-        "post-list-title";
-
-
-      applyPostVisibilityTitle(
-        title,
-        post.visibility,
-        post.title
-      );
-
-
-      const date =
-        document.createElement(
-          "span"
-        );
-
-
-      date.className =
-        "post-list-date";
-
-
-      date.textContent =
-        formatPostListDate(
-          post.created_at
-        );
-
-
-      item.append(
-        title,
-        date
-      );
-
-
       postList.appendChild(
-        item
+        postListEditModeOn
+          ? createSelectablePostListItem(
+              post
+            )
+          : createPostListItem(
+              post
+            )
       );
 
     }
   );
+
+}
+
+
+function createPostListItem(
+  post
+) {
+
+  const item =
+    document.createElement(
+      "a"
+    );
+
+
+  item.className =
+    "post-list-item";
+
+
+  item.href =
+    buildPostRoute(
+      `/post/${post.id}`
+    );
+
+
+  item.dataset.postId =
+    post.id;
+
+
+  const title =
+    document.createElement(
+      "span"
+    );
+
+
+  title.className =
+    "post-list-title";
+
+
+  applyPostVisibilityTitle(
+    title,
+    post.visibility,
+    post.title
+  );
+
+
+  const date =
+    document.createElement(
+      "span"
+    );
+
+
+  date.className =
+    "post-list-date";
+
+
+  date.textContent =
+    formatPostListDate(
+      post.created_at
+    );
+
+
+  item.append(
+    title,
+    date
+  );
+
+
+  return item;
 
 }
 

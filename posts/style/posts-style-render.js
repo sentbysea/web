@@ -25,6 +25,20 @@ function applyPostBodyStyles(
   }
 
 
+  /*
+    본문 폰트 선택(admin-quote BODY 섹션의 FONT). 항상
+    인라인으로 직접 지정 — html2canvas 캡처(발췌 export)
+    때 상속만 되어 있으면 못 읽고 시스템 명조체로 깨지는
+    문제가 있었음.
+  */
+
+  container.style.fontFamily =
+    settings.bodyFont ===
+    "nanummyeongjo"
+      ? '"Nanum Myeongjo", serif'
+      : '"Pretendard", sans-serif';
+
+
   container.style.color =
     settings.bodyColor ||
     "#555555";

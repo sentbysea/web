@@ -73,6 +73,16 @@ async function openPostPage(
   }
 
 
+  if (
+    bannerEditToggleButton
+  ) {
+
+    bannerEditToggleButton.hidden =
+      true;
+
+  }
+
+
   if (postPageTitle) {
 
     postPageTitle.textContent =

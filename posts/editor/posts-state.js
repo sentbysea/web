@@ -86,6 +86,24 @@ let currentBanners =
 let editingBannerId =
   null;
 
+
+/*
+  글 카테고리 목록 상태. posts-view-list.js /
+  posts-view-list-select.js 전용. currentCategoryPosts는
+  지금 화면에 그려진 글 목록(선택 삭제 모드에서 다시
+  그릴 때 재사용), selectedPostIdsForDelete는 선택 삭제
+  모드에서 체크된 글 id 모음.
+*/
+
+let postListEditModeOn =
+  false;
+
+let currentCategoryPosts =
+  [];
+
+let selectedPostIdsForDelete =
+  new Set();
+
 let currentPostId =
   null;
 

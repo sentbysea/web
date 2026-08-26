@@ -13,6 +13,28 @@
   <title>admin</title>
 
   <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <!--
+    본문 폰트 선택지 중 "나눔명조"용. Pretendard는 웹폰트로
+    안 불러오고 시스템 sans-serif로 fallback시키는 방식이라
+    (posts/style/posts-style-render.js 참고) 여기 안 넣음.
+  -->
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
     rel="stylesheet"
     href="./admin.css"
   >
@@ -1010,6 +1032,40 @@
                 class="quote-accordion-content"
                 hidden
               >
+
+
+                <!-- ===========================================
+                     FONT
+                     본문 텍스트 뷰어, 발췌(export) 이미지에도
+                     동일하게 적용됨(posts-style-render.js).
+                ============================================ -->
+
+                <div class="quote-setting-row">
+
+                  <label for="quoteBodyFont">
+                    FONT
+                  </label>
+
+                  <select
+                    id="quoteBodyFont"
+                    class="quote-select-input"
+                  >
+
+                    <option
+                      value="pretendard"
+                      selected
+                    >
+                      Pretendard
+                    </option>
+
+                    <option value="nanummyeongjo">
+                      나눔명조
+                    </option>
+
+                  </select>
+
+                </div>
+
 
 
                 <div class="quote-setting-row">

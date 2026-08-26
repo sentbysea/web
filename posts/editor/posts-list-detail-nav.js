@@ -437,3 +437,22 @@ bannerEditorImageUrl
     updateBannerEditorPreview
   );
 
+
+
+/* =========================================================
+   POST LIST 편집(선택 삭제)
+========================================================== */
+
+postListEditToggleButton
+  ?.addEventListener(
+    "click",
+    togglePostListEditMode
+  );
+
+
+postListSelectDeleteButton
+  ?.addEventListener(
+    "click",
+    deleteSelectedPosts
+  );
+

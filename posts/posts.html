@@ -34,10 +34,21 @@
 
 
       <button
-        class="banner-edit-toggle-button"
+        class="list-edit-toggle-button"
         id="bannerEditToggleButton"
         type="button"
         aria-label="배너 편집"
+        hidden
+      >
+        edit
+      </button>
+
+
+      <button
+        class="list-edit-toggle-button"
+        id="postListEditToggleButton"
+        type="button"
+        aria-label="글 목록 편집"
         hidden
       >
         edit
@@ -66,6 +77,37 @@
       class="post-list"
       id="postList"
     ></div>
+
+
+    <!-- =====================================================
+         글 목록 편집 모드: 선택 삭제
+
+         edit 모드에서만 보임(posts-view-list-select.js).
+    ====================================================== -->
+
+    <div
+      class="post-list-select-bar"
+      id="postListSelectBar"
+      hidden
+    >
+
+      <span
+        class="post-list-select-count"
+        id="postListSelectCount"
+      >
+        0개 선택됨
+      </span>
+
+      <button
+        class="post-list-select-delete"
+        id="postListSelectDeleteButton"
+        type="button"
+        disabled
+      >
+        delete
+      </button>
+
+    </div>
 
 
     <!-- =====================================================

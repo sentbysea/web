@@ -36,6 +36,7 @@ const quoteLiveInputs = [
   quoteTitleLetterSpacing,
   quoteTitleSpacing,
 
+  quoteBodyFont,
   quoteTextColor,
 
   /*
@@ -175,6 +176,10 @@ function collectQuoteSettings() {
 
 
     /* BODY */
+
+    bodyFont:
+      quoteBodyFont?.value ||
+      "pretendard",
 
     bodyColor:
       quoteTextColor?.value ||

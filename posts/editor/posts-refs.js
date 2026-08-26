@@ -182,6 +182,28 @@ const bannerEditToggleButton =
     "bannerEditToggleButton"
   );
 
+
+const postListEditToggleButton =
+  document.getElementById(
+    "postListEditToggleButton"
+  );
+
+const postListSelectBar =
+  document.getElementById(
+    "postListSelectBar"
+  );
+
+const postListSelectCount =
+  document.getElementById(
+    "postListSelectCount"
+  );
+
+const postListSelectDeleteButton =
+  document.getElementById(
+    "postListSelectDeleteButton"
+  );
+
+
 const bannerGrid =
   document.getElementById(
     "bannerGrid"

@@ -239,9 +239,17 @@ function createBannerCard(
   }
 
 
+  /*
+    ★ 배너 이미지는 실제 <img>로 넣어야 브라우저가 원본
+    비율을 그대로 살려서 보여준다(가로폭만 카드에 맞추고
+    세로는 auto). 예전엔 배경(div)+aspect-ratio 고정으로
+    항상 3:1로 잘라서 보여줬는데, 실제 배너 이미지 비율과
+    안 맞으면 이상하게 잘려 보였음.
+  */
+
   const image =
     document.createElement(
-      "div"
+      "img"
     );
 
 
@@ -249,35 +257,49 @@ function createBannerCard(
     "banner-card-image";
 
 
+  image.src =
+    banner.image_url ||
+    "";
+
+
+  image.alt =
+    banner.name ||
+    "";
+
+
+  image.loading =
+    "lazy";
+
+
+  card.appendChild(
+    image
+  );
+
+
   if (
-    banner.image_url
+    banner.name &&
+    banner.name.trim()
   ) {
 
-    image.style.backgroundImage =
-      `url("${banner.image_url}")`;
+    const name =
+      document.createElement(
+        "div"
+      );
 
-  }
+
+    name.className =
+      "banner-card-name";
 
 
-  const name =
-    document.createElement(
-      "div"
+    name.textContent =
+      banner.name;
+
+
+    card.appendChild(
+      name
     );
 
-
-  name.className =
-    "banner-card-name";
-
-
-  name.textContent =
-    banner.name ||
-    "untitled";
-
-
-  card.append(
-    image,
-    name
-  );
+  }
 
 
   if (

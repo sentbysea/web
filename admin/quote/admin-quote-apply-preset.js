@@ -178,6 +178,15 @@ function applyQuoteSettings(
 
   /* BODY */
 
+  if (quoteBodyFont) {
+
+    quoteBodyFont.value =
+      settings.bodyFont ||
+      "pretendard";
+
+  }
+
+
   if (quoteTextColor) {
 
     quoteTextColor.value =

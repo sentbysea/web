@@ -38,6 +38,18 @@ function applyPreviewTitleStyle(
     !previewTitleVisible;
 
 
+  /*
+    ★ 제목/출처는 항상 Pretendard로 고정(인라인 지정).
+    html2canvas로 캡처(발췌 export)할 때 이 값이 조상
+    요소로부터 상속만 되어 있으면 가끔 못 읽어서 시스템
+    명조체로 깨져 나오는 문제가 있었음 — 요소 자체에
+    직접 박아두면 그 문제가 안 생긴다.
+  */
+
+  title.style.fontFamily =
+    '"Pretendard", sans-serif';
+
+
   title.style.color =
     settings.titleColor ||
     "#222222";
@@ -167,6 +179,15 @@ function createPreviewSource(
 
   source.hidden =
     !previewSourceVisible;
+
+
+  /*
+    항상 Pretendard 고정 — 이유는 applyPreviewTitleStyle의
+    주석 참고(html2canvas 캡처 시 명조체로 깨지는 문제 방지).
+  */
+
+  source.style.fontFamily =
+    '"Pretendard", sans-serif';
 
 
   source.style.color =

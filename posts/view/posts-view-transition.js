@@ -391,26 +391,64 @@ function hidePostEditor() {
 
 async function updatePostAddButton() {
 
-  if (!postAddButton) {
-    return;
+  if (postAddButton) {
+
+    postAddButton.hidden =
+      true;
+
   }
 
 
-  postAddButton.hidden =
-    true;
+  if (
+    postListEditToggleButton
+  ) {
+
+    postListEditToggleButton.hidden =
+      true;
+
+  }
 
 
   const user =
     await getSignedInUser();
 
 
-  if (
-    user &&
+  const isOwnerViewingCategory =
+    Boolean(
+      user
+    ) &&
     currentPostView ===
-      "category"
+      "category";
+
+
+  if (
+    !isOwnerViewingCategory
   ) {
+    return;
+  }
+
+
+  if (postAddButton) {
 
     postAddButton.hidden =
+      false;
+
+  }
+
+
+  /*
+    글 목록 편집(선택 삭제)은 배너 카테고리엔 의미가
+    없음 — 배너는 자기 전용 edit 버튼(bannerEditToggleButton)
+    이 따로 있음.
+  */
+
+  if (
+    postListEditToggleButton &&
+    currentPostCategoryType !==
+      "banner"
+  ) {
+
+    postListEditToggleButton.hidden =
       false;
 
   }

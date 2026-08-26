@@ -94,6 +94,18 @@ function updateQuotePreview() {
       !quoteTitleEnabled?.checked;
 
 
+    /*
+      ★ 제목/출처는 항상 Pretendard로 고정(인라인 지정).
+      html2canvas로 캡처(발췌 export)할 때 이 값이 조상
+      요소로부터 상속만 되어 있으면 가끔 못 읽어서 시스템
+      명조체로 깨져 나오는 문제가 있었음 — 요소 자체에
+      직접 박아두면 그 문제가 안 생긴다.
+    */
+
+    quotePreviewTitle.style.fontFamily =
+      '"Pretendard", sans-serif';
+
+
     quotePreviewTitle.style.color =
       quoteTitleColor?.value ||
       "#222222";
@@ -135,6 +147,13 @@ function updateQuotePreview() {
   /* BODY */
 
   if (quotePreviewText) {
+
+    quotePreviewText.style.fontFamily =
+      quoteBodyFont?.value ===
+      "nanummyeongjo"
+        ? '"Nanum Myeongjo", serif'
+        : '"Pretendard", sans-serif';
+
 
     quotePreviewText.style.color =
       quoteTextColor?.value ||
@@ -220,6 +239,10 @@ function updateQuotePreview() {
 
     quotePreviewSource.hidden =
       !quoteSourceEnabled?.checked;
+
+
+    quotePreviewSource.style.fontFamily =
+      '"Pretendard", sans-serif';
 
 
     quotePreviewSource.style.color =

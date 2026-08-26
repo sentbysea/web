@@ -126,7 +126,13 @@
 }
 
 
-.banner-edit-toggle-button {
+/*
+  배너 카테고리의 "edit"(posts-view-banner.js)와 글 카테고리의
+  "edit"(선택 삭제, posts-view-list-select.js)가 같이 씀 —
+  카테고리 타입에 따라 둘 중 하나만 보임.
+*/
+
+.list-edit-toggle-button {
   position: absolute;
   top: 50%;
   right: 30px;
@@ -164,7 +170,7 @@
 }
 
 
-.banner-edit-toggle-button[aria-pressed="true"] {
+.list-edit-toggle-button[aria-pressed="true"] {
   border-color: #f0d3de;
 
   background: #fff5f8;
@@ -265,6 +271,93 @@
 }
 
 
+/*
+  글 목록 편집(선택 삭제) 모드. posts-view-list-select.js
+  참고 — 이 모드에서는 .post-list-item이 <a>가 아니라
+  <div>로 그려짐(눌러도 글로 안 들어가고 선택만 됨).
+*/
+
+.post-list-item-checkbox {
+  flex: 0 0 auto;
+
+  width: 16px;
+  height: 16px;
+
+  accent-color: #ee9fbd;
+
+  cursor: pointer;
+}
+
+
+.post-list-select-bar {
+  position: sticky;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: 10px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #f0d3de;
+
+  background: #fff8fa;
+}
+
+
+.post-list-select-bar[hidden] {
+  display: none;
+}
+
+
+.post-list-select-count {
+  font-size: 10px;
+
+  letter-spacing: 0.04em;
+
+  color: #d980a2;
+}
+
+
+.post-list-select-delete {
+  padding: 6px 14px;
+
+  border: 1px solid #ee9fbd;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  color: #ee9fbd;
+
+  cursor: pointer;
+}
+
+
+.post-list-select-delete:disabled {
+  opacity: 0.35;
+
+  cursor: default;
+}
+
+
+.post-list-select-delete:not(:disabled):hover {
+  background: #ee9fbd;
+
+  color: #ffffff;
+}
+
+
 .post-empty {
   padding-top: 30px;
 
@@ -321,17 +414,19 @@
 
 
 .banner-card-image {
-  width: 100%;
+  display: block;
 
-  aspect-ratio: 3 / 1;
+  width: 100%;
+  height: auto;
+
+  /*
+    가로폭만 카드에 맞추고 세로는 이미지 원본 비율 그대로
+    (auto) — 강제로 3:1 등에 잘라 넣지 않음.
+  */
 
   border: 1px solid #eeeeee;
 
-  background:
-    #f6f6f6
-    center
-    / cover
-    no-repeat;
+  background: #f6f6f6;
 }
 
 
@@ -496,12 +591,9 @@
 
 .banner-editor-preview {
   width: 100%;
-
-  aspect-ratio: 3 / 1;
+  height: auto;
 
   border: 1px solid #eeeeee;
-
-  object-fit: cover;
 }
 
 
