@@ -97,6 +97,18 @@ const bgmSettingsPanel =
     "bgmSettingsPanel"
   );
 
+
+const myBannerTabButton =
+  document.getElementById(
+    "myBannerTabButton"
+  );
+
+const myBannerSettingsPanel =
+  document.getElementById(
+    "myBannerSettingsPanel"
+  );
+
+
 const categoryList =
   document.getElementById(
     "categoryList"
@@ -152,6 +164,10 @@ function showSettingsSection(
     section !== "bgm";
 
 
+  myBannerSettingsPanel.hidden =
+    section !== "mybanner";
+
+
   profileTabButton.classList.toggle(
     "active",
     section === "profile"
@@ -167,6 +183,12 @@ function showSettingsSection(
   bgmTabButton.classList.toggle(
     "active",
     section === "bgm"
+  );
+
+
+  myBannerTabButton.classList.toggle(
+    "active",
+    section === "mybanner"
   );
 
 }
@@ -202,6 +224,18 @@ bgmTabButton.addEventListener(
 
     showSettingsSection(
       "bgm"
+    );
+
+  }
+);
+
+
+myBannerTabButton.addEventListener(
+  "click",
+  () => {
+
+    showSettingsSection(
+      "mybanner"
     );
 
   }

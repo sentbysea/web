@@ -2002,6 +2002,18 @@
                 BGM
               </button>
 
+              <span class="settings-tab-divider">
+                |
+              </span>
+
+              <button
+                class="settings-tab"
+                id="myBannerTabButton"
+                type="button"
+              >
+                MY BANNER
+              </button>
+
             </nav>
 
           </div>
@@ -2192,6 +2204,166 @@
         </section>
 
 
+
+        <!-- =================================================
+             MY BANNER
+
+             다른 사람들이 자기 사이트에 내 배너를 심어두면,
+             내가 나중에 이미지를 바꿔도 그쪽 코드는 안 건드려도
+             자동으로 새 이미지가 보이게 하는 기능
+             (admin-my-banner.js 참고). 이미지는 Supabase
+             Storage의 항상 같은 경로에 덮어쓰기(upsert)됨.
+        ================================================== -->
+
+        <section
+          class="settings-group my-banner-group settings-subpanel"
+          id="myBannerSettingsPanel"
+          hidden
+        >
+
+          <div class="settings-group-title">
+
+            <span>
+              MY BANNER
+            </span>
+
+            <small>
+              friends link
+            </small>
+
+          </div>
+
+
+          <div class="my-banner-preview-row">
+
+            <img
+              class="my-banner-preview"
+              id="myBannerPreview"
+              alt="배너 미리보기"
+              hidden
+            >
+
+            <div
+              class="my-banner-preview-empty"
+              id="myBannerPreviewEmpty"
+            >
+              아직 배너 이미지가 없습니다
+            </div>
+
+
+            <label
+              class="my-banner-change-button"
+              for="myBannerFileInput"
+            >
+              change
+            </label>
+
+            <input
+              class="my-banner-file-input"
+              id="myBannerFileInput"
+              type="file"
+              accept="image/*"
+              hidden
+            >
+
+          </div>
+
+
+          <p
+            class="my-banner-upload-message"
+            id="myBannerUploadMessage"
+          ></p>
+
+
+          <div class="setting-line">
+
+            <label for="myBannerUrlInput">
+              배너 클릭 시 이동할 URL
+            </label>
+
+            <input
+              id="myBannerUrlInput"
+              class="setting-input"
+              type="url"
+              placeholder="https://바이브.me"
+            >
+
+          </div>
+
+
+          <div class="setting-line">
+
+            <label for="myBannerImageUrlDisplay">
+              고정 IMAGE URL
+            </label>
+
+            <div class="my-banner-copy-row">
+
+              <input
+                id="myBannerImageUrlDisplay"
+                class="setting-input"
+                type="text"
+                readonly
+              >
+
+              <button
+                class="my-banner-copy-button"
+                id="myBannerCopyImageUrlButton"
+                type="button"
+              >
+                copy image url
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="setting-line">
+
+            <label for="myBannerHtmlCode">
+              HTML 코드
+            </label>
+
+            <div class="my-banner-copy-row">
+
+              <textarea
+                id="myBannerHtmlCode"
+                class="my-banner-html-textarea"
+                readonly
+                rows="3"
+              ></textarea>
+
+              <button
+                class="my-banner-copy-button"
+                id="myBannerCopyHtmlButton"
+                type="button"
+              >
+                copy html
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <button
+            class="save-button"
+            id="myBannerSaveButton"
+            type="button"
+          >
+            save
+          </button>
+
+
+          <p
+            class="save-message"
+            id="myBannerSaveMessage"
+          ></p>
+
+        </section>
+
+
       </section>
 
 
@@ -2224,6 +2396,7 @@
   <script src="./admin.js"></script>
   <script src="./admin-session.js"></script>
   <script src="./settings/admin-settings-load.js"></script>
+  <script src="./settings/admin-my-banner.js"></script>
   <script src="./settings/admin-settings-save.js"></script>
   <script src="./admin-posts.js"></script>
   <script src="./admin-posts-save.js"></script>

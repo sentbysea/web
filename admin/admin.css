@@ -717,6 +717,209 @@ button {
 
 
 /* =========================================================
+   MY BANNER
+
+   admin-my-banner.js 참고.
+========================================================== */
+
+.my-banner-group {
+  margin-top: 0;
+}
+
+
+.my-banner-preview-row {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 14px 14px;
+}
+
+
+.my-banner-preview {
+  display: block;
+
+  width: 160px;
+  height: auto;
+
+  border: 1px solid #eeeeee;
+
+  background: #f6f6f6;
+}
+
+
+.my-banner-preview[hidden] {
+  display: none;
+}
+
+
+.my-banner-preview-empty {
+  width: 160px;
+
+  padding: 18px 8px;
+
+  border: 1px dashed #eeeeee;
+
+  font-size: 9px;
+
+  letter-spacing: 0.03em;
+
+  line-height: 1.5;
+
+  color: #bbbbbb;
+
+  text-align: center;
+}
+
+
+.my-banner-preview-empty[hidden] {
+  display: none;
+}
+
+
+.my-banner-change-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 30px;
+
+  padding: 6px 14px;
+
+  border: 1px solid #e8e8e8;
+  border-radius: 2px;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  letter-spacing: 0.03em;
+
+  color: #777777;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.my-banner-change-button:hover {
+  border-color: #e0bdca;
+
+  color: #d980a2;
+}
+
+
+.my-banner-upload-message {
+  margin: 0 0 14px;
+
+  padding: 0 14px;
+
+  font-size: 10px;
+
+  letter-spacing: 0.03em;
+
+  color: #d980a2;
+
+  min-height: 12px;
+}
+
+
+.my-banner-copy-row {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+}
+
+
+.my-banner-copy-row .setting-input {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.my-banner-html-textarea {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 64px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+
+  outline: none;
+
+  resize: none;
+
+  background: #ffffff;
+
+  color: #444444;
+
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace;
+
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+
+.my-banner-copy-button {
+  flex: 0 0 auto;
+
+  min-height: 38px;
+
+  padding: 0 12px;
+
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 500;
+
+  letter-spacing: 0.03em;
+
+  color: #777777;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.my-banner-copy-button:hover {
+  border-color: #e0bdca;
+
+  color: #d980a2;
+}
+
+
+
+/* =========================================================
    CATEGORIES
 ========================================================== */
 

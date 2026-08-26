@@ -30,6 +30,11 @@ async function loadAdminSettings(
   user
 );
 
+
+  await loadMyBanner(
+    user
+  );
+
 }
 
 
