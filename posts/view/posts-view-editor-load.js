@@ -91,6 +91,30 @@ async function openNewPostEditor(
   }
 
 
+  if (
+    postListEditToggleButton
+  ) {
+
+    postListEditToggleButton.hidden =
+      true;
+
+  }
+
+
+  postListEditModeOn =
+    false;
+
+
+  if (
+    postListSelectBar
+  ) {
+
+    postListSelectBar.hidden =
+      true;
+
+  }
+
+
   postPageTitle.textContent =
     "NEW POST";
 
@@ -321,6 +345,30 @@ async function openPostEditor(
   ) {
 
     bannerEditToggleButton.hidden =
+      true;
+
+  }
+
+
+  if (
+    postListEditToggleButton
+  ) {
+
+    postListEditToggleButton.hidden =
+      true;
+
+  }
+
+
+  postListEditModeOn =
+    false;
+
+
+  if (
+    postListSelectBar
+  ) {
+
+    postListSelectBar.hidden =
       true;
 
   }

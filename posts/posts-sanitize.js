@@ -163,6 +163,53 @@ function sanitizeRichNode(
 
 
   /*
+    볼드/이탤릭/밑줄
+
+    Ctrl+B/I/U는 별도 JS 없이 브라우저 기본 contenteditable
+    동작으로 처리되는데(execCommand 없이도 대부분의 브라우저가
+    <b>/<i>/<u>를 직접 삽입함), 화이트리스트에 없어서 저장/
+    프리뷰 시점에 통째로 벗겨지고 있었다. 태그 자체를 그대로
+    허용해서 프리뷰/발췌/저장된 글 모두에 반영되게 한다.
+  */
+
+  if (
+    tag === "b" ||
+    tag === "strong" ||
+    tag === "i" ||
+    tag === "em" ||
+    tag === "u"
+  ) {
+
+    const element =
+      document.createElement(
+        tag
+      );
+
+
+    Array.from(
+      node.childNodes
+    ).forEach(
+      child => {
+
+        sanitizeRichNode(
+          child,
+          element
+        );
+
+      }
+    );
+
+
+    target.appendChild(
+      element
+    );
+
+    return;
+
+  }
+
+
+  /*
     허용된 inline span
   */
 

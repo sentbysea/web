@@ -396,6 +396,11 @@ const postEditorExportButton =
     "postEditorExportButton"
   );
 
+const postEditorCopyButton =
+  document.getElementById(
+    "postEditorCopyButton"
+  );
+
 const postEditorMessage =
   document.getElementById(
     "postEditorMessage"

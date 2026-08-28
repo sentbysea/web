@@ -83,6 +83,37 @@ async function openPostPage(
   }
 
 
+  /*
+    글 목록 편집(선택 삭제) 버튼은 카테고리 목록에서만
+    보여야 하는데, updatePostAddButton은 openCategoryPage에서만
+    불려서 여기(글 뷰어)로 넘어와도 이전 상태(visible)가
+    그대로 남아있었다.
+  */
+
+  if (
+    postListEditToggleButton
+  ) {
+
+    postListEditToggleButton.hidden =
+      true;
+
+  }
+
+
+  postListEditModeOn =
+    false;
+
+
+  if (
+    postListSelectBar
+  ) {
+
+    postListSelectBar.hidden =
+      true;
+
+  }
+
+
   if (postPageTitle) {
 
     postPageTitle.textContent =

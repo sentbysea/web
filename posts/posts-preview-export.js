@@ -14,6 +14,18 @@
      준비 확인(ensurePreviewPagesRendered)
    두 파일 다 이 파일보다 먼저 로드되어야 함
    (index.html 순서 참고).
+
+   ★ export/copy 버튼 분리:
+   예전에는 모바일에서 export를 누르면(데스크톱과 다르게)
+   현재 보이는 페이지 한 장만 클립보드에 복사했다 — export가
+   플랫폼마다 다르게 동작하는 게 혼란스럽다는 피드백에 따라,
+   이제 export는 데스크톱/모바일 모두 "전체 페이지를 PNG로
+   저장"으로 동작을 통일한다(모바일은 다운로드 대신 OS
+   공유 시트를 열어 "이미지 저장"으로 카메라롤에 한 번에
+   저장되게 함 — <a download>는 iOS Safari에서 Files 앱으로
+   가서 요청과 다름). 기존의 "현재 페이지만 클립보드 복사"
+   동작은 그대로 남겨서 별도 copy 버튼에 붙인다
+   (copyCurrentEditorPreviewPageToClipboard).
 ========================================================== */
 
 /* =========================================================
@@ -170,6 +182,524 @@ function openExportedImageOrDownload(
 }
 
 
+/*
+  현재 보이는 페이지 한 장을 캡처해서 File로 돌려준다.
+  copy 버튼과 export의 공유/다운로드 폴백 양쪽에서 재사용.
+*/
+
+async function captureCurrentEditorPreviewPageAsFile(
+  pageIndexForName
+) {
+
+  forceOpenSectionIfNeeded();
+
+
+  const previewPages =
+    await ensurePreviewPagesRendered();
+
+
+  if (
+    previewPages.length === 0
+  ) {
+
+    throw new Error(
+      "내보낼 미리보기가 없습니다."
+    );
+
+  }
+
+
+  const page =
+    previewPages[
+      editorPreviewPageIndex
+    ] ||
+    previewPages[
+      previewPages.length - 1
+    ];
+
+
+  const wasHidden =
+    page.hidden;
+
+
+  page.hidden =
+    false;
+
+
+  /*
+    hidden 해제 직후 바로 캡처하면 레이아웃/폰트가
+    아직 안정되기 전이라 텍스트가 겹쳐 보이는 등
+    깨진 이미지가 나올 수 있다.
+  */
+
+  await waitForExport(
+    30
+  );
+
+
+  try {
+
+    const ratio =
+      getPostPreviewRatio(
+        postStyleSettings ||
+        {}
+      );
+
+
+    const pageWidth =
+      520;
+
+
+    const pageHeight =
+      resolveExportPageHeight(
+        page,
+        ratio,
+        pageWidth
+      );
+
+
+    const blob =
+      await captureVisiblePageAsBlob(
+        page,
+        pageWidth,
+        pageHeight
+      );
+
+
+    const fileName =
+      `${
+        getExportBaseFileName()
+      }-${
+        pageIndexForName + 1
+      }.png`;
+
+
+    return new File(
+      [blob],
+      fileName,
+      {
+        type:
+          "image/png"
+      }
+    );
+
+  } finally {
+
+    page.hidden =
+      wasHidden;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   COPY (현재 페이지 한 장 → 클립보드)
+
+   예전 모바일 export의 동작을 그대로 옮김. 캡처가 끝나기
+   전에 clipboard.write를 먼저 호출해야(Promise를 값으로
+   넘겨도 됨) 모바일 브라우저의 "사용자 제스처 유효 시간"
+   안에 들어가서 클립보드 쓰기가 거부되지 않는다 — 자세한
+   이유는 아래 주석 참고.
+========================================================== */
+
+async function copyCurrentEditorPreviewPageToClipboard() {
+
+  if (
+    !window.html2canvas
+  ) {
+
+    showPostEditorMessage(
+      "이미지 변환 기능을 불러오지 못했습니다."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    document.fonts?.ready
+  ) {
+
+    await document.fonts.ready;
+
+  }
+
+
+  beginExportSectionState();
+
+
+  const canWriteClipboard =
+    navigator.clipboard?.write &&
+    window.ClipboardItem;
+
+
+  if (!canWriteClipboard) {
+
+    /*
+      클립보드 이미지 쓰기 자체를 지원하지 않는 환경
+      (구형 브라우저 등) — 캡처 후 공유/다운로드로 대체.
+    */
+
+    try {
+
+      const file =
+        await captureCurrentEditorPreviewPageAsFile(
+          editorPreviewPageIndex
+        );
+
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare(
+          {
+            files: [file]
+          }
+        )
+      ) {
+
+        await navigator.share(
+          {
+            files: [file],
+            title:
+              getExportBaseFileName()
+          }
+        );
+
+        showPostEditorMessage(
+          "ready 1 page ♡"
+        );
+
+      }
+
+      else {
+
+        openExportedImageOrDownload(
+          file
+        );
+
+      }
+
+    } catch (error) {
+
+      if (
+        error?.name !==
+        "AbortError"
+      ) {
+
+        console.error(
+          "preview copy error:",
+          error
+        );
+
+        showPostEditorMessage(
+          "이미지 저장 실패: " +
+          (
+            error?.message ||
+            "알 수 없는 오류"
+          )
+        );
+
+      }
+
+    } finally {
+
+      showEditorPreviewPage(
+        editorPreviewPageIndex,
+        {
+          resetZoom: false
+        }
+      );
+
+      restoreForcedExportSection();
+
+    }
+
+    return;
+
+  }
+
+
+  if (
+    postEditorCopyButton
+  ) {
+
+    postEditorCopyButton.disabled =
+      true;
+
+    postEditorCopyButton.textContent =
+      "...";
+
+  }
+
+
+  showPostEditorMessage(
+    "이미지 만드는 중..."
+  );
+
+
+  const capturePromise =
+    (
+      async () => {
+
+        forceOpenSectionIfNeeded();
+
+
+        const previewPages =
+          await ensurePreviewPagesRendered();
+
+
+        if (
+          previewPages.length === 0
+        ) {
+
+          throw new Error(
+            "내보낼 미리보기가 없습니다."
+          );
+
+        }
+
+
+        const page =
+          previewPages[
+            editorPreviewPageIndex
+          ] ||
+          previewPages[
+            previewPages.length - 1
+          ];
+
+
+        const wasHidden =
+          page.hidden;
+
+
+        page.hidden =
+          false;
+
+
+        await waitForExport(
+          30
+        );
+
+
+        try {
+
+          const ratio =
+            getPostPreviewRatio(
+              postStyleSettings ||
+              {}
+            );
+
+
+          const pageWidth =
+            520;
+
+
+          const pageHeight =
+            resolveExportPageHeight(
+              page,
+              ratio,
+              pageWidth
+            );
+
+
+          return await captureVisiblePageAsBlob(
+            page,
+            pageWidth,
+            pageHeight
+          );
+
+        } finally {
+
+          page.hidden =
+            wasHidden;
+
+        }
+
+      }
+    )();
+
+
+  try {
+
+    await navigator.clipboard.write(
+      [
+        new ClipboardItem(
+          {
+            "image/png":
+              capturePromise
+          }
+        )
+      ]
+    );
+
+
+    showPostEditorMessage(
+      "copied ♡"
+    );
+
+  } catch (clipboardError) {
+
+    console.warn(
+      "clipboard copy failed:",
+      clipboardError
+    );
+
+
+    try {
+
+      const blob =
+        await capturePromise;
+
+      const fileName =
+        `${
+          getExportBaseFileName()
+        }-${
+          editorPreviewPageIndex + 1
+        }.png`;
+
+      const file =
+        new File(
+          [blob],
+          fileName,
+          {
+            type:
+              "image/png"
+          }
+        );
+
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare(
+          {
+            files:
+              [file]
+          }
+        )
+      ) {
+
+        try {
+
+          await navigator.share(
+            {
+              files:
+                [file],
+
+              title:
+                getExportBaseFileName()
+            }
+          );
+
+
+          showPostEditorMessage(
+            "ready 1 page ♡"
+          );
+
+        } catch (shareError) {
+
+          if (
+            shareError?.name ===
+            "AbortError"
+          ) {
+
+            showPostEditorMessage(
+              ""
+            );
+
+          }
+
+          else {
+
+            console.warn(
+              "share failed:",
+              shareError
+            );
+
+
+            openExportedImageOrDownload(
+              file
+            );
+
+          }
+
+        }
+
+      }
+
+      else {
+
+        openExportedImageOrDownload(
+          file
+        );
+
+      }
+
+    } catch (captureError) {
+
+      console.error(
+        "preview export error:",
+        captureError
+      );
+
+
+      showPostEditorMessage(
+        "이미지 저장 실패: " +
+        (
+          captureError?.message ||
+          "알 수 없는 오류"
+        )
+      );
+
+    }
+
+  } finally {
+
+    if (
+      postEditorCopyButton
+    ) {
+
+      postEditorCopyButton.disabled =
+        false;
+
+      postEditorCopyButton.textContent =
+        "copy";
+
+    }
+
+
+    showEditorPreviewPage(
+      editorPreviewPageIndex,
+      {
+        resetZoom: false
+      }
+    );
+
+
+    restoreForcedExportSection();
+
+  }
+
+}
+
+
+
+/* =========================================================
+   EXPORT (전체 페이지 → 저장)
+
+   데스크톱: 전체 페이지를 PNG 파일로 순서대로 다운로드.
+   모바일: 같은 전체 페이지 PNG들을 만들어서, <a download>
+   대신 OS 공유 시트(navigator.share)를 열어 "이미지 저장"으로
+   카메라롤에 한 번에 저장되게 한다 — Safari의 <a download>는
+   Files 앱으로 가서 "갤러리에 전부 저장"이라는 요청과 다르고,
+   공유 시트의 "이미지 저장"만 사진 앱(카메라롤)에 직접 저장된다.
+   공유가 안 되는 환경(구형 브라우저 등)만 다운로드로 대체한다.
+========================================================== */
+
 async function exportEditorPreviewAsImages() {
 
   if (
@@ -208,317 +738,6 @@ async function exportEditorPreviewAsImages() {
 
   beginExportSectionState();
 
-
-
-  const isMobileExport =
-    isMobilePostEditor();
-
-
-
-
-  /*
-    ★ 모바일: 클립보드에 "즉시" 쓰기를 등록하고, 실제 이미지를
-    만드는 무거운 작업(html2canvas 등)은 그 안에서 나중에
-    끝낸다.
-
-    navigator.clipboard.write([new ClipboardItem({...})])는
-    ClipboardItem의 값으로 아직 완료되지 않은 Promise를 받아도,
-    write() 호출 자체가 사용자 클릭(user activation) 시점에
-    이루어졌다면 그 Promise가 나중에 resolve될 때 정상적으로
-    써주도록 스펙에 정의되어 있다.
-
-    반대로 먼저 await로 html2canvas를 다 끝내고 나서
-    clipboard.write를 호출하면, 그 사이(특히 모바일 브라우저)
-    "사용자 제스처가 아직 유효하다"는 상태가 만료돼서
-    클립보드 쓰기 자체가 조용히 거부되는 경우가 많다 —
-    이게 바로 모바일 export가 "눌러도 반응 없음"이었던
-    근본 원인으로 보인다.
-  */
-
-  if (
-    isMobileExport &&
-    navigator.clipboard?.write &&
-    window.ClipboardItem
-  ) {
-
-    if (
-      postEditorExportButton
-    ) {
-
-      postEditorExportButton.disabled =
-        true;
-
-      postEditorExportButton.textContent =
-        "...";
-
-    }
-
-
-    showPostEditorMessage(
-      "이미지 만드는 중..."
-    );
-
-
-    const capturePromise =
-      (
-        async () => {
-
-          forceOpenSectionIfNeeded();
-
-
-          const previewPages =
-            await ensurePreviewPagesRendered();
-
-
-          if (
-            previewPages.length === 0
-          ) {
-
-            throw new Error(
-              "내보낼 미리보기가 없습니다."
-            );
-
-          }
-
-
-          const page =
-            previewPages[
-              editorPreviewPageIndex
-            ] ||
-            previewPages[
-              previewPages.length - 1
-            ];
-
-
-          const wasHidden =
-            page.hidden;
-
-
-          page.hidden =
-            false;
-
-
-          /*
-            hidden 해제 직후 바로 캡처하면 레이아웃/폰트가
-            아직 안정되기 전이라 텍스트가 겹쳐 보이는 등
-            깨진 이미지가 나올 수 있다(데스크톱 루프와
-            동일하게 안정화 시간을 준다).
-          */
-
-          await waitForExport(
-            30
-          );
-
-
-          try {
-
-            const ratio =
-              getPostPreviewRatio(
-                postStyleSettings ||
-                {}
-              );
-
-
-            const pageWidth =
-              520;
-
-
-            const pageHeight =
-              resolveExportPageHeight(
-                page,
-                ratio,
-                pageWidth
-              );
-
-
-            return await captureVisiblePageAsBlob(
-              page,
-              pageWidth,
-              pageHeight
-            );
-
-          } finally {
-
-            page.hidden =
-              wasHidden;
-
-          }
-
-        }
-      )();
-
-
-    try {
-
-      await navigator.clipboard.write(
-        [
-          new ClipboardItem(
-            {
-              "image/png":
-                capturePromise
-            }
-          )
-        ]
-      );
-
-
-      showPostEditorMessage(
-        "copied ♡"
-      );
-
-    } catch (clipboardError) {
-
-      console.warn(
-        "clipboard copy failed:",
-        clipboardError
-      );
-
-
-      try {
-
-        const blob =
-          await capturePromise;
-
-        const fileName =
-          `${
-            getExportBaseFileName()
-          }-${
-            editorPreviewPageIndex + 1
-          }.png`;
-
-        const file =
-          new File(
-            [blob],
-            fileName,
-            {
-              type:
-                "image/png"
-            }
-          );
-
-
-        if (
-          navigator.share &&
-          navigator.canShare &&
-          navigator.canShare(
-            {
-              files:
-                [file]
-            }
-          )
-        ) {
-
-          try {
-
-            await navigator.share(
-              {
-                files:
-                  [file],
-
-                title:
-                  getExportBaseFileName()
-              }
-            );
-
-
-            showPostEditorMessage(
-              "ready 1 page ♡"
-            );
-
-          } catch (shareError) {
-
-            if (
-              shareError?.name ===
-              "AbortError"
-            ) {
-
-              showPostEditorMessage(
-                ""
-              );
-
-            }
-
-            else {
-
-              console.warn(
-                "share failed:",
-                shareError
-              );
-
-
-              openExportedImageOrDownload(
-                file
-              );
-
-            }
-
-          }
-
-        }
-
-        else {
-
-          openExportedImageOrDownload(
-            file
-          );
-
-        }
-
-      } catch (captureError) {
-
-        console.error(
-          "preview export error:",
-          captureError
-        );
-
-
-        showPostEditorMessage(
-          "이미지 저장 실패: " +
-          (
-            captureError?.message ||
-            "알 수 없는 오류"
-          )
-        );
-
-      }
-
-    } finally {
-
-      if (
-        postEditorExportButton
-      ) {
-
-        postEditorExportButton.disabled =
-          false;
-
-        postEditorExportButton.textContent =
-          "export";
-
-      }
-
-
-      showEditorPreviewPage(
-        editorPreviewPageIndex,
-        {
-          resetZoom: false
-        }
-      );
-
-
-      restoreForcedExportSection();
-
-    }
-
-
-    return;
-
-  }
-
-
-  /*
-    데스크톱(또는 클립보드 API 자체가 없는 환경): 기존처럼
-    전체 페이지를 순서대로 PNG로 만들어서 한꺼번에 다운로드한다.
-  */
 
   forceOpenSectionIfNeeded();
 
@@ -676,64 +895,148 @@ async function exportEditorPreviewAsImages() {
     );
 
 
-    exportFiles.forEach(
-      file => {
-
-        const url =
-          URL.createObjectURL(
-            file
-          );
-
-
-        const link =
-          document.createElement(
-            "a"
-          );
+    const canShareFiles =
+      isMobilePostEditor() &&
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare(
+        {
+          files:
+            exportFiles
+        }
+      );
 
 
-        link.href =
-          url;
+    if (canShareFiles) {
 
+      try {
 
-        link.download =
-          file.name;
+        await navigator.share(
+          {
+            files:
+              exportFiles,
 
-
-        document.body.appendChild(
-          link
+            title:
+              baseFileName
+          }
         );
 
 
-        link.click();
-
-
-        link.remove();
-
-
-        setTimeout(
-          () => {
-
-            URL.revokeObjectURL(
-              url
-            );
-
-          },
-          1000
+        showPostEditorMessage(
+          `saved ${exportFiles.length} page`
+          +
+          `${
+            exportFiles.length > 1
+              ? "s"
+              : ""
+          } ♡`
         );
+
+      } catch (shareError) {
+
+        if (
+          shareError?.name ===
+          "AbortError"
+        ) {
+
+          showPostEditorMessage(
+            ""
+          );
+
+        }
+
+        else {
+
+          console.warn(
+            "share failed:",
+            shareError
+          );
+
+
+          /*
+            공유가 실패하면(팝업 차단 등) 페이지별로
+            새 탭에 열어서 길게 눌러 저장하게 하는
+            최후의 수단으로 대체.
+          */
+
+          exportFiles.forEach(
+            file => {
+
+              openExportedImageOrDownload(
+                file
+              );
+
+            }
+          );
+
+        }
 
       }
-    );
+
+    }
+
+    else {
+
+      exportFiles.forEach(
+        file => {
+
+          const url =
+            URL.createObjectURL(
+              file
+            );
 
 
-    showPostEditorMessage(
-      `saved ${exportFiles.length} page`
-      +
-      `${
-        exportFiles.length > 1
-          ? "s"
-          : ""
-      } ♡`
-    );
+          const link =
+            document.createElement(
+              "a"
+            );
+
+
+          link.href =
+            url;
+
+
+          link.download =
+            file.name;
+
+
+          document.body.appendChild(
+            link
+          );
+
+
+          link.click();
+
+
+          link.remove();
+
+
+          setTimeout(
+            () => {
+
+              URL.revokeObjectURL(
+                url
+              );
+
+            },
+            1000
+          );
+
+        }
+      );
+
+
+      showPostEditorMessage(
+        `saved ${exportFiles.length} page`
+        +
+        `${
+          exportFiles.length > 1
+            ? "s"
+            : ""
+        } ♡`
+      );
+
+    }
 
 
   } catch (error) {

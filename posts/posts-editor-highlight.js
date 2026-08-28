@@ -310,7 +310,7 @@ function stripRichStylesFromFragment(
   const wrappers =
     Array.from(
       fragment.querySelectorAll(
-        ".post-inline-font, .post-inline-highlight, .post-inline-color"
+        ".post-inline-font, .post-inline-highlight, .post-inline-color, b, strong, i, em, u"
       )
     );
 

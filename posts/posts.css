@@ -2897,12 +2897,14 @@ text-size-adjust: 100%;
   background: #fffafb;
 }
 
-.post-editor-button.export {
+.post-editor-button.export,
+.post-editor-button.copy {
   color: #888888;
 }
 
 
-.post-editor-button.export:hover {
+.post-editor-button.export:hover,
+.post-editor-button.copy:hover {
   color: #ee9fbd;
 
   border-color: #e8c1d0;

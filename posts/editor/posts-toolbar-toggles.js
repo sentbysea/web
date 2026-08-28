@@ -486,6 +486,17 @@ postEditorCancelButton
    EXPORT
 ========================================================== */
 
+postEditorCopyButton
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      await copyCurrentEditorPreviewPageToClipboard();
+
+    }
+  );
+
+
 postEditorExportButton
   ?.addEventListener(
     "click",

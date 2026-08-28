@@ -141,6 +141,16 @@ function setEditorContentMode(
   }
 
 
+  if (
+    postEditorCopyButton
+  ) {
+
+    postEditorCopyButton.hidden =
+      isHtml;
+
+  }
+
+
   if (isHtml) {
 
     closeEditorPreview();

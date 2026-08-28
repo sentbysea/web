@@ -117,6 +117,37 @@ function renderEditorPreviewPages(
       current.page
     );
 
+
+    onContinuationPage =
+      true;
+
+  }
+
+
+  /*
+    ★ 새 페이지가 <br>(빈 줄) 한가운데서 시작되는 것 방지.
+
+    페이지가 넘어가는 지점이 하필 문단 사이 빈 줄(연속
+    <br> 등)이면, 그 <br>이 그대로 새 페이지의 첫 내용으로
+    옮겨져서 새 페이지가 빈 줄로 시작해버린다. 새 페이지
+    맨 위(최상위 컨테이너가 아직 비어 있을 때)에 놓일
+    <br>/공백은 실제 내용이 나오기 전까지 건너뛴다.
+    (수동 페이지 나누기로 시작한 페이지에도 동일하게 적용 —
+    일관성을 위해 첫 페이지에는 적용하지 않는다.)
+  */
+
+  let onContinuationPage =
+    false;
+
+
+  function isLeadingBlankAtPageStart() {
+
+    return (
+      onContinuationPage &&
+      openChain.length === 0 &&
+      current.content.childNodes.length === 0
+    );
+
   }
 
 
@@ -191,6 +222,18 @@ function renderEditorPreviewPages(
 
     parts.forEach(
       part => {
+
+        if (
+          /^\s+$/.test(
+            part
+          ) &&
+          isLeadingBlankAtPageStart()
+        ) {
+
+          return;
+
+        }
+
 
         const textNode =
           document.createTextNode(
@@ -316,6 +359,17 @@ function renderEditorPreviewPages(
         한 번만 넘침 검사(이미 충분히 작음).
       */
 
+      if (
+        node.nodeName ===
+          "BR" &&
+        isLeadingBlankAtPageStart()
+      ) {
+
+        return;
+
+      }
+
+
       const clone =
         node.cloneNode(
           true
@@ -338,6 +392,17 @@ function renderEditorPreviewPages(
 
         startNewPage();
         rebuildOpenChain();
+
+
+        if (
+          node.nodeName ===
+            "BR" &&
+          isLeadingBlankAtPageStart()
+        ) {
+
+          return;
+
+        }
 
 
         currentContainer().appendChild(
