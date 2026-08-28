@@ -309,12 +309,98 @@
 
 
             <!-- ===============================================
+                 MOBILE TAB BAR
+
+                 데스크톱에선 CSS로 완전히 숨김(display:none) —
+                 좌측 7개 아코디언을 그대로 씀. 모바일에선
+                 .quote-controls 자체가 화면 하단에 고정되는
+                 시트가 되고, 이 탭바가 그 시트의 맨 위에
+                 붙어서(position:sticky) 항상 보인다. 탭을
+                 누르면 admin-quote-mobile-tabs.js가
+                 data-quote-mobile-tab 값이 일치하는 아코디언
+                 섹션만 보여주고 나머지는 숨긴다(개별 섹션의
+                 +/- 아코디언 접기 상태와는 무관하게 항상 펼친
+                 것처럼 보여줌 — 탭 전환 자체가 이미 필터링
+                 역할을 하기 때문).
+            ================================================ -->
+
+            <div class="quote-mobile-tabbar-wrap">
+
+              <div
+                class="quote-mobile-tabbar"
+                id="quoteMobileTabbar"
+                role="tablist"
+              >
+
+                <button
+                  class="quote-mobile-tab"
+                  type="button"
+                  data-quote-mobile-tab-target="content"
+                  aria-pressed="true"
+                >
+                  CONTENT
+                </button>
+
+                <button
+                  class="quote-mobile-tab"
+                  type="button"
+                  data-quote-mobile-tab-target="canvas"
+                  aria-pressed="false"
+                >
+                  CANVAS
+                </button>
+
+                <button
+                  class="quote-mobile-tab"
+                  type="button"
+                  data-quote-mobile-tab-target="title-source"
+                  aria-pressed="false"
+                >
+                  TITLE·SOURCE
+                </button>
+
+                <button
+                  class="quote-mobile-tab"
+                  type="button"
+                  data-quote-mobile-tab-target="body"
+                  aria-pressed="false"
+                >
+                  BODY
+                </button>
+
+                <button
+                  class="quote-mobile-tab"
+                  type="button"
+                  data-quote-mobile-tab-target="preset"
+                  aria-pressed="false"
+                >
+                  PRESET
+                </button>
+
+              </div>
+
+
+              <button
+                class="quote-mobile-tabbar-collapse"
+                id="quoteMobileTabbarCollapse"
+                type="button"
+                aria-expanded="true"
+                aria-label="설정 패널 접기"
+              >
+                ⌄
+              </button>
+
+            </div>
+
+
+            <!-- ===============================================
                  TEST CONTENT
             ================================================ -->
 
             <section
               class="quote-accordion is-open"
               data-quote-section
+              data-quote-mobile-tab="content"
             >
 
               <button
@@ -400,6 +486,7 @@
             <section
               class="quote-accordion is-open"
               data-quote-section
+              data-quote-mobile-tab="canvas"
             >
 
               <button
@@ -686,6 +773,7 @@
             <section
               class="quote-accordion is-open"
               data-quote-section
+              data-quote-mobile-tab="body"
             >
 
               <button
@@ -751,6 +839,7 @@
             <section
               class="quote-accordion"
               data-quote-section
+              data-quote-mobile-tab="title-source"
             >
 
               <button
@@ -981,6 +1070,7 @@
             <section
               class="quote-accordion"
               data-quote-section
+              data-quote-mobile-tab="body"
             >
 
               <button
@@ -1514,6 +1604,7 @@
             <section
               class="quote-accordion"
               data-quote-section
+              data-quote-mobile-tab="title-source"
             >
 
               <button
@@ -1766,6 +1857,7 @@
             <section
               class="quote-accordion is-open"
               data-quote-section
+              data-quote-mobile-tab="preset"
             >
 
               <button
@@ -2474,6 +2566,15 @@
   <script src="./quote/admin-quote-apply-preset.js"></script>
   <script src="./quote/admin-quote-preset-list.js"></script>
   <script src="./quote/admin-quote-preset-crud.js"></script>
+
+  <!--
+    restoreQuoteAccordionState()(preset-crud.js 맨 끝에서 실행)가
+    localStorage에 저장된 개별 아코디언 open/close 상태를
+    되돌리는데, 모바일 탭 필터가 그보다 먼저 적용돼 있으면
+    그 상태에 덮어써질 수 있어서 반드시 이 파일이 맨 마지막에
+    로드돼야 함.
+  -->
+  <script src="./quote/admin-quote-mobile-tabs.js"></script>
 
   <script src="../site-footer.js"></script>
 

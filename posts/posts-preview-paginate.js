@@ -535,7 +535,7 @@ function renderEditorPreviewPages(
    UPDATE PREVIEW
 ========================================================== */
 
-function updateEditorPreview(
+async function updateEditorPreview(
   options = {}
 ) {
 
@@ -543,6 +543,28 @@ function updateEditorPreview(
     !postEditorPreviewPages
   ) {
     return;
+  }
+
+
+  /*
+    ★ 폰트(Pretendard/Nanum Myeongjo)가 아직 로딩 중일 때
+    페이지 분할을 계산하면 대체 폰트 기준으로 잰 줄바꿈/
+    문단 높이를 그대로 써버린다 — 데스크톱은 폰트가 보통
+    이미 캐시돼 있어 티가 안 나지만, 모바일(특히 에디터에
+    들어가자마자 바로 프리뷰부터 여는 경우)은 아직 폰트
+    요청이 끝나기 전이라 실제 완성된 폰트로 다시 그려질 때와
+    다른 분량으로 쪼개지거나, "고정" source가 밀어내야 할
+    본문 높이 자체가 잘못 계산돼 있었을 수 있다(export
+    쪽엔 이미 같은 이유로 적용돼 있던 처리). 이미 로드됐으면
+    즉시 resolve되니 재렌더링 쪽에는 비용이 거의 없다.
+  */
+
+  if (
+    document.fonts?.ready
+  ) {
+
+    await document.fonts.ready;
+
   }
 
 

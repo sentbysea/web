@@ -29,6 +29,24 @@ const quoteAccordionToggles =
   );
 
 
+/* MOBILE TAB BAR */
+
+const quoteControls =
+  document.querySelector(
+    ".quote-controls"
+  );
+
+const quoteMobileTabButtons =
+  document.querySelectorAll(
+    ".quote-mobile-tab"
+  );
+
+const quoteMobileTabbarCollapse =
+  document.getElementById(
+    "quoteMobileTabbarCollapse"
+  );
+
+
 /* =========================================================
    TEST CONTENT
 ========================================================== */

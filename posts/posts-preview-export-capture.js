@@ -125,6 +125,33 @@ function bakeCssVarStylesForCapture(
     pageComputed.boxSizing;
 
 
+  /*
+    ★ aspect-ratio도 CSS 변수(--post-preview-aspect)로
+    지정돼 있어서 위 padding과 똑같은 문제가 있다. RATIO가
+    AUTO일 때는 라이브 브라우저가 var()를 auto로 정확히
+    읽어서 페이지가 실제 콘텐츠 높이만큼 커지지만,
+    html2canvas는 var()를 못 읽어서 CSS에 적어둔 폴백값
+    (4 / 5)을 페이지 자체의 aspect-ratio로 그려버린다 —
+    거기에 overflow:hidden까지 걸려 있어서, 폴백 비율보다
+    긴 본문이 캡처본에서만 그 높이에서 통째로 잘려 나가는
+    원인이었다(화면 프리뷰는 멀쩡한데 export만 잘리는 이유).
+    계산된(auto 포함) 값을 그대로 인라인으로 박아넣으면
+    html2canvas가 var() 없이도 정확히 읽는다.
+  */
+
+  affected.push(
+    {
+      node: page,
+      prop: "aspectRatio",
+      previousValue:
+        page.style.aspectRatio
+    }
+  );
+
+  page.style.aspectRatio =
+    pageComputed.aspectRatio;
+
+
   const title =
     page.querySelector(
       ".post-editor-preview-title"

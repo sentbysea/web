@@ -506,9 +506,24 @@
 
 
   .post-editor-preview-ratio-controls {
-    flex: 0 0 auto;
+    /*
+      ★ flex:0 0 auto만 있으면 이 줄 자체의 너비가 자기
+      내용물(버튼 6개 + custom 너비/높이 입력칸)을 한 줄로
+      전부 펼친 "필요한 만큼"으로 정해져서, flex-wrap: wrap이
+      있어도 감쌀 기준 너비 자체가 없어 화면 밖으로 그냥
+      넘쳐버렸다. 부모 줄 폭에 맞춰 100%로 고정해야 실제로
+      다음 줄로 줄바꿈된다.
+    */
 
-    gap: 5px;
+    flex:
+      0
+      0
+      100%;
+
+    width: 100%;
+
+    row-gap: 6px;
+    column-gap: 5px;
 
     margin-top: 6px;
     margin-bottom: 8px;
@@ -518,7 +533,7 @@
   .post-editor-preview-ratio-button {
     padding:
       2px
-      7px;
+      6px;
 
     font-size: 8px;
   }

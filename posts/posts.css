@@ -1740,6 +1740,23 @@ body.post-mode .music-button {
   display: none;
 }
 
+
+/*
+  텍스트 선택 시 뜨는 이 메뉴 안의 스와치만 동그라미 대신
+  네모로(고정 툴바 쪽 스와치는 그대로 원형 유지).
+*/
+
+.post-editor-floating-menu
+.post-highlight-custom-control {
+  border-radius: 6px;
+}
+
+
+.post-editor-floating-menu
+.post-highlight-swatch {
+  border-radius: 3px;
+}
+
 /* =========================================================
    RICH TEXT EDITOR
 ========================================================== */

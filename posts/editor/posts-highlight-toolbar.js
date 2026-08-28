@@ -321,12 +321,39 @@ function positionEditorFloatingMenu(
     );
 
 
+  /*
+    ★ iOS Safari에서 키보드가 떠 있는 동안 position:fixed
+    요소는 레이아웃 뷰포트(주소창/키보드까지 포함한, 실제로는
+    안 보이는 영역까지 포함한 전체 기준) 좌표로 그려지는데,
+    getBoundingClientRect()/window.innerWidth/Height는 시각
+    뷰포트(실제로 화면에 보이는 영역) 기준이라 서로 어긋난다.
+    평소엔 둘이 거의 같아서 안 보이던 오차가, 스크롤/키보드
+    상태가 바뀔 때마다 visualViewport의 offset이 달라지면서
+    메뉴가 화면 위에서 위치를 못 잡고 흔들리듯 움직이는
+    것처럼 보였다. offsetLeft/offsetTop만큼 보정해주면
+    시각 뷰포트 기준으로 맞아떨어진다.
+  */
+
+  const viewport =
+    window.visualViewport;
+
+
+  const viewportOffsetLeft =
+    viewport?.offsetLeft ||
+    0;
+
+
+  const viewportOffsetTop =
+    viewport?.offsetTop ||
+    0;
+
+
   postEditorFloatingMenu.style.top =
-    `${top}px`;
+    `${top + viewportOffsetTop}px`;
 
 
   postEditorFloatingMenu.style.left =
-    `${left}px`;
+    `${left + viewportOffsetLeft}px`;
 
 }
 
@@ -465,6 +492,27 @@ window.addEventListener(
   syncEditorFloatingMenu,
   true
 );
+
+
+/*
+  ★ 온스크린 키보드가 열리고 닫힐 때(모바일 iOS Safari)는
+  일반 scroll 이벤트가 안 뜨고 visualViewport의 크기/오프셋만
+  바뀐다 — 이것도 같이 들어야 메뉴가 키보드가 뜨는 순간에도
+  바로 올바른 위치로 다시 계산된다.
+*/
+
+window.visualViewport
+  ?.addEventListener(
+    "resize",
+    syncEditorFloatingMenu
+  );
+
+
+window.visualViewport
+  ?.addEventListener(
+    "scroll",
+    syncEditorFloatingMenu
+  );
 
 
 document
