@@ -21,6 +21,12 @@ const postEditorPageBreak =
   );
 
 
+const postEditorUndoButton =
+  document.getElementById(
+    "postEditorUndoButton"
+  );
+
+
 const postEditorPreviewPages =
   document.getElementById(
     "postEditorPreviewPages"

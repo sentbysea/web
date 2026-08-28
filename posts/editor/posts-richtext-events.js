@@ -72,6 +72,11 @@ function insertEditorPageBreak() {
   }
 
 
+  pushEditorUndoSnapshot(
+    true
+  );
+
+
   /*
     선택된 글자가 있다면
     선택 시작점을 기준으로 삽입.
@@ -389,6 +394,11 @@ postEditorContent
       }
 
 
+      pushEditorUndoSnapshot(
+        true
+      );
+
+
       range.deleteContents();
 
 
@@ -487,6 +497,11 @@ postEditorContent
 
 
       event.preventDefault();
+
+
+      pushEditorUndoSnapshot(
+        true
+      );
 
 
       range.deleteContents();
@@ -658,7 +673,6 @@ function captureEditorCaretBeforeToolbar() {
 
 [
   postEditorFontToggle,
-  postEditorHighlightPreset,
   postEditorClearStyle
 ].forEach(
   button => {

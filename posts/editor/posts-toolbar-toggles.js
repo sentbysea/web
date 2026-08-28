@@ -182,16 +182,14 @@ postEditorPreviewSourceToggle
   );
 
 
-postEditorPreviewSourcePositionFlow
+postEditorPreviewAlignSelect
   ?.addEventListener(
-    "click",
+    "change",
     () => {
 
-      previewSourcePosition =
-        "flow";
-
-
-      syncPreviewVisibilityToggleButtons();
+      previewVerticalAlign =
+        postEditorPreviewAlignSelect.value ||
+        null;
 
 
       updateEditorPreview(
@@ -204,16 +202,36 @@ postEditorPreviewSourcePositionFlow
   );
 
 
-postEditorPreviewSourcePositionFixed
+postEditorPreviewBodyAlignSelect
   ?.addEventListener(
-    "click",
+    "change",
+    () => {
+
+      previewBodyAlign =
+        postEditorPreviewBodyAlignSelect.value ||
+        null;
+
+
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
+
+    }
+  );
+
+
+postEditorPreviewSourcePositionSelect
+  ?.addEventListener(
+    "change",
     () => {
 
       previewSourcePosition =
-        "fixed";
-
-
-      syncPreviewVisibilityToggleButtons();
+        postEditorPreviewSourcePositionSelect.value ===
+        "fixed"
+          ? "fixed"
+          : "flow";
 
 
       updateEditorPreview(

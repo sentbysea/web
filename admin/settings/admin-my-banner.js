@@ -55,16 +55,6 @@ const myBannerCopyImageUrlButton =
     "myBannerCopyImageUrlButton"
   );
 
-const myBannerHtmlCode =
-  document.getElementById(
-    "myBannerHtmlCode"
-  );
-
-const myBannerCopyHtmlButton =
-  document.getElementById(
-    "myBannerCopyHtmlButton"
-  );
-
 const myBannerSaveButton =
   document.getElementById(
     "myBannerSaveButton"
@@ -82,7 +72,7 @@ let myBannerUserId =
 
 
 /* =========================================================
-   경로 / URL / HTML 코드 만들기
+   경로 / URL 만들기
 ========================================================== */
 
 function buildMyBannerImageUrl(
@@ -93,101 +83,6 @@ function buildMyBannerImageUrl(
     `${SUPABASE_URL}/storage/v1/object/public/` +
     `${MY_BANNER_BUCKET}/${userId}/banner`
   );
-
-}
-
-
-function escapeMyBannerHtml(
-  value
-) {
-
-  return (
-    value ||
-    ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    );
-
-}
-
-
-function guessMyBannerAltFromUrl(
-  homeUrl
-) {
-
-  try {
-
-    return new URL(
-      homeUrl
-    ).hostname;
-
-  }
-
-  catch (error) {
-
-    return "";
-
-  }
-
-}
-
-
-function updateMyBannerHtmlCode() {
-
-  if (
-    !myBannerHtmlCode ||
-    !myBannerImageUrlDisplay
-  ) {
-    return;
-  }
-
-
-  const homeUrl =
-    myBannerUrlInput
-      ?.value
-      .trim() ||
-    "";
-
-
-  const imageUrl =
-    myBannerImageUrlDisplay.value ||
-    "";
-
-
-  const alt =
-    guessMyBannerAltFromUrl(
-      homeUrl
-    );
-
-
-  myBannerHtmlCode.value =
-    `<a href="${
-      escapeMyBannerHtml(
-        homeUrl
-      )
-    }">\n  <img src="${
-      escapeMyBannerHtml(
-        imageUrl
-      )
-    }" alt="${
-      escapeMyBannerHtml(
-        alt
-      )
-    }">\n</a>`;
 
 }
 
@@ -348,9 +243,6 @@ async function loadMyBanner(
 
   }
 
-
-  updateMyBannerHtmlCode();
-
 }
 
 
@@ -489,9 +381,6 @@ myBannerFileInput
       );
 
 
-      updateMyBannerHtmlCode();
-
-
       /*
         같은 파일을 다시 골라도 change 이벤트가 뜨게
         비워둠.
@@ -508,13 +397,6 @@ myBannerFileInput
 /* =========================================================
    URL 저장
 ========================================================== */
-
-myBannerUrlInput
-  ?.addEventListener(
-    "input",
-    updateMyBannerHtmlCode
-  );
-
 
 myBannerSaveButton
   ?.addEventListener(
@@ -630,9 +512,6 @@ myBannerSaveButton
 
       }
 
-
-      updateMyBannerHtmlCode();
-
     }
   );
 
@@ -696,21 +575,6 @@ myBannerCopyImageUrlButton
         myBannerImageUrlDisplay?.value,
         myBannerCopyImageUrlButton,
         "copy image url"
-      );
-
-    }
-  );
-
-
-myBannerCopyHtmlButton
-  ?.addEventListener(
-    "click",
-    () => {
-
-      copyMyBannerText(
-        myBannerHtmlCode?.value,
-        myBannerCopyHtmlButton,
-        "copy html"
       );
 
     }

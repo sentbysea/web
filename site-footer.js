@@ -303,6 +303,27 @@ document.addEventListener(
         ? "../"
         : "/admin/";
 
+
+    /*
+      어드민에서 나갈 땐 마지막으로 보던 화면을
+      잊는다 — 사이트 홈에서 하트로 다시 들어올 땐
+      항상 admin 초기 화면(홈 메뉴)부터 시작하도록.
+      (어드민 안에서의 새로고침/탭 복귀는 마지막 화면
+      유지가 의도된 동작이라 그대로 둠 — admin.js 참고.)
+    */
+
+    if (
+      isOnAdminPage
+    ) {
+
+      sessionStorage.setItem(
+        "admin-current-view",
+        "home"
+      );
+
+    }
+
+
     window.setTimeout(
       () => {
 

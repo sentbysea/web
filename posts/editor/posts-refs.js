@@ -229,14 +229,24 @@ const bannerEditorUrl =
     "bannerEditorUrl"
   );
 
-const bannerEditorImageUrl =
+const bannerEditorFileInput =
   document.getElementById(
-    "bannerEditorImageUrl"
+    "bannerEditorFileInput"
   );
 
 const bannerEditorPreview =
   document.getElementById(
     "bannerEditorPreview"
+  );
+
+const bannerEditorPreviewEmpty =
+  document.getElementById(
+    "bannerEditorPreviewEmpty"
+  );
+
+const bannerEditorUploadMessage =
+  document.getElementById(
+    "bannerEditorUploadMessage"
   );
 
 const bannerEditorDelete =
@@ -402,16 +412,6 @@ const postEditorFontToggle =
     "postEditorFontToggle"
   );
 
-const postEditorHighlightPreset =
-  document.getElementById(
-    "postEditorHighlightPreset"
-  );
-
-const postEditorPresetSwatch =
-  document.getElementById(
-    "postEditorPresetSwatch"
-  );
-
 const postEditorCustomColor =
   document.getElementById(
     "postEditorCustomColor"
@@ -420,6 +420,21 @@ const postEditorCustomColor =
 const postEditorCustomSwatch =
   document.getElementById(
     "postEditorCustomSwatch"
+  );
+
+const postEditorCustomPointColor =
+  document.getElementById(
+    "postEditorCustomPointColor"
+  );
+
+const postEditorCustomPointSwatch =
+  document.getElementById(
+    "postEditorCustomPointSwatch"
+  );
+
+const postEditorCustomPointControl =
+  document.querySelector(
+    'label[for="postEditorCustomPointColor"]'
   );
 
 const postEditorClearStyle =
@@ -437,16 +452,6 @@ const postEditorFloatingMenu =
     "postEditorFloatingMenu"
   );
 
-const postEditorFloatingHighlightPreset =
-  document.getElementById(
-    "postEditorFloatingHighlightPreset"
-  );
-
-const postEditorFloatingPresetSwatch =
-  document.getElementById(
-    "postEditorFloatingPresetSwatch"
-  );
-
 const postEditorFloatingCustomColor =
   document.getElementById(
     "postEditorFloatingCustomColor"
@@ -460,6 +465,16 @@ const postEditorFloatingCustomSwatch =
   const postEditorCustomControl =
   document.querySelector(
     ".post-highlight-custom-control"
+  );
+
+const postEditorFloatingCustomPointColor =
+  document.getElementById(
+    "postEditorFloatingCustomPointColor"
+  );
+
+const postEditorFloatingCustomPointSwatch =
+  document.getElementById(
+    "postEditorFloatingCustomPointSwatch"
   );
 
 
@@ -517,19 +532,19 @@ const postEditorPreviewSourceToggle =
     "postEditorPreviewSourceToggle"
   );
 
-const postEditorPreviewSourcePositionRow =
+const postEditorPreviewAlignSelect =
   document.getElementById(
-    "postEditorPreviewSourcePositionRow"
+    "postEditorPreviewAlignSelect"
   );
 
-const postEditorPreviewSourcePositionFlow =
+const postEditorPreviewBodyAlignSelect =
   document.getElementById(
-    "postEditorPreviewSourcePositionFlow"
+    "postEditorPreviewBodyAlignSelect"
   );
 
-const postEditorPreviewSourcePositionFixed =
+const postEditorPreviewSourcePositionSelect =
   document.getElementById(
-    "postEditorPreviewSourcePositionFixed"
+    "postEditorPreviewSourcePositionSelect"
   );
 
 const postEditorPreviewRatioTrigger =

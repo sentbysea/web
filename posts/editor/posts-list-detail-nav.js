@@ -431,10 +431,10 @@ bannerEditorDelete
   );
 
 
-bannerEditorImageUrl
+bannerEditorFileInput
   ?.addEventListener(
-    "input",
-    updateBannerEditorPreview
+    "change",
+    handleBannerEditorFileChange
   );
 
 

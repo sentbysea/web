@@ -31,15 +31,24 @@ function updateQuotePreview() {
     ) || 1080;
 
 
-  const exportHeight =
-    Math.round(
-      exportWidth *
-      ratio.height /
-      ratio.width
-    );
+  /*
+    ★ AUTO는 exportWidth 아래 크기 표시를 나중에(내용을 다
+    그린 뒤 실제 높이를 재서) 채운다 — updateQuotePreview()
+    맨 끝 참고.
+  */
 
+  if (
+    quotePreviewSize &&
+    !ratio.auto
+  ) {
 
-  if (quotePreviewSize) {
+    const exportHeight =
+      Math.round(
+        exportWidth *
+        ratio.height /
+        ratio.width
+      );
+
 
     quotePreviewSize.textContent =
       `${exportWidth} × ${exportHeight}`;
@@ -48,7 +57,9 @@ function updateQuotePreview() {
 
 
   quotePreviewCanvas.style.aspectRatio =
-    `${ratio.width} / ${ratio.height}`;
+    ratio.auto
+      ? "auto"
+      : `${ratio.width} / ${ratio.height}`;
 
 
   quotePreviewCanvas.style.backgroundColor =
@@ -57,6 +68,21 @@ function updateQuotePreview() {
 
 
   applyCanvasPadding();
+
+
+  /*
+    ★ GENERAL
+    title/body/source가 항상 같은 폰트를 쓰도록 여기서
+    한 번만 계산해서 세 곳(아래)에 그대로 재사용한다.
+    예전엔 body만 이 값을 따르고 title/source는
+    Pretendard로 고정돼 있었음.
+  */
+
+  const quoteFontFamily =
+    quoteBodyFont?.value ===
+    "nanummyeongjo"
+      ? '"Nanum Myeongjo", serif'
+      : '"Pretendard", sans-serif';
 
 
   /* TEST CONTENT */
@@ -95,15 +121,14 @@ function updateQuotePreview() {
 
 
     /*
-      ★ 제목/출처는 항상 Pretendard로 고정(인라인 지정).
-      html2canvas로 캡처(발췌 export)할 때 이 값이 조상
-      요소로부터 상속만 되어 있으면 가끔 못 읽어서 시스템
-      명조체로 깨져 나오는 문제가 있었음 — 요소 자체에
-      직접 박아두면 그 문제가 안 생긴다.
+      제목도 GENERAL의 폰트를 그대로 따름. 인라인으로
+      직접 박아두는 이유: html2canvas로 캡처(발췌 export)할
+      때 상속만 되어 있으면 가끔 못 읽어서 시스템 명조체로
+      깨져 나오는 문제가 있었음.
     */
 
     quotePreviewTitle.style.fontFamily =
-      '"Pretendard", sans-serif';
+      quoteFontFamily;
 
 
     quotePreviewTitle.style.color =
@@ -149,10 +174,7 @@ function updateQuotePreview() {
   if (quotePreviewText) {
 
     quotePreviewText.style.fontFamily =
-      quoteBodyFont?.value ===
-      "nanummyeongjo"
-        ? '"Nanum Myeongjo", serif'
-        : '"Pretendard", sans-serif';
+      quoteFontFamily;
 
 
     quotePreviewText.style.color =
@@ -242,7 +264,7 @@ function updateQuotePreview() {
 
 
     quotePreviewSource.style.fontFamily =
-      '"Pretendard", sans-serif';
+      quoteFontFamily;
 
 
     quotePreviewSource.style.color =
@@ -267,16 +289,76 @@ function updateQuotePreview() {
       "right";
 
 
+    /*
+      "fixed": 본문이 짧아도 캔버스 맨 아래에 고정 — flex-column인
+      캔버스에서 마지막 자식에 marginTop:auto를 주면 남는
+      공간을 전부 흡수해서 바닥에 붙고, 캔버스 padding은
+      그대로 지켜진다. (실제 글쓰기 에디터의 export는
+      html2canvas가 이 방식을 제대로 못 그려서 스페이서
+      elemenet 방식으로 따로 구현했지만 — posts-preview.js
+      참고 — 관리자 패널은 export를 직접 하지 않는 순수
+      미리보기라 원래 방식 그대로 둬도 문제없음.)
+    */
+
     quotePreviewSource.style.marginTop =
-      `${
-        quoteSourceSpacing?.value ||
-        0
-      }px`;
+      quoteSourcePosition?.value ===
+      "fixed" &&
+      !ratio.auto
+        ? "auto"
+        : `${
+            quoteSourceSpacing?.value ||
+            0
+          }px`;
 
   }
 
 
-  applyVerticalAlignment();
+  /*
+    AUTO는 박스 높이가 콘텐츠 높이와 항상 같아서 center
+    지정 자체는 시각적으로 의미 없지만, 요구사항대로
+    명시적으로 center로 둔다(quoteVerticalAlign 드롭다운
+    값 자체는 건드리지 않음).
+  */
+
+  if (ratio.auto) {
+
+    quotePreviewCanvas.style.justifyContent =
+      "center";
+
+  } else {
+
+    applyVerticalAlignment();
+
+  }
+
+
+  /*
+    AUTO의 크기 표시는 여기서 — 캔버스는 항상 520px 폭으로
+    레이아웃되므로, 실제 렌더링된 높이(offsetHeight)를
+    exportWidth 비율만큼 환산하면 실제 내보내기 픽셀 높이가
+    된다.
+  */
+
+  if (
+    quotePreviewSize &&
+    ratio.auto
+  ) {
+
+    const naturalHeight =
+      quotePreviewCanvas.offsetHeight;
+
+
+    const exportHeight =
+      Math.round(
+        naturalHeight *
+        (exportWidth / 520)
+      );
+
+
+    quotePreviewSize.textContent =
+      `${exportWidth} × ${exportHeight}`;
+
+  }
 
 
   applyQuotePreviewScale();

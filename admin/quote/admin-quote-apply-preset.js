@@ -213,6 +213,22 @@ function applyQuoteSettings(
   }
 
 
+  /*
+    ★ NEW
+    예전에 저장한 프리셋에는
+    pointColor가 없을 수 있으므로
+    기본값 #5c7cfa 사용.
+  */
+
+  if (quotePointColor) {
+
+    quotePointColor.value =
+      settings.pointColor ||
+      "#5c7cfa";
+
+  }
+
+
   if (quoteFontSize) {
 
     quoteFontSize.value =
@@ -395,6 +411,15 @@ function applyQuoteSettings(
     quoteSourceSpacing.value =
       settings.sourceSpacing ??
       28;
+
+  }
+
+
+  if (quoteSourcePosition) {
+
+    quoteSourcePosition.value =
+      settings.sourcePosition ||
+      "flow";
 
   }
 

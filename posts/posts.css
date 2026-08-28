@@ -589,16 +589,108 @@
 }
 
 
+.banner-editor-image-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
 .banner-editor-preview {
-  width: 100%;
+  display: block;
+
+  width: 96px;
   height: auto;
 
   border: 1px solid #eeeeee;
+
+  background: #f6f6f6;
 }
 
 
 .banner-editor-preview[hidden] {
   display: none;
+}
+
+
+.banner-editor-preview-empty {
+  width: 96px;
+
+  padding: 12px 6px;
+
+  border: 1px dashed #eeeeee;
+
+  font-size: 8.5px;
+
+  letter-spacing: 0.02em;
+
+  line-height: 1.4;
+
+  color: #bbbbbb;
+
+  text-align: center;
+}
+
+
+.banner-editor-preview-empty[hidden] {
+  display: none;
+}
+
+
+.banner-editor-change-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 30px;
+
+  padding: 6px 14px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+
+  background: transparent;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  letter-spacing: 0.03em;
+
+  color: #999999;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.banner-editor-change-button:hover {
+  border-color: #f0d3de;
+
+  background: #fff5f8;
+
+  color: #d980a2;
+}
+
+
+.banner-editor-upload-message {
+  margin: 6px 0 0;
+
+  font-size: 9px;
+
+  letter-spacing: 0.02em;
+
+  color: #d980a2;
+
+  min-height: 11px;
 }
 
 
@@ -1504,60 +1596,50 @@ body.post-mode .music-button {
 
 
 /* =========================================================
-   HIGHLIGHT CONTROLS
+   HIGHLIGHT / POINT COLOR CONTROL
+
+   ★ 예전엔 preset(원클릭 적용) + custom(컬러피커) 두 버튼이
+   있었는데, 하나로 합쳐서 이 스와치 자체가 컬러피커 트리거가
+   됐다 — 초기 색은 QUOTE PRESET 값을 따름(posts-style-preset.js
+   updatePresetHighlightSwatch/updatePresetPointColorSwatch).
+   버튼이 하나뿐이라 텍스트 라벨 없이 스와치만 남았고, 대신
+   눈에 잘 띄도록 테두리를 줬다.
 ========================================================== */
 
-.post-highlight-preset-button,
 .post-highlight-custom-control {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
-  gap: 5px;
+  width: 24px;
+  height: 24px;
 
-  min-height: 24px;
+  padding: 0;
 
-  padding:
-    3px
-    5px;
+  border:
+    1px solid
+    #e5e5e5;
 
-  border: 0;
+  border-radius: 50%;
 
   background: transparent;
-
-  font-family:
-    "Pretendard",
-    sans-serif;
-
-  font-size: 9px;
-
-  line-height: 1;
-
-  letter-spacing: 0.025em;
-
-  color: #999999;
 
   cursor: pointer;
 
   transition:
-    color 0.18s ease,
-    background 0.18s ease;
+    border-color 0.18s ease,
+    transform 0.16s ease;
 
   -webkit-tap-highlight-color:
     transparent;
 }
 
 
-.post-highlight-preset-button:hover,
 .post-highlight-custom-control:hover {
-  color: #555555;
-}
+  border-color: #d5d5d5;
 
-
-.post-highlight-preset-button.active {
-  color: #d980a2;
-
-  background:
-    #fff5f8;
+  transform:
+    scale(1.06);
 }
 
 
@@ -1568,13 +1650,13 @@ body.post-mode .music-button {
 .post-highlight-swatch {
   display: block;
 
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
 
   flex:
     0
     0
-    13px;
+    15px;
 
   border:
     1px solid
@@ -1589,19 +1671,6 @@ body.post-mode .music-button {
 
   background:
     #f4dce6;
-
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease;
-}
-
-
-.post-highlight-preset-button:hover
-.post-highlight-swatch,
-.post-highlight-custom-control:hover
-.post-highlight-swatch {
-  transform:
-    scale(1.08);
 }
 
 
@@ -2063,7 +2132,7 @@ body.post-mode .music-button {
     1px solid
     #e5e5e5;
 
-  border-radius: 999px;
+  border-radius: 4px;
 
   background: transparent;
 
@@ -2149,6 +2218,39 @@ body.post-mode .music-button {
 }
 
 
+/*
+  ★ align/body align/source position — 옵션이 여러 개(3~4개)로
+  늘어나면서 버튼을 줄줄이 늘어놓으면 가독성이 떨어져서
+  드롭다운 하나로 묶었다. title/source 표시 토글, ratio는
+  자주 누르는 on/off라 버튼으로 남겨둠.
+*/
+
+.post-editor-preview-select {
+  padding: 3px 6px;
+
+  border:
+    1px solid
+    #e5e5e5;
+
+  border-radius: 4px;
+
+  background: #ffffff;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 9px;
+  font-weight: 400;
+
+  letter-spacing: 0.025em;
+
+  color: #999999;
+
+  cursor: pointer;
+}
+
+
 /* =========================================================
    RATIO CONTROLS
 ========================================================== */
@@ -2174,7 +2276,7 @@ body.post-mode .music-button {
     1px solid
     #e5e5e5;
 
-  border-radius: 999px;
+  border-radius: 4px;
 
   background: transparent;
 
@@ -2445,7 +2547,7 @@ text-size-adjust: 100%;
    PAGE BREAK BUTTON
 ========================================================== */
 
-.post-editor-page-group {
+.post-editor-undo-group {
   margin-left: auto;
 }
 
@@ -2459,6 +2561,30 @@ text-size-adjust: 100%;
   color: #d980a2;
 
   background: #fff5f8;
+}
+
+
+.post-editor-tool-button.undo {
+  color: #a9a9a9;
+}
+
+
+.post-editor-tool-button.undo:hover {
+  color: #d980a2;
+
+  background: #fff5f8;
+}
+
+
+.post-editor-tool-button.undo:disabled {
+  color: #dddddd;
+
+  cursor: default;
+}
+
+
+.post-editor-tool-button.undo:disabled:hover {
+  background: transparent;
 }
 
 
@@ -2524,6 +2650,12 @@ text-size-adjust: 100%;
    stage(캔버스 뷰포트) 안쪽 하단에 가볍게 떠 있는
    반투명 오버레이. 캔버스를 가리지 않도록 배경은
    최소한만 쓰고, 화살표는 원형 버튼으로 분리.
+
+   ★ 카드 배경만 옅게(0.35) 하고 opacity는 안 건드림 —
+   컨테이너 전체에 opacity를 주면 화살표/페이지 숫자
+   글자까지 같이 흐려져서 오히려 안 보이게 된다. 평소엔
+   배경 카드가 은은하게 비치다가, 마우스를 올리면(조작하기
+   편하도록) 카드가 또렷해진다.
 ========================================================== */
 
 .post-editor-preview-pagination {
@@ -2552,11 +2684,11 @@ text-size-adjust: 100%;
       255,
       255,
       255,
-      0.55
+      0.35
     );
 
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   box-shadow:
     0
@@ -2566,10 +2698,25 @@ text-size-adjust: 100%;
       0,
       0,
       0,
-      0.06
+      0.04
     );
 
+  transition:
+    background 0.2s ease;
+
   pointer-events: none;
+}
+
+
+.post-editor-preview-pagination:hover,
+.post-editor-preview-pagination:focus-within {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.8
+    );
 }
 
 

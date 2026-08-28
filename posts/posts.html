@@ -159,24 +159,57 @@
         >
       </div>
 
-      <div class="banner-editor-field">
-        <label for="bannerEditorImageUrl">
-          BANNER IMAGE URL
-        </label>
-        <input
-          id="bannerEditorImageUrl"
-          type="url"
-          autocomplete="off"
-          placeholder="https://..."
-        >
-      </div>
+      <!--
+        배너 이미지는 URL을 직접 입력받지 않고 Storage에
+        업로드함(친구가 이미지를 지우거나 옮기면 우리 목록도
+        깨지는 문제 방지) — posts-view-banner-form.js 참고.
+      -->
 
-      <img
-        class="banner-editor-preview"
-        id="bannerEditorPreview"
-        alt=""
-        hidden
-      >
+      <div class="banner-editor-field">
+
+        <label for="bannerEditorFileInput">
+          BANNER IMAGE
+        </label>
+
+        <div class="banner-editor-image-row">
+
+          <img
+            class="banner-editor-preview"
+            id="bannerEditorPreview"
+            alt=""
+            hidden
+          >
+
+          <div
+            class="banner-editor-preview-empty"
+            id="bannerEditorPreviewEmpty"
+          >
+            이미지 없음
+          </div>
+
+          <label
+            class="banner-editor-change-button"
+            for="bannerEditorFileInput"
+          >
+            change
+          </label>
+
+          <input
+            class="banner-editor-file-input"
+            id="bannerEditorFileInput"
+            type="file"
+            accept="image/*"
+            hidden
+          >
+
+        </div>
+
+        <p
+          class="banner-editor-upload-message"
+          id="bannerEditorUploadMessage"
+        ></p>
+
+      </div>
 
       <div class="banner-editor-actions">
 
@@ -589,6 +622,30 @@
 
 
           <!-- =================================================
+               PAGE BREAK
+          ================================================== -->
+
+          <div class="post-editor-tool-group">
+
+            <span class="post-editor-tool-label">
+              PAGE
+            </span>
+
+
+            <button
+              class="post-editor-tool-button page-break"
+              id="postEditorPageBreak"
+              type="button"
+              title="현재 위치에서 다음 페이지로 넘기기"
+            >
+              break
+            </button>
+
+          </div>
+
+
+
+          <!-- =================================================
                HIGHLIGHT
           ================================================== -->
 
@@ -599,43 +656,23 @@
             </span>
 
 
-            <!-- PRESET -->
-
-            <button
-              class="post-highlight-preset-button"
-              id="postEditorHighlightPreset"
-              type="button"
-              title="preset highlight"
-            >
-
-              <span
-                class="post-highlight-swatch"
-                id="postEditorPresetSwatch"
-              ></span>
-
-              <span>
-                preset
-              </span>
-
-            </button>
-
-
-
-            <!-- CUSTOM -->
+            <!--
+              단일 컨트롤. 초기 색은 QUOTE PRESET의 하이라이트
+              색(getPresetHighlightColor)을 따르고, 누르면
+              컬러피커가 열려서 바로 조정할 수 있다
+              (updatePresetHighlightSwatch — posts-style-preset.js).
+            -->
 
             <label
               class="post-highlight-custom-control"
               for="postEditorCustomColor"
+              title="highlight color"
             >
 
               <span
                 class="post-highlight-swatch"
                 id="postEditorCustomSwatch"
               ></span>
-
-              <span>
-                custom
-              </span>
 
             </label>
 
@@ -645,7 +682,50 @@
               class="post-highlight-color-input"
               type="color"
               value="#f4dce6"
-              aria-label="커스텀 하이라이트 색상 선택"
+              aria-label="하이라이트 색상 선택"
+            >
+
+          </div>
+
+
+
+          <!-- =================================================
+               POINT COLOR
+          ================================================== -->
+
+          <div class="post-editor-tool-group">
+
+            <span class="post-editor-tool-label">
+              POINT COLOR
+            </span>
+
+
+            <!--
+              단일 컨트롤. 초기 색은 QUOTE PRESET의 포인트 컬러
+              (getPresetPointColor)를 따르고, 누르면 컬러피커가
+              열려서 바로 조정할 수 있다.
+            -->
+
+            <label
+              class="post-highlight-custom-control"
+              for="postEditorCustomPointColor"
+              title="point color"
+            >
+
+              <span
+                class="post-highlight-swatch"
+                id="postEditorCustomPointSwatch"
+              ></span>
+
+            </label>
+
+
+            <input
+              id="postEditorCustomPointColor"
+              class="post-highlight-color-input"
+              type="color"
+              value="#5c7cfa"
+              aria-label="포인트 컬러 선택"
             >
 
           </div>
@@ -695,23 +775,22 @@
 
 
           <!-- =================================================
-               PAGE BREAK
+               UNDO
+
+               데스크톱은 Ctrl/Cmd+Z(posts-editor-undo.js)로도
+               되는데, 모바일은 키보드 단축키가 없으니 버튼도
+               같이 둠 — 예전 PAGE BREAK가 있던 오른쪽 끝 자리.
           ================================================== -->
 
-          <div class="post-editor-tool-group post-editor-page-group">
-
-            <span class="post-editor-tool-label">
-              PAGE
-            </span>
-
+          <div class="post-editor-tool-group post-editor-undo-group">
 
             <button
-              class="post-editor-tool-button page-break"
-              id="postEditorPageBreak"
+              class="post-editor-tool-button undo"
+              id="postEditorUndoButton"
               type="button"
-              title="현재 위치에서 다음 페이지로 넘기기"
+              title="되돌리기 (Ctrl/Cmd+Z)"
             >
-              break
+              undo
             </button>
 
           </div>
@@ -747,24 +826,10 @@
           hidden
         >
 
-          <button
-            class="post-highlight-preset-button"
-            id="postEditorFloatingHighlightPreset"
-            type="button"
-            title="preset highlight"
-          >
-
-            <span
-              class="post-highlight-swatch"
-              id="postEditorFloatingPresetSwatch"
-            ></span>
-
-          </button>
-
-
           <label
             class="post-highlight-custom-control"
             for="postEditorFloatingCustomColor"
+            title="highlight color"
           >
 
             <span
@@ -780,7 +845,30 @@
             class="post-highlight-color-input"
             type="color"
             value="#f4dce6"
-            aria-label="커스텀 하이라이트 색상 선택"
+            aria-label="하이라이트 색상 선택"
+          >
+
+
+          <label
+            class="post-highlight-custom-control"
+            for="postEditorFloatingCustomPointColor"
+            title="point color"
+          >
+
+            <span
+              class="post-highlight-swatch"
+              id="postEditorFloatingCustomPointSwatch"
+            ></span>
+
+          </label>
+
+
+          <input
+            id="postEditorFloatingCustomPointColor"
+            class="post-highlight-color-input"
+            type="color"
+            value="#5c7cfa"
+            aria-label="포인트 컬러 선택"
           >
 
         </div>
@@ -894,42 +982,104 @@
                 </button>
 
 
-                <!-- =============================================
-                     SOURCE POSITION (source가 켜져 있을 때만
-                     "source" 버튼 옆에 펼쳐짐)
-                ============================================== -->
+                <!--
+                  SOURCE POSITION — source 버튼 바로 옆에 붙어야
+                  자기가 뭘 조정하는 옵션인지 헷갈리지 않는다.
+                  source가 켜져 있을 때만 보임.
+                -->
 
-                <div
-                  class="post-editor-preview-subrow"
-                  id="postEditorPreviewSourcePositionRow"
+                <select
+                  class="post-editor-preview-select"
+                  id="postEditorPreviewSourcePositionSelect"
                   hidden
                 >
 
+                  <option value="flow">
+                    flow
+                  </option>
+
+                  <option value="fixed">
+                    fixed
+                  </option>
+
+                </select>
+
+
+
+                <!-- =============================================
+                     VERTICAL ALIGN (세션 한정 — "preset"이면
+                     QUOTE 프리셋 값을 그대로 따름. 이 글에서만
+                     잠깐 위/가운데로 바꿔보고 싶을 때 사용)
+                ============================================== -->
+
+                <div class="post-editor-preview-subrow">
+
                   <span class="post-editor-preview-subrow-label">
-                    position
+                    align
                   </span>
 
 
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    id="postEditorPreviewSourcePositionFlow"
-                    type="button"
-                    data-position="flow"
-                    aria-pressed="true"
+                  <select
+                    class="post-editor-preview-select"
+                    id="postEditorPreviewAlignSelect"
                   >
-                    flow
-                  </button>
+
+                    <option value="">
+                      preset
+                    </option>
+
+                    <option value="top">
+                      top
+                    </option>
+
+                    <option value="center">
+                      center
+                    </option>
+
+                  </select>
+
+                </div>
 
 
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    id="postEditorPreviewSourcePositionFixed"
-                    type="button"
-                    data-position="fixed"
-                    aria-pressed="false"
+
+                <!-- =============================================
+                     BODY ALIGN (세션 한정 — "preset"이면 QUOTE
+                     프리셋 값을 그대로 따름)
+                ============================================== -->
+
+                <div class="post-editor-preview-subrow">
+
+                  <span class="post-editor-preview-subrow-label">
+                    body
+                  </span>
+
+
+                  <select
+                    class="post-editor-preview-select"
+                    id="postEditorPreviewBodyAlignSelect"
                   >
-                    fixed
-                  </button>
+
+                    <option value="">
+                      preset
+                    </option>
+
+                    <option value="left">
+                      left
+                    </option>
+
+                    <option value="center">
+                      center
+                    </option>
+
+                    <option value="right">
+                      right
+                    </option>
+
+                    <option value="justify">
+                      justify
+                    </option>
+
+                  </select>
 
                 </div>
 
@@ -993,6 +1143,16 @@
                     aria-pressed="false"
                   >
                     4:3
+                  </button>
+
+
+                  <button
+                    class="post-editor-preview-ratio-button"
+                    type="button"
+                    data-ratio="auto"
+                    aria-pressed="false"
+                  >
+                    auto
                   </button>
 
 

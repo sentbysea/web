@@ -15,6 +15,27 @@
 
 function getQuoteRatio() {
 
+  /*
+    ★ AUTO: 고정 비율이 아니라 콘텐츠 높이를 그대로 쓰라는
+    신호. width/height는 안전한 기본값일 뿐이고, 실제로는
+    auto 플래그를 보고 분기한다(admin-quote-preview-update.js
+    참고).
+  */
+
+  if (
+    currentQuoteRatio ===
+    "auto"
+  ) {
+
+    return {
+      width: 1,
+      height: 1,
+      auto: true
+    };
+
+  }
+
+
   if (
     currentQuoteRatio ===
     "custom"
@@ -55,7 +76,13 @@ function getQuoteRatio() {
 
 
 /* =========================================================
-   ACTION / DIALOGUE PARSER
+   ACTION / DIALOGUE / HIGHLIGHT / POINT COLOR PARSER
+
+   테스트 프리뷰 전용 문법(실제 글 콘텐츠와는 무관):
+   *text*   → action
+   "text"   → dialogue
+   ==text== → highlight (quoteHighlightColor 배경색)
+   ^text^   → point color (quotePointColor 글자색)
 ========================================================== */
 
 function renderStyledQuoteText(
@@ -64,7 +91,7 @@ function renderStyledQuoteText(
 ) {
 
   const pattern =
-    /(\*[^*\n]+\*|"[^"\n]+"|“[^”\n]+”)/g;
+    /(\*[^*\n]+\*|"[^"\n]+"|“[^”\n]+”|==[^=\n]+==|\^[^^\n]+\^)/g;
 
 
   let lastIndex =
@@ -116,6 +143,34 @@ function renderStyledQuoteText(
 
       span.className =
         "quote-action-text";
+
+
+      span.textContent =
+        rawText.slice(
+          1,
+          -1
+        );
+
+    } else if (
+      rawText.startsWith("==")
+    ) {
+
+      span.className =
+        "quote-highlight-text";
+
+
+      span.textContent =
+        rawText.slice(
+          2,
+          -2
+        );
+
+    } else if (
+      rawText.startsWith("^")
+    ) {
+
+      span.className =
+        "quote-point-text";
 
 
       span.textContent =
@@ -211,6 +266,36 @@ function applySpecialQuoteStyles() {
         element.style.fontWeight =
           quoteDialogueWeight?.value ||
           "500";
+
+      }
+    );
+
+
+  quotePreviewText
+    .querySelectorAll(
+      ".quote-highlight-text"
+    )
+    .forEach(
+      element => {
+
+        element.style.backgroundColor =
+          quoteHighlightColor?.value ||
+          "#f4dce6";
+
+      }
+    );
+
+
+  quotePreviewText
+    .querySelectorAll(
+      ".quote-point-text"
+    )
+    .forEach(
+      element => {
+
+        element.style.color =
+          quotePointColor?.value ||
+          "#5c7cfa";
 
       }
     );

@@ -19,6 +19,38 @@
 
 
 /*
+  캡처용 페이지 높이 계산. ratio가 AUTO면 고정 비율이 없으니,
+  이미 hidden 해제해서 실제 레이아웃된 page의 높이를 그대로
+  캡처 높이로 쓴다(transform:scale은 offsetHeight에 영향을
+  안 주므로 여기서 재도 정확함). 모바일 클립보드 경로와
+  데스크톱 다중 페이지 저장 경로 양쪽에서 재사용한다.
+*/
+
+function resolveExportPageHeight(
+  page,
+  ratio,
+  pageWidth
+) {
+
+  if (ratio.auto) {
+
+    return page.offsetHeight;
+
+  }
+
+
+  return Math.round(
+    pageWidth *
+    (
+      ratio.height /
+      ratio.width
+    )
+  );
+
+}
+
+
+/*
   한 페이지를 html2canvas로 캡처해서 PNG Blob으로 만든다.
   모바일 클립보드 경로와, 그 폴백(공유/새탭) 양쪽에서
   재사용한다.
@@ -64,6 +96,33 @@ function bakeCssVarStylesForCapture(
 
   page.style.padding =
     pageComputed.padding;
+
+
+  /*
+    ★ padding을 인라인으로 박아넣는 순간, html2canvas가
+    box-sizing: border-box(CSS 클래스로만 지정돼 있음)를
+    같이 못 읽어오는 경우가 있다 — 그러면 padding을
+    content-box처럼(즉 지정한 height 위에 padding을 또
+    더해서) 계산해버려서, 실제 렌더링 높이가 의도한 것보다
+    padding*2만큼 커진다. "flow" source나 본문처럼 위쪽에
+    있는 내용은 이 정도 오차로는 안 잘리지만, "fixed" source처럼
+    캔버스 맨 아래 끝에 딱 붙는 요소는 이 초과분 밖으로
+    밀려나서 export에서만 통째로 안 보이는 버그가 있었다
+    (직접 재현/확인함). box-sizing도 같이 인라인으로 박아두면
+    해결된다.
+  */
+
+  affected.push(
+    {
+      node: page,
+      prop: "boxSizing",
+      previousValue:
+        page.style.boxSizing
+    }
+  );
+
+  page.style.boxSizing =
+    pageComputed.boxSizing;
 
 
   const title =

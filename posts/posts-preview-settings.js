@@ -355,6 +355,29 @@ function getPostPreviewRatio(
 ) {
 
   /*
+    ★ AUTO: 고정 비율이 아니라 콘텐츠 높이를 그대로 쓰라는
+    신호. width/height는 옛 호출부를 위한 안전한 기본값일
+    뿐이고, 실제로는 auto 플래그를 보고 분기해야 한다
+    (posts-preview.js의 createEditorPreviewPage,
+    posts-preview-export.js의 두 캡처 지점,
+    posts-preview-css-vars.js의 --post-preview-aspect 참고).
+  */
+
+  if (
+    previewRatioMode ===
+    "auto"
+  ) {
+
+    return {
+      width: 1,
+      height: 1,
+      auto: true
+    };
+
+  }
+
+
+  /*
     프리뷰에서 직접 고른 비율이 있으면
     프리셋보다 우선.
   */
@@ -422,6 +445,26 @@ function getPostPreviewRatio(
       };
 
     }
+
+  }
+
+
+  /*
+    세션 오버라이드가 없을 때(previewRatioMode === null)만
+    QUOTE 프리셋 자체가 AUTO로 저장돼 있는지 확인.
+  */
+
+  if (
+    !previewRatioMode &&
+    settings.ratio ===
+    "auto"
+  ) {
+
+    return {
+      width: 1,
+      height: 1,
+      auto: true
+    };
 
   }
 

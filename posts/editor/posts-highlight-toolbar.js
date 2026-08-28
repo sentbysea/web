@@ -77,31 +77,18 @@ postEditorPreviewNext
   );
 
 /* =========================================================
-   PRESET HIGHLIGHT
-========================================================== */
-
-
-postEditorHighlightPreset
-  ?.addEventListener(
-    "click",
-    () => {
-
-      applyEditorHighlight(
-        getPresetHighlightColor()
-      );
-
-    }
-  );
-
-
-
-/* =========================================================
    CUSTOM HIGHLIGHT
 ========================================================== */
 
 /*
-  컬러피커를 여는 순간에도
-  현재 선택영역을 먼저 저장해 둠.
+  ★ 스와치를 누르는 즉시(pointerdown) 지금 색을 먼저
+  적용한다 — 컬러피커(change 이벤트)까지 안 가고 그냥
+  눌러서 끝내는 경우가 대부분이라, "눌렀는데 왜 안
+  먹지" 하는 문제를 없애준다. 컬러피커를 열어서 실제로
+  다른 색을 고르면 change 핸들러가 그 색으로 다시 한 번
+  덮어씌운다. pointerdown 시점에 선택영역을 먼저
+  저장해두는 이유도 동일(포커스가 옮겨가기 전에 붙잡아야
+  함).
 */
 
 postEditorCustomControl
@@ -110,6 +97,15 @@ postEditorCustomControl
     () => {
 
       captureEditorSelectionBeforeToolbar();
+
+
+      if (postEditorCustomColor) {
+
+        applyEditorHighlight(
+          postEditorCustomColor.value
+        );
+
+      }
 
     }
   );
@@ -150,12 +146,71 @@ postEditorCustomColor
 
 
 /* =========================================================
-   MOBILE FLOATING HIGHLIGHT MENU
+   CUSTOM POINT COLOR
+========================================================== */
 
-   본문에서 텍스트를 선택하면(주로 모바일 롱프레스),
-   위에 있는 고정 툴바까지 갈 필요 없이 선택 영역
-   바로 옆에 하이라이트 버튼이 뜨게 한다.
-   고정 툴바는 그대로 유지(둘 다 사용 가능).
+postEditorCustomPointControl
+  ?.addEventListener(
+    "pointerdown",
+    () => {
+
+      captureEditorSelectionBeforeToolbar();
+
+
+      if (postEditorCustomPointColor) {
+
+        applyEditorPointColor(
+          postEditorCustomPointColor.value
+        );
+
+      }
+
+    }
+  );
+
+postEditorCustomPointColor
+  ?.addEventListener(
+    "focus",
+    () => {
+
+      updateCustomPointColorSwatch();
+
+    }
+  );
+
+
+postEditorCustomPointColor
+  ?.addEventListener(
+    "input",
+    updateCustomPointColorSwatch
+  );
+
+
+postEditorCustomPointColor
+  ?.addEventListener(
+    "change",
+    () => {
+
+      updateCustomPointColorSwatch();
+
+
+      applyEditorPointColor(
+        postEditorCustomPointColor.value
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   FLOATING HIGHLIGHT / POINT COLOR 메뉴
+
+   본문에서 텍스트를 선택하면(데스크톱 드래그, 모바일
+   롱프레스 둘 다) 위에 있는 고정 툴바까지 갈 필요 없이
+   선택 영역 바로 옆에 하이라이트/포인트 컬러 버튼이 뜨게
+   한다. 고정 툴바는 그대로 유지(둘 다 사용 가능) — 트위터
+   등에서 텍스트 선택 시 뜨는 볼드/이탤릭 팝업과 같은 패턴.
 ========================================================== */
 
 function hideEditorFloatingMenu() {
@@ -279,8 +334,7 @@ function positionEditorFloatingMenu(
 function syncEditorFloatingMenu() {
 
   if (
-    !postEditorFloatingMenu ||
-    !isMobilePostEditor()
+    !postEditorFloatingMenu
   ) {
 
     hideEditorFloatingMenu();
@@ -340,6 +394,46 @@ function syncEditorFloatingMenu() {
   }
 
 
+  /*
+    ★ postEditorContent는 자기 안에서 스크롤되는 상자
+    (overflow-y:auto)라, 선택 영역이 그 상자의 스크롤로
+    안 보이게 밀려 올라가도(overflow로 잘렸을 뿐) getBoundingClientRect
+    는 여전히 "원래 있어야 할" 화면 좌표를 그대로 돌려준다
+    — 그대로 두면 메뉴가 상자 바깥(예: 위쪽 CATEGORY 영역)에
+    뜬금없이 떠서 지금 화면에 보이는 글자와 상관없어 보인다.
+    선택 영역이 상자의 실제로 보이는 세로 범위를 벗어났으면
+    숨긴다.
+  */
+
+  if (postEditorContent) {
+
+    const editorRect =
+      postEditorContent.getBoundingClientRect();
+
+
+    const rectMiddle =
+      (
+        rect.top +
+        rect.bottom
+      ) / 2;
+
+
+    if (
+      rectMiddle <
+        editorRect.top ||
+      rectMiddle >
+        editorRect.bottom
+    ) {
+
+      hideEditorFloatingMenu();
+
+      return;
+
+    }
+
+  }
+
+
   positionEditorFloatingMenu(
     rect
   );
@@ -353,52 +447,24 @@ document.addEventListener(
 );
 
 
-postEditorContent
-  ?.addEventListener(
-    "scroll",
-    hideEditorFloatingMenu
-  );
+/*
+  ★ 스크롤해도 그냥 숨기지 않고 다시 위치를 계산한다.
+  전에는 스크롤하면 메뉴를 숨기기만 했는데, 선택 자체는
+  그대로 유지되니(selectionchange가 다시 안 뜸) 메뉴가
+  스크롤 전 화면 좌표에 그대로 남아 있다가 — 아래로
+  스크롤할수록 실제 선택 영역과는 점점 멀어져 보였다.
 
+  scroll 이벤트는 버블링은 안 해도 캡처링은 하기 때문에,
+  window에 capture:true로 하나만 걸어두면 postEditorContent
+  내부 스크롤이든 postArea든 페이지 자체 스크롤이든 전부
+  여기서 다 잡혀서 선택 영역을 계속 따라다니게 된다.
+*/
 
-postArea
-  ?.addEventListener(
-    "scroll",
-    hideEditorFloatingMenu
-  );
-
-
-[
-  postEditorFloatingHighlightPreset
-].forEach(
-  button => {
-
-    button
-      ?.addEventListener(
-        "pointerdown",
-        event => {
-
-          captureEditorSelectionBeforeToolbar();
-
-          event.preventDefault();
-
-        }
-      );
-
-  }
+window.addEventListener(
+  "scroll",
+  syncEditorFloatingMenu,
+  true
 );
-
-
-postEditorFloatingHighlightPreset
-  ?.addEventListener(
-    "click",
-    () => {
-
-      applyEditorHighlight(
-        getPresetHighlightColor()
-      );
-
-    }
-  );
 
 
 document
@@ -410,6 +476,38 @@ document
     () => {
 
       captureEditorSelectionBeforeToolbar();
+
+
+      if (postEditorFloatingCustomColor) {
+
+        applyEditorHighlight(
+          postEditorFloatingCustomColor.value
+        );
+
+      }
+
+    }
+  );
+
+
+document
+  .querySelector(
+    'label[for="postEditorFloatingCustomPointColor"]'
+  )
+  ?.addEventListener(
+    "pointerdown",
+    () => {
+
+      captureEditorSelectionBeforeToolbar();
+
+
+      if (postEditorFloatingCustomPointColor) {
+
+        applyEditorPointColor(
+          postEditorFloatingCustomPointColor.value
+        );
+
+      }
 
     }
   );
@@ -433,6 +531,29 @@ postEditorFloatingCustomColor
 
 
       updateCustomHighlightSwatch();
+
+    }
+  );
+
+
+postEditorFloatingCustomPointColor
+  ?.addEventListener(
+    "input",
+    updateCustomPointColorSwatch
+  );
+
+
+postEditorFloatingCustomPointColor
+  ?.addEventListener(
+    "change",
+    () => {
+
+      applyEditorPointColor(
+        postEditorFloatingCustomPointColor.value
+      );
+
+
+      updateCustomPointColorSwatch();
 
     }
   );

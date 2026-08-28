@@ -15,17 +15,6 @@
    BACK
 ========================================================== */
 
-writeBackButton
-  .addEventListener(
-    "click",
-    () => {
-
-      showAdminHome();
-
-    }
-  );
-
-
 quoteBackButton
   .addEventListener(
     "click",
@@ -38,6 +27,28 @@ quoteBackButton
 
 
 settingsBackButton
+  .addEventListener(
+    "click",
+    () => {
+
+      showAdminHome();
+
+    }
+  );
+
+
+customizeBackButton
+  .addEventListener(
+    "click",
+    () => {
+
+      showAdminHome();
+
+    }
+  );
+
+
+inquiryBackButton
   .addEventListener(
     "click",
     () => {

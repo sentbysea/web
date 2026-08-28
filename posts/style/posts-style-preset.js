@@ -57,6 +57,9 @@ async function loadPostStylePreset() {
     updatePresetHighlightSwatch();
 
 
+    updatePresetPointColorSwatch();
+
+
     return postStyleSettings;
 
   }
@@ -316,27 +319,22 @@ function getSafeHighlightColor(
 }
 
 
+/*
+  ★ 버튼이 하나(커스텀 컬러피커)뿐이라, 이 컨트롤의 "초기 색"을
+  QUOTE PRESET의 하이라이트 색으로 맞춰준다 — 프리셋이 처음
+  로드되거나(loadPostStylePreset) 세션 중 다른 프리셋으로
+  바꿔 낄 때(applyPostPresetById)마다 호출됨.
+*/
+
 function updatePresetHighlightSwatch() {
 
   const presetColor =
     getPresetHighlightColor();
 
 
-  if (
-    postEditorPresetSwatch
-  ) {
+  if (postEditorCustomColor) {
 
-    postEditorPresetSwatch.style.background =
-      presetColor;
-
-  }
-
-
-  if (
-    postEditorFloatingPresetSwatch
-  ) {
-
-    postEditorFloatingPresetSwatch.style.background =
+    postEditorCustomColor.value =
       presetColor;
 
   }
@@ -385,6 +383,123 @@ function updateCustomHighlightSwatch() {
 
     postEditorFloatingCustomColor.value =
       postEditorCustomColor.value;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   POINT COLOR
+   (HIGHLIGHT과 동일한 구조 — 배경색 대신 글자색)
+========================================================== */
+
+function getPresetPointColor() {
+
+  const color =
+    postStyleSettings
+      ?.pointColor;
+
+
+  if (
+    /^#[0-9a-fA-F]{6}$/.test(
+      color || ""
+    )
+  ) {
+
+    return color;
+
+  }
+
+
+  return "#5c7cfa";
+
+}
+
+
+function getSafePointColor(
+  color
+) {
+
+  if (
+    /^#[0-9a-fA-F]{6}$/.test(
+      color || ""
+    )
+  ) {
+
+    return color;
+
+  }
+
+
+  return getPresetPointColor();
+
+}
+
+
+/*
+  ★ HIGHLIGHT과 동일 — 버튼이 하나뿐이라 이 컨트롤의 초기
+  색을 QUOTE PRESET의 포인트 컬러로 맞춰준다.
+*/
+
+function updatePresetPointColorSwatch() {
+
+  const presetColor =
+    getPresetPointColor();
+
+
+  if (postEditorCustomPointColor) {
+
+    postEditorCustomPointColor.value =
+      presetColor;
+
+  }
+
+
+  updateCustomPointColorSwatch();
+
+}
+
+
+function updateCustomPointColorSwatch() {
+
+  if (
+    !postEditorCustomPointSwatch ||
+    !postEditorCustomPointColor
+  ) {
+    return;
+  }
+
+
+  const color =
+    getSafePointColor(
+      postEditorCustomPointColor.value
+    );
+
+
+  postEditorCustomPointSwatch.style.background =
+    color;
+
+
+  if (
+    postEditorFloatingCustomPointSwatch
+  ) {
+
+    postEditorFloatingCustomPointSwatch.style.background =
+      color;
+
+  }
+
+
+  if (
+    postEditorFloatingCustomPointColor &&
+    postEditorFloatingCustomPointColor.value !==
+      postEditorCustomPointColor.value
+  ) {
+
+    postEditorFloatingCustomPointColor.value =
+      postEditorCustomPointColor.value;
 
   }
 

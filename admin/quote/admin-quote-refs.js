@@ -165,6 +165,17 @@ const quoteHighlightColor =
   );
 
 
+/*
+  ★ NEW
+  메인 에디터의 포인트 컬러(글자색 강조)에서 사용할 색
+*/
+
+const quotePointColor =
+  document.getElementById(
+    "quotePointColor"
+  );
+
+
 const quoteFontSize =
   document.getElementById(
     "quoteFontSize"
@@ -268,6 +279,11 @@ const quoteSourceAlign =
 const quoteSourceSpacing =
   document.getElementById(
     "quoteSourceSpacing"
+  );
+
+const quoteSourcePosition =
+  document.getElementById(
+    "quoteSourcePosition"
   );
 
 

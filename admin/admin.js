@@ -84,12 +84,6 @@ const adminHome =
   );
 
 
-const writePanel =
-  document.getElementById(
-    "writePanel"
-  );
-
-
 const quotePanel =
   document.getElementById(
     "quotePanel"
@@ -102,16 +96,22 @@ const settingsPanel =
   );
 
 
+const customizePanel =
+  document.getElementById(
+    "customizePanel"
+  );
+
+
+const inquiryPanel =
+  document.getElementById(
+    "inquiryPanel"
+  );
+
+
 
 /* =========================================================
    메뉴 버튼
 ========================================================== */
-
-const openWriteButton =
-  document.getElementById(
-    "openWriteButton"
-  );
-
 
 const openQuoteButton =
   document.getElementById(
@@ -125,9 +125,15 @@ const openSettingsButton =
   );
 
 
-const writeBackButton =
+const openCustomizeButton =
   document.getElementById(
-    "writeBackButton"
+    "openCustomizeButton"
+  );
+
+
+const openInquiryButton =
+  document.getElementById(
+    "openInquiryButton"
   );
 
 
@@ -143,14 +149,27 @@ const settingsBackButton =
   );
 
 
+const customizeBackButton =
+  document.getElementById(
+    "customizeBackButton"
+  );
+
+
+const inquiryBackButton =
+  document.getElementById(
+    "inquiryBackButton"
+  );
+
+
 
 /* =========================================================
    현재 큰 화면 기억
 
    home
-   write
    quote
    settings
+   customize
+   inquiry
 ========================================================== */
 
 let currentAdminView =
@@ -265,53 +284,6 @@ function showAdminHome(
     false;
 
 
-  writePanel.hidden =
-    true;
-
-
-  quotePanel.hidden =
-    true;
-
-
-  settingsPanel.hidden =
-    true;
-
-}
-
-
-
-/* =========================================================
-   WRITE
-========================================================== */
-
-function showWritePanel(
-  saveState = true
-) {
-
-  if (
-    saveState
-  ) {
-
-    saveCurrentAdminView(
-      "write"
-    );
-
-  }
-
-
-  adminPage.classList.remove(
-    "quote-mode"
-  );
-
-
-  adminHome.hidden =
-    true;
-
-
-  writePanel.hidden =
-    false;
-
-
   quotePanel.hidden =
     true;
 
@@ -320,17 +292,19 @@ function showWritePanel(
     true;
 
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  customizePanel.hidden =
+    true;
+
+
+  inquiryPanel.hidden =
+    true;
 
 }
 
 
 
 /* =========================================================
-   QUOTE
+   QUOTE PRESET
 ========================================================== */
 
 function showQuotePanel(
@@ -357,15 +331,19 @@ function showQuotePanel(
     true;
 
 
-  writePanel.hidden =
-    true;
-
-
   quotePanel.hidden =
     false;
 
 
   settingsPanel.hidden =
+    true;
+
+
+  customizePanel.hidden =
+    true;
+
+
+  inquiryPanel.hidden =
     true;
 
 
@@ -438,16 +416,20 @@ function showSettingsPanel(
     true;
 
 
-  writePanel.hidden =
-    true;
-
-
   quotePanel.hidden =
     true;
 
 
   settingsPanel.hidden =
     false;
+
+
+  customizePanel.hidden =
+    true;
+
+
+  inquiryPanel.hidden =
+    true;
 
 
   if (
@@ -460,6 +442,112 @@ function showSettingsPanel(
     );
 
   }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/* =========================================================
+   CUSTOMIZE
+========================================================== */
+
+function showCustomizePanel(
+  saveState = true
+) {
+
+  if (
+    saveState
+  ) {
+
+    saveCurrentAdminView(
+      "customize"
+    );
+
+  }
+
+
+  adminPage.classList.remove(
+    "quote-mode"
+  );
+
+
+  adminHome.hidden =
+    true;
+
+
+  quotePanel.hidden =
+    true;
+
+
+  settingsPanel.hidden =
+    true;
+
+
+  customizePanel.hidden =
+    false;
+
+
+  inquiryPanel.hidden =
+    true;
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+
+/* =========================================================
+   INQUIRY
+========================================================== */
+
+function showInquiryPanel(
+  saveState = true
+) {
+
+  if (
+    saveState
+  ) {
+
+    saveCurrentAdminView(
+      "inquiry"
+    );
+
+  }
+
+
+  adminPage.classList.remove(
+    "quote-mode"
+  );
+
+
+  adminHome.hidden =
+    true;
+
+
+  quotePanel.hidden =
+    true;
+
+
+  settingsPanel.hidden =
+    true;
+
+
+  customizePanel.hidden =
+    true;
+
+
+  inquiryPanel.hidden =
+    false;
 
 
   window.scrollTo({
@@ -493,10 +581,10 @@ function restoreAdminView() {
 
   if (
     currentAdminView ===
-    "write"
+    "settings"
   ) {
 
-    showWritePanel(
+    showSettingsPanel(
       false
     );
 
@@ -507,10 +595,24 @@ function restoreAdminView() {
 
   if (
     currentAdminView ===
-    "settings"
+    "customize"
   ) {
 
-    showSettingsPanel(
+    showCustomizePanel(
+      false
+    );
+
+    return;
+
+  }
+
+
+  if (
+    currentAdminView ===
+    "inquiry"
+  ) {
+
+    showInquiryPanel(
       false
     );
 
@@ -531,17 +633,6 @@ function restoreAdminView() {
    메뉴 이동
 ========================================================== */
 
-openWriteButton
-  .addEventListener(
-    "click",
-    () => {
-
-      showWritePanel();
-
-    }
-  );
-
-
 openQuoteButton
   .addEventListener(
     "click",
@@ -559,6 +650,28 @@ openSettingsButton
     () => {
 
       showSettingsPanel();
+
+    }
+  );
+
+
+openCustomizeButton
+  .addEventListener(
+    "click",
+    () => {
+
+      showCustomizePanel();
+
+    }
+  );
+
+
+openInquiryButton
+  .addEventListener(
+    "click",
+    () => {
+
+      showInquiryPanel();
 
     }
   );

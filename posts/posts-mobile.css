@@ -155,9 +155,7 @@
   }
 
 
-  .post-editor-tool-button,
-  .post-highlight-preset-button,
-  .post-highlight-custom-control {
+  .post-editor-tool-button {
     font-size: 8.5px;
   }
 
@@ -494,6 +492,15 @@
 
 
   .post-editor-preview-subrow-label {
+    font-size: 8px;
+  }
+
+
+  .post-editor-preview-select {
+    padding:
+      2px
+      5px;
+
     font-size: 8px;
   }
 

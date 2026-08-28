@@ -28,6 +28,11 @@ function applyEditorHighlight(
   }
 
 
+  pushEditorUndoSnapshot(
+    true
+  );
+
+
   const safeColor =
     getSafeHighlightColor(
       color
@@ -72,6 +77,25 @@ function applyEditorHighlight(
     updateEditorPreview();
 
     updateEditorToolbarState();
+
+
+    /*
+      ★ 컬러피커(특히 pointerdown 즉시 적용) 이후에는
+      selectionchange가 늦게(또는 OS 피커 포커스 이동과
+      뒤엉켜) 뜰 수 있어서, 방금 적용한 위치를 기준으로
+      직접 한 번 더 계산해 둔다 — 안 그러면 메뉴가 예전
+      선택 위치에 멀리 남아있는 것처럼 보일 수 있다.
+    */
+
+    if (
+      typeof syncEditorFloatingMenu ===
+        "function"
+    ) {
+
+      syncEditorFloatingMenu();
+
+    }
+
 
     return;
 
@@ -119,6 +143,158 @@ function applyEditorHighlight(
 
   updateEditorToolbarState();
 
+
+  if (
+    typeof syncEditorFloatingMenu ===
+      "function"
+  ) {
+
+    syncEditorFloatingMenu();
+
+  }
+
+}
+
+
+
+/* =========================================================
+   POINT COLOR
+   (HIGHLIGHT과 동일한 구조 — 배경색 대신 글자색)
+========================================================== */
+
+function applyEditorPointColor(
+  color
+) {
+
+  const range =
+    getEditorRange();
+
+
+  if (!range) {
+    return;
+  }
+
+
+  pushEditorUndoSnapshot(
+    true
+  );
+
+
+  const safeColor =
+    getSafePointColor(
+      color
+    );
+
+
+  const existing =
+    closestRichStyle(
+      range.startContainer,
+      "post-inline-color"
+    );
+
+
+  if (
+    existing &&
+    existing.contains(
+      range.endContainer.nodeType ===
+        Node.ELEMENT_NODE
+        ? range.endContainer
+        : range.endContainer.parentElement
+    )
+  ) {
+
+    existing.dataset.pointColor =
+      safeColor;
+
+
+    existing.style.color =
+      safeColor;
+
+
+    selectWrappedContent(
+      existing
+    );
+
+
+    updateEditorPreview();
+
+    updateEditorToolbarState();
+
+
+    /*
+      ★ 컬러피커(특히 pointerdown 즉시 적용) 이후에는
+      selectionchange가 늦게(또는 OS 피커 포커스 이동과
+      뒤엉켜) 뜰 수 있어서, 방금 적용한 위치를 기준으로
+      직접 한 번 더 계산해 둔다 — 안 그러면 메뉴가 예전
+      선택 위치에 멀리 남아있는 것처럼 보일 수 있다.
+    */
+
+    if (
+      typeof syncEditorFloatingMenu ===
+        "function"
+    ) {
+
+      syncEditorFloatingMenu();
+
+    }
+
+
+    return;
+
+  }
+
+
+  const wrapper =
+    document.createElement(
+      "span"
+    );
+
+
+  wrapper.className =
+    "post-inline-color";
+
+
+  wrapper.dataset.pointColor =
+    safeColor;
+
+
+  wrapper.style.color =
+    safeColor;
+
+
+  const fragment =
+    range.extractContents();
+
+
+  wrapper.appendChild(
+    fragment
+  );
+
+
+  range.insertNode(
+    wrapper
+  );
+
+
+  selectWrappedContent(
+    wrapper
+  );
+
+
+  updateEditorPreview();
+
+  updateEditorToolbarState();
+
+
+  if (
+    typeof syncEditorFloatingMenu ===
+      "function"
+  ) {
+
+    syncEditorFloatingMenu();
+
+  }
+
 }
 
 
@@ -134,7 +310,7 @@ function stripRichStylesFromFragment(
   const wrappers =
     Array.from(
       fragment.querySelectorAll(
-        ".post-inline-font, .post-inline-highlight"
+        ".post-inline-font, .post-inline-highlight, .post-inline-color"
       )
     );
 
@@ -167,6 +343,11 @@ function clearEditorStyle() {
   if (!range) {
     return;
   }
+
+
+  pushEditorUndoSnapshot(
+    true
+  );
 
 
   /*
@@ -217,6 +398,13 @@ function clearEditorStyle() {
     );
 
 
+  const parentPointColor =
+    closestRichStyle(
+      marker,
+      "post-inline-color"
+    );
+
+
   if (parentFont) {
 
     unwrapElement(
@@ -230,6 +418,15 @@ function clearEditorStyle() {
 
     unwrapElement(
       parentHighlight
+    );
+
+  }
+
+
+  if (parentPointColor) {
+
+    unwrapElement(
+      parentPointColor
     );
 
   }
@@ -281,6 +478,16 @@ function clearEditorStyle() {
 
   updateEditorToolbarState();
 
+
+  if (
+    typeof syncEditorFloatingMenu ===
+      "function"
+  ) {
+
+    syncEditorFloatingMenu();
+
+  }
+
 }
 
 
@@ -300,10 +507,6 @@ function updateEditorToolbarState() {
     false;
 
 
-  let highlightColor =
-    null;
-
-
   if (savedEditorRange) {
 
     const start =
@@ -318,29 +521,10 @@ function updateEditorToolbarState() {
       );
 
 
-    const highlight =
-      closestRichStyle(
-        start,
-        "post-inline-highlight"
-      );
-
-
     fontActive =
       Boolean(
         font
       );
-
-
-    highlightColor =
-      highlight
-        ?.dataset
-        ?.highlight
-      ||
-      highlight
-        ?.style
-        ?.backgroundColor
-      ||
-      null;
 
   }
 
@@ -367,30 +551,6 @@ function updateEditorToolbarState() {
 
   }
 
-
-  if (
-    postEditorHighlightPreset
-  ) {
-
-    const preset =
-      getPresetHighlightColor()
-        .toLowerCase();
-
-
-    postEditorHighlightPreset
-      .classList
-      .toggle(
-        "active",
-        typeof highlightColor ===
-          "string"
-        &&
-        highlightColor
-          .toLowerCase() ===
-          preset
-      );
-
-  }
-
 }
 
 
@@ -411,6 +571,9 @@ function clearRichEditor() {
 
   savedEditorRange =
     null;
+
+
+  resetEditorUndoHistory();
 
 }
 

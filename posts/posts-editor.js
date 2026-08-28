@@ -432,6 +432,11 @@ function toggleEditorFont() {
   }
 
 
+  pushEditorUndoSnapshot(
+    true
+  );
+
+
   const existing =
     closestRichStyle(
       range.startContainer,

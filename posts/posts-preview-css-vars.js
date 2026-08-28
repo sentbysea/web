@@ -36,7 +36,9 @@ function applyPostPreviewPresetVariables(
     .style
     .setProperty(
       "--post-preview-aspect",
-      `${ratio.width} / ${ratio.height}`
+      ratio.auto
+        ? "auto"
+        : `${ratio.width} / ${ratio.height}`
     );
 
 
@@ -121,6 +123,19 @@ let previewSourceVisible = true;
 
 
 /*
+  ★ NEW
+  세션 한정 오버라이드. null이면 QUOTE 프리셋의 verticalAlign/
+  bodyAlign을 그대로 따르고, 이 글을 쓰는 동안 버튼을 한 번이라도
+  누르면 그 값으로 잠깐 덮어쓴다(프리셋 자체는 안 바뀜).
+  verticalAlign은 이 토글에서 top/center 둘만 고른다
+  (자연스럽게-위에서부터/가운데).
+*/
+
+let previewVerticalAlign = null;
+let previewBodyAlign = null;
+
+
+/*
   source 위치: "flow"(본문 끝나는 곳에 자연스럽게) 또는
   "fixed"(본문 길이와 무관하게 캔버스 맨 아래 고정).
 */
@@ -146,8 +161,26 @@ function resetPreviewVisibilityOverrides() {
     false;
 
 
+  /*
+    ★ NEW
+    admin QUOTE PRESET의 SOURCE POSITION 값을 기본값으로
+    쓰고, 이번 편집 세션 동안엔 이 flow/fixed 버튼으로
+    여전히 잠깐 덮어쓸 수 있다(프리셋 자체는 안 바뀜).
+  */
+
   previewSourcePosition =
-    "flow";
+    settings.sourcePosition ===
+    "fixed"
+      ? "fixed"
+      : "flow";
+
+
+  previewVerticalAlign =
+    null;
+
+
+  previewBodyAlign =
+    null;
 
 
   previewRatioRowExpanded =
@@ -209,37 +242,55 @@ function syncPreviewVisibilityToggleButtons() {
 
   /*
     source가 켜져 있을 때만
-    position(flow/fixed) 선택 줄이 펼쳐짐.
+    position(flow/fixed) 드롭다운이 보임.
   */
 
   if (
-    postEditorPreviewSourcePositionRow
+    postEditorPreviewSourcePositionSelect
   ) {
 
-    postEditorPreviewSourcePositionRow.hidden =
+    postEditorPreviewSourcePositionSelect.hidden =
       !previewSourceVisible;
 
   }
 
 
-  postEditorPreviewSourcePositionFlow
-    ?.setAttribute(
-      "aria-pressed",
-      String(
-        previewSourcePosition ===
-        "flow"
-      )
-    );
+  if (
+    postEditorPreviewSourcePositionSelect
+  ) {
+
+    postEditorPreviewSourcePositionSelect.value =
+      previewSourcePosition;
+
+  }
 
 
-  postEditorPreviewSourcePositionFixed
-    ?.setAttribute(
-      "aria-pressed",
-      String(
-        previewSourcePosition ===
-        "fixed"
-      )
-    );
+  /*
+    ★ NEW
+    null(오버라이드 없음)이면 select도 빈 값("preset")으로 —
+    "지금은 프리셋 값을 그대로 따르는 중"이라는 뜻.
+  */
+
+  if (
+    postEditorPreviewAlignSelect
+  ) {
+
+    postEditorPreviewAlignSelect.value =
+      previewVerticalAlign ||
+      "";
+
+  }
+
+
+  if (
+    postEditorPreviewBodyAlignSelect
+  ) {
+
+    postEditorPreviewBodyAlignSelect.value =
+      previewBodyAlign ||
+      "";
+
+  }
 
 }
 

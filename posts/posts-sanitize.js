@@ -19,6 +19,7 @@
   - br
   - span.post-inline-font
   - span.post-inline-highlight
+  - span.post-inline-color
 */
 
 
@@ -181,9 +182,16 @@ function sanitizeRichNode(
       );
 
 
+    const hasPointColor =
+      node.classList.contains(
+        "post-inline-color"
+      );
+
+
     if (
       hasFont ||
-      hasHighlight
+      hasHighlight ||
+      hasPointColor
     ) {
 
       const span =
@@ -221,6 +229,31 @@ function sanitizeRichNode(
 
 
         span.style.backgroundColor =
+          color;
+
+      }
+
+
+      if (hasPointColor) {
+
+        span.classList.add(
+          "post-inline-color"
+        );
+
+
+        const color =
+          getSafePointColor(
+            node.dataset.pointColor
+            ||
+            node.style.color
+          );
+
+
+        span.dataset.pointColor =
+          color;
+
+
+        span.style.color =
           color;
 
       }
@@ -331,7 +364,7 @@ function legacyMarkupToRichHTML(
 
 
   const pattern =
-    /(\[font\]|\[\/font\]|\[hl=#[0-9a-fA-F]{6}\]|\[\/hl\])/g;
+    /(\[font\]|\[\/font\]|\[hl=#[0-9a-fA-F]{6}\]|\[\/hl\]|\[pc=#[0-9a-fA-F]{6}\]|\[\/pc\])/g;
 
 
   let lastIndex =
@@ -466,6 +499,66 @@ function legacyMarkupToRichHTML(
 
     else if (
       token === "[/hl]"
+    ) {
+
+      if (
+        stack.length > 1
+      ) {
+
+        stack.pop();
+
+      }
+
+    }
+
+
+    else if (
+      token.startsWith(
+        "[pc="
+      )
+    ) {
+
+      const color =
+        getSafePointColor(
+          token.slice(
+            4,
+            -1
+          )
+        );
+
+
+      const span =
+        document.createElement(
+          "span"
+        );
+
+
+      span.className =
+        "post-inline-color";
+
+
+      span.dataset.pointColor =
+        color;
+
+
+      span.style.color =
+        color;
+
+
+      current.appendChild(
+        span
+      );
+
+
+      stack.push(
+        span
+      );
+
+    }
+
+
+    else if (
+      token === "[/pc]"
     ) {
 
       if (

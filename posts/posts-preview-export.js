@@ -324,12 +324,10 @@ async function exportEditorPreviewAsImages() {
 
 
             const pageHeight =
-              Math.round(
-                pageWidth *
-                (
-                  ratio.height /
-                  ratio.width
-                )
+              resolveExportPageHeight(
+                page,
+                ratio,
+                pageWidth
               );
 
 
@@ -612,12 +610,10 @@ async function exportEditorPreviewAsImages() {
 
 
       const pageHeight =
-        Math.round(
-          pageWidth *
-          (
-            ratio.height /
-            ratio.width
-          )
+        resolveExportPageHeight(
+          page,
+          ratio,
+          pageWidth
         );
 
 

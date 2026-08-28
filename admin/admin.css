@@ -848,38 +848,6 @@ button {
 }
 
 
-.my-banner-html-textarea {
-  flex: 1;
-
-  min-width: 0;
-
-  height: 64px;
-
-  padding: 8px 12px;
-
-  border: 1px solid #eeeeee;
-  border-radius: 4px;
-
-  outline: none;
-
-  resize: none;
-
-  background: #ffffff;
-
-  color: #444444;
-
-  font-family:
-    "SFMono-Regular",
-    Consolas,
-    "Liberation Mono",
-    Menlo,
-    monospace;
-
-  font-size: 10.5px;
-  line-height: 1.5;
-}
-
-
 .my-banner-copy-button {
   flex: 0 0 auto;
 
@@ -1138,200 +1106,26 @@ button {
 
 
 /* =========================================================
-   WRITE
+   COMING SOON
+   (CUSTOMIZE / INQUIRY 준비 화면)
 ========================================================== */
 
-.write-editor {
-  margin-top: 18px;
-}
-
-
-.write-field {
-  margin-bottom: 20px;
-
-  padding-left: 14px;
-  padding-right: 14px;
-}
-
-
-.write-field label {
-  display: block;
-
-  margin-bottom: 8px;
-
-  color: #777777;
-
-  font-size: 10px;
-
-  letter-spacing: 0.08em;
-}
-
-
-.write-input,
-.write-select,
-.write-textarea {
-  width: 100%;
-
-  border:
-    1px solid
-    #ececec;
-
-  border-radius: 2px;
-
-  background: #ffffff;
-
-  color: #444444;
-
-  outline: none;
-
-  transition:
-    border-color 0.2s ease;
-}
-
-
-.write-input:focus,
-.write-select:focus,
-.write-textarea:focus {
-  border-color: #e7b6c8;
-}
-
-
-.write-input,
-.write-select {
-  min-height: 38px;
-
+.coming-soon {
   padding:
-    8px 10px;
+    60px 4px;
 
-  font-size: 13px;
+  text-align: center;
 }
 
 
-.write-select {
-  cursor: pointer;
-}
-
-
-.write-textarea {
-  min-height: 300px;
-
-  padding: 14px;
-
-  resize: vertical;
-
-  font-size: 13px;
-
-  line-height: 1.75;
-
-  white-space: pre-wrap;
-}
-
-
-.write-actions {
-  display: flex;
-
-  justify-content: flex-end;
-  align-items: center;
-
-  gap: 8px;
-
-  padding-left: 14px;
-  padding-right: 14px;
-}
-
-
-.write-actions
-.save-button {
+.coming-soon-text {
   margin: 0;
-}
 
+  color: #bbbbbb;
 
-.write-preview-button {
-  min-width: 64px;
-
-  min-height: 30px;
-
-  padding:
-    6px 12px;
-
-  border:
-    1px solid
-    #e8e8e8;
-
-  border-radius: 2px;
-
-  background: #ffffff;
-
-  color: #999999;
-
-  font-size: 10px;
-
-  letter-spacing: 0.06em;
-
-  cursor: pointer;
-
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-
-.write-preview-button:hover {
-  color: #e39ab5;
-
-  border-color: #efc9d7;
-}
-
-
-.post-preview {
-  margin:
-    34px 14px 0;
-
-  padding-top: 18px;
-
-  border-top:
-    1px solid
-    #eeeeee;
-}
-
-
-.post-preview-label {
-  margin-bottom: 22px;
-
-  color: #b5b5b5;
-
-  font-size: 9px;
+  font-size: 11px;
 
   letter-spacing: 0.1em;
-}
-
-
-.post-preview-title {
-  margin:
-    0 0 22px;
-
-  color: #333333;
-
-  font-size: 16px;
-
-  font-weight: 500;
-
-  line-height: 1.5;
-}
-
-
-.post-preview-content {
-  color: #444444;
-
-  font-size: 13px;
-
-  line-height: 1.85;
-
-  white-space: pre-wrap;
-
-  word-break: keep-all;
-
-  overflow-wrap: break-word;
 }
 
 
@@ -1864,6 +1658,8 @@ button {
 ========================================================== */
 
 .quote-preview-canvas {
+  position: relative;
+
   display: flex;
 
   flex-direction: column;
@@ -1970,6 +1766,21 @@ button {
 
 .quote-preview-text p:last-child {
   margin-bottom: 0;
+}
+
+
+/*
+  ==text== 테스트 문법 렌더 결과.
+  실제 에디터의 .post-inline-highlight(posts.css)와
+  동일한 룩으로 맞춤 — 색상은 JS가 인라인으로 채움.
+*/
+
+.quote-highlight-text {
+  padding:
+    0
+    0.12em;
+
+  border-radius: 2px;
 }
 
 
@@ -2096,41 +1907,6 @@ button {
 
   .settings-tab {
     font-size: 9px;
-  }
-
-
-
-  /* WRITE */
-
-  .write-field {
-    padding-left: 10px;
-
-    padding-right: 10px;
-  }
-
-
-  .write-textarea {
-    min-height: 360px;
-
-    padding: 13px;
-
-    font-size: 14px;
-
-    line-height: 1.8;
-  }
-
-
-  .write-actions {
-    padding-left: 10px;
-
-    padding-right: 10px;
-  }
-
-
-  .post-preview {
-    margin-left: 10px;
-
-    margin-right: 10px;
   }
 
 

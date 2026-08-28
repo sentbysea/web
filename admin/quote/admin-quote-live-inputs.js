@@ -43,6 +43,7 @@ const quoteLiveInputs = [
     ★ NEW
   */
   quoteHighlightColor,
+  quotePointColor,
 
   quoteFontSize,
   quoteBodyWeight,
@@ -65,7 +66,8 @@ const quoteLiveInputs = [
   quoteSourceSize,
   quoteSourceWeight,
   quoteSourceAlign,
-  quoteSourceSpacing
+  quoteSourceSpacing,
+  quoteSourcePosition
 
 ];
 
@@ -197,6 +199,17 @@ function collectQuoteSettings() {
       "#f4dce6",
 
 
+    /*
+      ★ NEW
+      메인 글 에디터의 POINT COLOR가
+      이 값을 사용하게 된다.
+    */
+
+    pointColor:
+      quotePointColor?.value ||
+      "#5c7cfa",
+
+
     bodySize:
       Number(
         quoteFontSize?.value
@@ -291,7 +304,19 @@ function collectQuoteSettings() {
     sourceSpacing:
       Number(
         quoteSourceSpacing?.value
-      ) || 0
+      ) || 0,
+
+
+    /*
+      ★ NEW
+      실제 글쓰기 에디터 프리뷰의 flow/fixed 토글이
+      이 값을 기본값으로 사용하게 된다(posts-preview-css-vars.js
+      resetPreviewVisibilityOverrides 참고).
+    */
+
+    sourcePosition:
+      quoteSourcePosition?.value ||
+      "flow"
 
   };
 

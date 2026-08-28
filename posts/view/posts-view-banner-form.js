@@ -6,9 +6,35 @@
    posts-view-banner.js에 있음(둘 다 이 파일보다 먼저
    로드돼야 함).
 
-   내용: 배너 추가/수정 폼 열기/닫기, 이미지 URL 미리보기,
-   저장(insert/update), 삭제.
+   배너 이미지는 URL을 직접 입력받지 않고 MY BANNER
+   (admin/settings/admin-my-banner.js)와 같은 방식으로
+   Supabase Storage에 업로드한다 — 친구가 이미지를 지우거나
+   옮기면 우리 목록도 같이 깨지던 문제를 없애려는 것.
+   같은 user-banners 버킷/RLS 정책을 재사용하되, 경로만
+   {user_id}/category-banners/{uuid}/image 로 나눠서 씀
+   (MY BANNER는 {user_id}/banner 하나뿐이라 안 겹침).
+
+   내용: 배너 추가/수정 폼 열기/닫기, 이미지 업로드/미리보기,
+   저장(insert/update), 삭제(Storage 파일도 같이 정리).
 ========================================================== */
+
+const BANNER_CATEGORY_IMAGE_BUCKET =
+  "user-banners";
+
+
+/*
+  지금 폼에 올라가 있는 이미지의 Storage 경로/공개 URL.
+  openBannerForm에서 기존 배너 값으로 채워지거나,
+  업로드 성공 시 새 값으로 바뀐다. save할 때 이 값을 그대로
+  banners.image_path / image_url에 쓴다.
+*/
+
+let editingBannerImagePath =
+  null;
+
+let editingBannerImageUrl =
+  null;
+
 
 
 /* =========================================================
@@ -24,6 +50,16 @@ function openBannerForm(
     banner
       ? banner.id
       : null;
+
+
+  editingBannerImagePath =
+    banner?.image_path ||
+    null;
+
+
+  editingBannerImageUrl =
+    banner?.image_url ||
+    null;
 
 
   if (
@@ -57,17 +93,28 @@ function openBannerForm(
 
 
   if (
-    bannerEditorImageUrl
+    bannerEditorFileInput
   ) {
 
-    bannerEditorImageUrl.value =
-      banner?.image_url ||
+    bannerEditorFileInput.value =
       "";
 
   }
 
 
-  updateBannerEditorPreview();
+  if (
+    bannerEditorUploadMessage
+  ) {
+
+    bannerEditorUploadMessage.textContent =
+      "";
+
+  }
+
+
+  updateBannerEditorPreview(
+    editingBannerImageUrl
+  );
 
 
   if (
@@ -118,6 +165,14 @@ function closeBannerForm() {
     null;
 
 
+  editingBannerImagePath =
+    null;
+
+
+  editingBannerImageUrl =
+    null;
+
+
   if (bannerEditor) {
 
     bannerEditor.hidden =
@@ -136,20 +191,15 @@ function closeBannerForm() {
 }
 
 
-function updateBannerEditorPreview() {
+function updateBannerEditorPreview(
+  url
+) {
 
   if (
     !bannerEditorPreview
   ) {
     return;
   }
-
-
-  const url =
-    bannerEditorImageUrl
-      ?.value
-      .trim() ||
-    "";
 
 
   if (!url) {
@@ -163,6 +213,16 @@ function updateBannerEditorPreview() {
     );
 
 
+    if (
+      bannerEditorPreviewEmpty
+    ) {
+
+      bannerEditorPreviewEmpty.hidden =
+        false;
+
+    }
+
+
     return;
 
   }
@@ -174,6 +234,159 @@ function updateBannerEditorPreview() {
 
   bannerEditorPreview.hidden =
     false;
+
+
+  if (
+    bannerEditorPreviewEmpty
+  ) {
+
+    bannerEditorPreviewEmpty.hidden =
+      true;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   이미지 업로드(같은 배너면 같은 경로에 덮어쓰기)
+========================================================== */
+
+async function handleBannerEditorFileChange(
+  event
+) {
+
+  const file =
+    event.target.files?.[0];
+
+
+  if (!file) {
+    return;
+  }
+
+
+  const user =
+    await getSignedInUser();
+
+
+  if (!user) {
+
+    if (
+      bannerEditorUploadMessage
+    ) {
+
+      bannerEditorUploadMessage.textContent =
+        "로그인이 필요합니다.";
+
+    }
+
+    return;
+
+  }
+
+
+  if (
+    bannerEditorUploadMessage
+  ) {
+
+    bannerEditorUploadMessage.textContent =
+      "업로드 중...";
+
+  }
+
+
+  /*
+    이미 이 배너에 올려둔 이미지가 있으면 같은 경로에
+    덮어쓰고, 처음 올리는 거면 새 uuid로 경로를 만든다.
+  */
+
+  const path =
+    editingBannerImagePath ||
+    crypto.randomUUID();
+
+
+  const storagePath =
+    `${user.id}/category-banners/${path}/image`;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from(
+        BANNER_CATEGORY_IMAGE_BUCKET
+      )
+      .upload(
+        storagePath,
+        file,
+        {
+          upsert:
+            true,
+
+          contentType:
+            file.type,
+
+          cacheControl:
+            "60"
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      error
+    );
+
+
+    if (
+      bannerEditorUploadMessage
+    ) {
+
+      bannerEditorUploadMessage.textContent =
+        "업로드하지 못했습니다.";
+
+    }
+
+    return;
+
+  }
+
+
+  editingBannerImagePath =
+    path;
+
+
+  editingBannerImageUrl =
+    `${SUPABASE_URL}/storage/v1/object/public/` +
+    `${BANNER_CATEGORY_IMAGE_BUCKET}/${storagePath}`;
+
+
+  if (
+    bannerEditorUploadMessage
+  ) {
+
+    bannerEditorUploadMessage.textContent =
+      "업로드 완료 ♡";
+
+  }
+
+
+  /*
+    미리보기는 방금 올린 걸 바로 보여줘야 하니 캐시를
+    피해서(?t=) 로드 — 실제로 저장되는 image_url에는
+    이 쿼리를 안 붙인다(고정 URL이어야 하므로).
+  */
+
+  updateBannerEditorPreview(
+    `${editingBannerImageUrl}?t=${Date.now()}`
+  );
+
+
+  event.target.value =
+    "";
 
 }
 
@@ -199,16 +412,9 @@ async function saveBannerForm() {
     "";
 
 
-  const imageUrl =
-    bannerEditorImageUrl
-      ?.value
-      .trim() ||
-    "";
-
-
   if (
     !url ||
-    !imageUrl
+    !editingBannerImageUrl
   ) {
 
     if (
@@ -216,7 +422,7 @@ async function saveBannerForm() {
     ) {
 
       bannerEditorMessage.textContent =
-        "url / 이미지 url을 입력해주세요.";
+        "url을 입력하고 배너 이미지를 올려주세요.";
 
     }
 
@@ -265,8 +471,12 @@ async function saveBannerForm() {
             .update({
               name,
               url,
+
               image_url:
-                imageUrl
+                editingBannerImageUrl,
+
+              image_path:
+                editingBannerImagePath
             })
             .eq(
               "id",
@@ -293,7 +503,10 @@ async function saveBannerForm() {
               url,
 
               image_url:
-                imageUrl,
+                editingBannerImageUrl,
+
+              image_path:
+                editingBannerImagePath,
 
               sort_order:
                 currentBanners.length
@@ -357,7 +570,7 @@ async function refreshBannerList() {
         "banners"
       )
       .select(
-        "id, name, url, image_url, sort_order"
+        "id, name, url, image_url, image_path, sort_order"
       )
       .eq(
         "category_id",
@@ -459,6 +672,38 @@ async function deleteBanner(
     );
 
     return;
+
+  }
+
+
+  /*
+    ★ Storage에 올려둔 파일도 같이 정리 — 안 지우면
+    다시는 안 쓰는 이미지가 계속 쌓인다.
+  */
+
+  const deletedBanner =
+    currentBanners.find(
+      banner =>
+        banner.id ===
+        id
+    );
+
+
+  if (
+    deletedBanner?.image_path
+  ) {
+
+    await supabaseClient
+      .storage
+      .from(
+        BANNER_CATEGORY_IMAGE_BUCKET
+      )
+      .remove(
+        [
+          `${user.id}/category-banners/` +
+          `${deletedBanner.image_path}/image`
+        ]
+      );
 
   }
 

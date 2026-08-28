@@ -67,7 +67,7 @@ async function renderBannerCategory(
         "banners"
       )
       .select(
-        "id, name, url, image_url, sort_order"
+        "id, name, url, image_url, image_path, sort_order"
       )
       .eq(
         "category_id",
