@@ -747,6 +747,49 @@
                   }
 
 
+                  let fontsCheck =
+                    null;
+
+                  try {
+
+                    fontsCheck =
+                      {
+                        checkPretendard14:
+                          clonedDocument.fonts
+                            ?.check(
+                              "14px Pretendard"
+                            ) ??
+                          null,
+                        entries:
+                          Array.from(
+                            clonedDocument.fonts ||
+                            []
+                          ).map(
+                            f => ({
+                              family:
+                                f.family,
+                              status:
+                                f.status,
+                              weight:
+                                f.weight
+                            })
+                          )
+                      };
+
+                  } catch (e) {
+
+                    fontsCheck =
+                      {
+                        error:
+                          String(
+                            e?.stack ||
+                            e
+                          )
+                      };
+
+                  }
+
+
                   try {
 
                     const postSnapshot =
@@ -768,7 +811,9 @@
                           pre:
                             preSnapshot,
                           post:
-                            postSnapshot
+                            postSnapshot,
+                          fontsCheck:
+                            fontsCheck
                         }
                       );
 
@@ -1068,6 +1113,20 @@
 
           }
 
+
+          if (
+            clone.fontsCheck
+          ) {
+
+            parts.push(
+              "[CLONE FONTS CHECK] " +
+                JSON.stringify(
+                  clone.fontsCheck
+                )
+            );
+
+          }
+
         }
 
 
@@ -1313,7 +1372,7 @@
       "right:calc(8px + env(safe-area-inset-right));" +
       "top:calc(8px + env(safe-area-inset-top));" +
       "z-index:999998;" +
-      "background:#ff6a00;color:#fff;border:none;" +
+      "background:#e91e8c;color:#fff;border:none;" +
       "padding:8px 10px;font:11px monospace;font-weight:bold;" +
       "border-radius:6px;opacity:0.85;";
 
