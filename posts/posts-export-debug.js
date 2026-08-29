@@ -600,32 +600,28 @@
                   clonedDocument
                 ) {
 
+                  const run =
+                    DEBUG_STATE.currentRun;
+
+                  let preSnapshot =
+                    null;
+
                   try {
 
-                    const run =
-                      DEBUG_STATE.currentRun;
-
-                    if (run) {
-
-                      run.cloneSnapshots.push(
-                        measureClonedNode(
-                          "HTML2CANVAS CLONE page" +
-                            element.dataset
-                              .pageIndex,
-                          clonedDocument,
-                          element
-                        )
+                    preSnapshot =
+                      measureClonedNode(
+                        "HTML2CANVAS CLONE (PRE-FONT-WAIT) page" +
+                          element.dataset
+                            .pageIndex,
+                        clonedDocument,
+                        element
                       );
-
-                    }
 
                   } catch (e) {
 
-                    if (
-                      DEBUG_STATE.currentRun
-                    ) {
+                    if (run) {
 
-                      DEBUG_STATE.currentRun.cloneError =
+                      run.cloneError =
                         String(
                           e?.stack ||
                           e
@@ -641,9 +637,51 @@
                     "function"
                   ) {
 
-                    return await userOnClone(
+                    await userOnClone(
                       clonedDocument
                     );
+
+                  }
+
+
+                  try {
+
+                    const postSnapshot =
+                      measureClonedNode(
+                        "HTML2CANVAS CLONE (POST-FONT-WAIT) page" +
+                          element.dataset
+                            .pageIndex,
+                        clonedDocument,
+                        element
+                      );
+
+                    if (run) {
+
+                      run.cloneSnapshots.push(
+                        {
+                          pageIndex:
+                            element.dataset
+                              .pageIndex,
+                          pre:
+                            preSnapshot,
+                          post:
+                            postSnapshot
+                        }
+                      );
+
+                    }
+
+                  } catch (e) {
+
+                    if (run) {
+
+                      run.cloneError =
+                        String(
+                          e?.stack ||
+                          e
+                        );
+
+                    }
 
                   }
 
@@ -850,14 +888,54 @@
         if (clone) {
 
           parts.push(
-            "[HTML2CANVAS CLONE]"
+            "[HTML2CANVAS CLONE - PRE FONT WAIT]"
           );
 
           parts.push(
             formatEntry(
-              clone
+              clone.pre
             )
           );
+
+          parts.push(
+            "[HTML2CANVAS CLONE - POST FONT WAIT]"
+          );
+
+          parts.push(
+            formatEntry(
+              clone.post
+            )
+          );
+
+          if (
+            clone.pre &&
+            clone.post &&
+            !clone.pre.missing &&
+            !clone.post.missing
+          ) {
+
+            const preH =
+              clone.pre.content
+                ?.clientHeight;
+
+            const postH =
+              clone.post.content
+                ?.clientHeight;
+
+            parts.push(
+              "[FONT WAIT EFFECT] pre-wait content height=" +
+                preH +
+                " -> post-wait content height=" +
+                postH +
+                (
+                  preH ===
+                  postH
+                    ? "  (변화 없음 — 폰트 대기가 레이아웃을 안 바꿈)"
+                    : "  (변화 있음 — 폰트 대기 후 재계산됨)"
+                )
+            );
+
+          }
 
         }
 
@@ -886,19 +964,20 @@
         if (
           clone &&
           cap &&
-          !clone.missing
+          clone.post &&
+          !clone.post.missing
         ) {
 
           parts.push(
-            "[MATCH] capture.start===clone.start: " +
+            "[MATCH] capture.start===clone(post).start: " +
               (
                 cap.start ===
-                clone.start
+                clone.post.start
               ) +
-              " / capture.end===clone.end: " +
+              " / capture.end===clone(post).end: " +
               (
                 cap.end ===
-                clone.end
+                clone.post.end
               )
           );
 
