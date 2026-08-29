@@ -415,11 +415,11 @@ function applyQuoteSettings(
   }
 
 
-  if (quoteSourcePosition) {
+  if (quoteSourceBottomOffset) {
 
-    quoteSourcePosition.value =
-      settings.sourcePosition ||
-      "flow";
+    quoteSourceBottomOffset.value =
+      settings.sourceBottomOffset ??
+      0;
 
   }
 

@@ -379,17 +379,6 @@
 
               </div>
 
-
-              <button
-                class="quote-mobile-tabbar-collapse"
-                id="quoteMobileTabbarCollapse"
-                type="button"
-                aria-expanded="true"
-                aria-label="설정 패널 접기"
-              >
-                ⌄
-              </button>
-
             </div>
 
 
@@ -1669,36 +1658,36 @@
 
 
                 <!-- ===========================================
-                     POSITION
-                     flow: 본문 끝나는 곳에 자연스럽게
-                     fixed: 캔버스 맨 아래 고정(패딩 침범 안 함,
-                     source에 marginTop:auto 방식 — 실제 글쓰기
-                     에디터 프리뷰와 동일한 메커니즘)
+                     BOTTOM MARGIN
+                     source는 항상 캔버스 맨 아래 고정(패딩
+                     침범 안 함, marginTop:auto 방식 — 실제
+                     글쓰기 에디터 프리뷰와 동일한 메커니즘).
+                     이 값은 그 고정 위치에서 캔버스 맨 아래로부터
+                     추가로 얼마나 띄울지(marginBottom)를 정한다.
                 ============================================ -->
 
                 <div class="quote-setting-row">
 
-                  <label for="quoteSourcePosition">
-                    POSITION
+                  <label for="quoteSourceBottomOffset">
+                    BOTTOM MARGIN
                   </label>
 
-                  <select
-                    id="quoteSourcePosition"
-                    class="quote-select-input"
-                  >
+                  <div class="quote-input-with-unit">
 
-                    <option
-                      value="flow"
-                      selected
+                    <input
+                      id="quoteSourceBottomOffset"
+                      class="quote-number-input"
+                      type="number"
+                      min="0"
+                      max="500"
+                      value="0"
                     >
-                      flow
-                    </option>
 
-                    <option value="fixed">
-                      fixed
-                    </option>
+                    <span class="quote-unit">
+                      px
+                    </span>
 
-                  </select>
+                  </div>
 
                 </div>
 
@@ -1972,7 +1961,15 @@
                  계산과는 완전히 분리되어 있음(admin-quote-preview-update.js
                  참고) — 여기서 값을 바꿔도 실제 내보내기 크기는
                  그대로다. 데스크톱/모바일 공통으로 사용.
+
+                 quote-preview-stage-wrap으로 묶는 이유: 모바일에서는
+                 이 줌 컨트롤이 자기 자리를 따로 차지하지 않고
+                 stage 안쪽 모서리에 작게 겹쳐 뜬다(admin.css 모바일
+                 미디어쿼리 참고) — position:absolute 기준점이
+                 필요해서 감싸는 wrapper를 둔다.
             ================================================ -->
+
+            <div class="quote-preview-stage-wrap">
 
             <div
               class="quote-preview-zoom"
@@ -2055,6 +2052,8 @@
 
 
               </div>
+
+            </div>
 
             </div>
 

@@ -290,25 +290,38 @@ function updateQuotePreview() {
 
 
     /*
-      "fixed": 본문이 짧아도 캔버스 맨 아래에 고정 — flex-column인
+      source는 항상 캔버스 맨 아래에 고정 — flex-column인
       캔버스에서 마지막 자식에 marginTop:auto를 주면 남는
       공간을 전부 흡수해서 바닥에 붙고, 캔버스 padding은
       그대로 지켜진다. (실제 글쓰기 에디터의 export는
       html2canvas가 이 방식을 제대로 못 그려서 스페이서
       elemenet 방식으로 따로 구현했지만 — posts-preview.js
       참고 — 관리자 패널은 export를 직접 하지 않는 순수
-      미리보기라 원래 방식 그대로 둬도 문제없음.)
+      미리보기라 원래 방식 그대로 둬도 문제없음. ratio가
+      AUTO면 밀어낼 여유 공간 자체가 없으므로 TOP SPACE만
+      적용한다.)
     */
 
     quotePreviewSource.style.marginTop =
-      quoteSourcePosition?.value ===
-      "fixed" &&
       !ratio.auto
         ? "auto"
         : `${
             quoteSourceSpacing?.value ||
             0
           }px`;
+
+
+    /*
+      ★ NEW
+      캔버스 맨 아래로부터 추가로 띄울 여백.
+    */
+
+    quotePreviewSource.style.marginBottom =
+      `${
+        Number(
+          quoteSourceBottomOffset?.value
+        ) || 0
+      }px`;
 
   }
 

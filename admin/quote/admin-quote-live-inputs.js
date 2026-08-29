@@ -67,7 +67,7 @@ const quoteLiveInputs = [
   quoteSourceWeight,
   quoteSourceAlign,
   quoteSourceSpacing,
-  quoteSourcePosition
+  quoteSourceBottomOffset
 
 ];
 
@@ -309,14 +309,16 @@ function collectQuoteSettings() {
 
     /*
       ★ NEW
-      실제 글쓰기 에디터 프리뷰의 flow/fixed 토글이
-      이 값을 기본값으로 사용하게 된다(posts-preview-css-vars.js
-      resetPreviewVisibilityOverrides 참고).
+      source는 항상 캔버스 맨 아래 고정. 이 값은 그 고정
+      위치에서 캔버스 맨 아래로부터 추가로 얼마나 띄울지
+      (marginBottom)를 정한다 — posts-preview.js의
+      createPreviewSource 참고.
     */
 
-    sourcePosition:
-      quoteSourcePosition?.value ||
-      "flow"
+    sourceBottomOffset:
+      Number(
+        quoteSourceBottomOffset?.value
+      ) || 0
 
   };
 

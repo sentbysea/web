@@ -247,8 +247,8 @@ function renderEditorPreviewPages(
 
 
         if (
-          previewPageIsOverflowing(
-            current.page
+          previewCurrentPageIsOverflowing(
+            current
           )
         ) {
 
@@ -382,8 +382,8 @@ function renderEditorPreviewPages(
 
 
       if (
-        previewPageIsOverflowing(
-          current.page
+        previewCurrentPageIsOverflowing(
+          current
         )
       ) {
 

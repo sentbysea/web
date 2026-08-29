@@ -2,13 +2,13 @@
    QUOTE - MOBILE TAB BAR
 
    admin-quote.js 분할본. DOM 참조(quoteControls,
-   quoteMobileTabButtons, quoteMobileTabbarCollapse,
-   quoteAccordionSections)는 admin-quote-refs.js에 있음
-   (반드시 먼저 로드돼야 함).
+   quoteMobileTabButtons, quoteAccordionSections)는
+   admin-quote-refs.js에 있음(반드시 먼저 로드돼야 함).
 
    모바일(max-width:600px)에서는 .quote-controls가 화면
-   하단에 고정되는 시트가 되고, 원래 7개였던 아코디언
-   (TEST CONTENT/CANVAS/GENERAL/TITLE/BODY/SOURCE/PRESET)을
+   하단에 항상 보이는 고정 시트가 되고(프리뷰와 위아래로
+   완전히 나뉨 — 접었다 펼쳤다 하지 않음), 원래 7개였던
+   아코디언(TEST CONTENT/CANVAS/GENERAL/TITLE/BODY/SOURCE/PRESET)을
    5개 탭(content/canvas/title-source/body/preset)으로 묶어서
    보여준다. 탭을 누르면 data-quote-mobile-tab 값이 일치하는
    섹션만 보이고 나머지는 숨긴다 — 예전처럼 7개를 전부 위아래로
@@ -165,26 +165,6 @@ function setQuoteMobileTab(
   openSectionsForActiveQuoteMobileTab();
 
 
-  /*
-    시트가 접혀 있었으면 탭을 눌렀다는 것 자체가
-    "이 설정을 보고 싶다"는 뜻이므로 자동으로 펼친다.
-  */
-
-  if (
-    quoteControls
-      ?.classList
-      .contains(
-        "is-collapsed"
-      )
-  ) {
-
-    setQuoteMobileSheetCollapsed(
-      false
-    );
-
-  }
-
-
   quoteControls
     ?.scrollTo(
       {
@@ -212,86 +192,6 @@ quoteMobileTabButtons.forEach(
 
   }
 );
-
-
-
-/* =========================================================
-   COLLAPSE / EXPAND
-
-   탭바는 그대로 두고 그 위 설정 영역만 접어서, 프리뷰를
-   전체로 보고 싶을 때 시트를 최소 높이로 줄일 수 있게 한다.
-========================================================== */
-
-function setQuoteMobileSheetCollapsed(
-  collapsed
-) {
-
-  if (!quoteControls) {
-    return;
-  }
-
-
-  quoteControls.classList.toggle(
-    "is-collapsed",
-    collapsed
-  );
-
-
-  if (
-    quoteMobileTabbarCollapse
-  ) {
-
-    quoteMobileTabbarCollapse.setAttribute(
-      "aria-expanded",
-      String(!collapsed)
-    );
-
-
-    quoteMobileTabbarCollapse.textContent =
-      collapsed
-        ? "⌃"
-        : "⌄";
-
-  }
-
-
-  /*
-    ★ 시트를 접고/펼치면 CSS(:has(.quote-controls.is-collapsed))가
-    프리뷰 stage의 높이(38dvh↔72dvh)를 즉시 바꾼다. 이전
-    fitScale은 이제 낡은 값이라 그대로 두면 접었는데도
-    프리뷰가 안 커진 것처럼 보인다 — 클래스 토글이 반영된
-    다음 프레임에 새 stage 크기 기준으로 다시 계산한다.
-  */
-
-  if (
-    typeof applyQuotePreviewScale ===
-      "function"
-  ) {
-
-    requestAnimationFrame(
-      applyQuotePreviewScale
-    );
-
-  }
-
-}
-
-
-quoteMobileTabbarCollapse
-  ?.addEventListener(
-    "click",
-    () => {
-
-      setQuoteMobileSheetCollapsed(
-        !quoteControls
-          ?.classList
-          .contains(
-            "is-collapsed"
-          )
-      );
-
-    }
-  );
 
 
 

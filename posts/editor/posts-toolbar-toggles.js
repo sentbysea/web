@@ -222,28 +222,6 @@ postEditorPreviewBodyAlignSelect
   );
 
 
-postEditorPreviewSourcePositionSelect
-  ?.addEventListener(
-    "change",
-    () => {
-
-      previewSourcePosition =
-        postEditorPreviewSourcePositionSelect.value ===
-        "fixed"
-          ? "fixed"
-          : "flow";
-
-
-      updateEditorPreview(
-        {
-          preserveView: true
-        }
-      );
-
-    }
-  );
-
-
 postEditorPreviewRatioTrigger
   ?.addEventListener(
     "click",

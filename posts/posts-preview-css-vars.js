@@ -135,15 +135,6 @@ let previewVerticalAlign = null;
 let previewBodyAlign = null;
 
 
-/*
-  source 위치: "flow"(본문 끝나는 곳에 자연스럽게) 또는
-  "fixed"(본문 길이와 무관하게 캔버스 맨 아래 고정).
-*/
-
-let previewSourcePosition =
-  "flow";
-
-
 function resetPreviewVisibilityOverrides() {
 
   const settings =
@@ -159,20 +150,6 @@ function resetPreviewVisibilityOverrides() {
   previewSourceVisible =
     settings.sourceEnabled !==
     false;
-
-
-  /*
-    ★ NEW
-    admin QUOTE PRESET의 SOURCE POSITION 값을 기본값으로
-    쓰고, 이번 편집 세션 동안엔 이 flow/fixed 버튼으로
-    여전히 잠깐 덮어쓸 수 있다(프리셋 자체는 안 바뀜).
-  */
-
-  previewSourcePosition =
-    settings.sourcePosition ===
-    "fixed"
-      ? "fixed"
-      : "flow";
 
 
   previewVerticalAlign =
@@ -238,31 +215,6 @@ function syncPreviewVisibilityToggleButtons() {
         previewSourceVisible
       )
     );
-
-
-  /*
-    source가 켜져 있을 때만
-    position(flow/fixed) 드롭다운이 보임.
-  */
-
-  if (
-    postEditorPreviewSourcePositionSelect
-  ) {
-
-    postEditorPreviewSourcePositionSelect.hidden =
-      !previewSourceVisible;
-
-  }
-
-
-  if (
-    postEditorPreviewSourcePositionSelect
-  ) {
-
-    postEditorPreviewSourcePositionSelect.value =
-      previewSourcePosition;
-
-  }
 
 
   /*

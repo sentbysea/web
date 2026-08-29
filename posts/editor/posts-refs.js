@@ -547,11 +547,6 @@ const postEditorPreviewBodyAlignSelect =
     "postEditorPreviewBodyAlignSelect"
   );
 
-const postEditorPreviewSourcePositionSelect =
-  document.getElementById(
-    "postEditorPreviewSourcePositionSelect"
-  );
-
 const postEditorPreviewRatioTrigger =
   document.getElementById(
     "postEditorPreviewRatioTrigger"

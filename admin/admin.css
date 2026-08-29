@@ -1601,6 +1601,18 @@ button {
 }
 
 
+/*
+  모바일에서 quote-preview-zoom이 stage 모서리에 겹쳐 뜰 때
+  기준이 되는 위치 컨테이너(admin.css 모바일 미디어쿼리 참고).
+  데스크톱에서는 zoom이 static이라 이 position:relative가
+  아무 영향도 없음.
+*/
+
+.quote-preview-stage-wrap {
+  position: relative;
+}
+
+
 .quote-preview-heading {
   display: flex;
 
@@ -2073,35 +2085,89 @@ button {
 
   /*
     ★ preview 영역 높이. 데스크톱 clamp(440px,55vh,620px)는
-    모바일에서 하단 고정 시트(.quote-controls, 52vh)와 겹치므로
+    모바일에서 하단 고정 시트(.quote-controls)와 겹치므로
     모바일 전용 값으로 덮어쓴다.
 
-    설정 시트가 펼쳐진 기본 상태에선 화면의 나머지 절반 정도만
-    쓸 수 있으니 38dvh, 시트를 접으면(quoteControls.is-collapsed)
-    거의 화면 전체를 쓸 수 있으니 72dvh로 키운다 — 접었는데도
-    프리뷰가 안 커지던 문제 수정. dvh를 못 읽는 구형 브라우저
-    대비로 vh를 먼저 적어두고 dvh로 덮어씀.
+    프리뷰/설정을 접었다 펼쳤다 하지 않고 화면을 위아래로
+    항상 나눠 보여주기로 하면서(.quote-controls 높이를 기존
+    52vh의 0.6배인 31vh로 줄임 — 아래 참고), 그만큼 남는
+    공간을 프리뷰 쪽에 몰아준다(기존 38vh + 줄어든 21vh ≈
+    59vh). dvh를 못 읽는 구형 브라우저 대비로 vh를 먼저
+    적어두고 dvh로 덮어씀.
   */
 
   .quote-preview-stage {
-    height: 38vh;
-    height: 38dvh;
+    height: 59vh;
+    height: 59dvh;
 
     padding: 18px;
   }
 
 
-  .quote-workspace:has(
-    .quote-controls.is-collapsed
-  )
-  .quote-preview-stage {
-    height: 72vh;
-    height: 72dvh;
+  .quote-preview-canvas {
+    padding: 36px;
   }
 
 
-  .quote-preview-canvas {
-    padding: 36px;
+  /*
+    ★ 줌 컨트롤(−/%/+/FIT)을 stage 위 별도 줄로 두면 그만큼
+    프리뷰가 차지할 세로 공간이 줄어든다 — stage 오른쪽 위
+    모서리에 작게 겹쳐 띄워서 그 줄 자체를 없앤다(기준 위치는
+    .quote-preview-stage-wrap, 위 desktop 섹션 참고).
+  */
+
+  .quote-preview-zoom {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    z-index: 5;
+
+    margin-bottom: 0;
+
+    padding: 4px 6px;
+
+    gap: 4px;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.92
+      );
+
+    border-radius: 8px;
+
+    box-shadow:
+      0
+      2px
+      8px
+      rgba(
+        0,
+        0,
+        0,
+        0.10
+      );
+  }
+
+
+  .quote-preview-zoom-btn,
+  .quote-preview-zoom-fit {
+    min-width: 24px;
+    min-height: 24px;
+
+    padding: 0 6px;
+
+    font-size: 10px;
+  }
+
+
+  .quote-preview-zoom-value {
+    min-width: 28px;
+
+    font-size: 9px;
   }
 
 
@@ -2185,6 +2251,13 @@ button {
      탭바(.quote-mobile-tabbar-wrap)가 이 시트의 맨 아래에
      sticky로 붙어서 항상 보이고, 탭을 누르면
      admin-quote-mobile-tabs.js가 그 그룹의 아코디언만 보여준다.
+
+     ★ 예전엔 화살표 버튼으로 이 시트를 접었다 펼쳤다 할 수
+     있었는데(52vh↔44px), 접지 않고도 프리뷰가 잘 보이도록
+     기본 높이 자체를 0.6배(31vh)로 줄이고 접기 기능은
+     제거했다 — 화면이 항상 프리뷰/설정 두 영역으로 고정
+     분할된다(admin-quote-mobile-tabs.js에는 더 이상
+     collapse 관련 코드가 없음).
   ======================================================== */
 
   .quote-controls {
@@ -2206,7 +2279,7 @@ button {
       처리한다.
     */
 
-    height: 52vh;
+    height: 31vh;
 
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -2233,16 +2306,6 @@ button {
         0,
         0.10
       );
-
-    transition:
-      height 0.22s ease;
-  }
-
-
-  .quote-controls.is-collapsed {
-    height: 44px;
-
-    overflow: hidden;
   }
 
 
@@ -2254,13 +2317,8 @@ button {
     display: flex;
 
     /*
-      ★ 예전엔 collapse 버튼이 탭 줄 "아래"에 폭 100%짜리
-      독립된 줄로 따로 있어서 어색하고 자리를 더 차지했다.
-      탭이 그 아래 필드들을 조작하는 컨트롤이니, 필드보다
-      위에 있는 게 구조적으로 더 자연스럽다는 피드백으로
-      위치를 바꿈 — 시트 맨 위에 붙어서(position:sticky)
-      스크롤해도 항상 보인다. collapse 버튼은 이제 이 줄의
-      오른쪽 끝에 같이 붙는다.
+      시트 맨 위에 붙어서(position:sticky) 스크롤해도
+      항상 보인다.
     */
 
     align-items: center;
@@ -2275,33 +2333,6 @@ button {
     border-bottom:
       1px solid
       #eeeeee;
-  }
-
-
-  .quote-mobile-tabbar-collapse {
-    flex: 0 0 auto;
-
-    width: 40px;
-    min-height: 40px;
-
-    margin-right: 8px;
-
-    border:
-      1px solid
-      #e5e5e5;
-
-    border-radius: 4px;
-
-    background: transparent;
-
-    color: #999999;
-
-    font-size: 13px;
-
-    cursor: pointer;
-
-    -webkit-tap-highlight-color:
-      transparent;
   }
 
 

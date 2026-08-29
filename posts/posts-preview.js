@@ -239,6 +239,21 @@ function createPreviewSource(
     }px`;
 
 
+  /*
+    ★ NEW
+    캔버스 맨 아래로부터 추가로 띄울 여백(QUOTE PRESET의
+    BOTTOM MARGIN). "fixed" 스페이서가 다 흡수하고 남은
+    자리에서, source 자신의 marginBottom으로 한 번 더 민다.
+  */
+
+  source.style.marginBottom =
+    `${
+      Number(
+        settings.sourceBottomOffset
+      ) || 0
+    }px`;
+
+
   return source;
 
 }
@@ -352,23 +367,23 @@ function createEditorPreviewPage(
 
 
   /*
-    ★ "fixed" source(아래 조금 더 내려가면 나오는 스페이서)는
-    남는 세로 공간을 전부 흡수하는 flex:1 1 auto 아이템이라,
-    page 자체에 justifyContent를 걸어두면 스페이서가 여유
-    공간을 다 먹어버려서 center/bottom을 선택해도 항상
-    title/body가 위쪽에 붙어버렸다(정렬 설정이 무의미해짐).
-    fixed 모드일 때만 title/body를 별도 그룹(.post-editor-preview-content-group)
-    으로 묶어 그 그룹 쪽에 justifyContent를 걸고, 그룹 자체는
-    flex:1 1 auto로 소스 위 남는 공간을 전부 차지하게 한다 —
-    그룹이 "스페이서 역할"까지 겸하므로 소스는 여전히 캔버스
-    맨 아래(=패딩 경계)에 고정되면서, 그 안의 title/body는
-    원하는 정렬대로 보인다. flow 모드는 스페이서 자체가 없어서
-    이 문제가 없으므로 기존처럼 page에 바로 건다.
+    source는 항상 캔버스 맨 아래에 고정된다(스페이서 방식).
+    이 스페이서는 남는 세로 공간을 전부 흡수하는
+    flex:1 1 auto 아이템이라, page 자체에 justifyContent를
+    걸어두면 스페이서가 여유 공간을 다 먹어버려서 center/bottom을
+    선택해도 항상 title/body가 위쪽에 붙어버렸다(정렬 설정이
+    무의미해짐). 그래서 title/body를 별도 그룹
+    (.post-editor-preview-content-group)으로 묶어 그 그룹
+    쪽에 justifyContent를 걸고, 그룹 자체는 flex:1 1 auto로
+    소스 위 남는 공간을 전부 차지하게 한다 — 그룹이
+    "스페이서 역할"까지 겸하므로 소스는 여전히 캔버스 맨
+    아래(=패딩 경계)에 고정되면서, 그 안의 title/body는
+    원하는 정렬대로 보인다. ratio가 AUTO면 박스 높이 자체가
+    콘텐츠 높이라 밀어낼 여유 공간이 없으므로(="고정"이
+    의미 없음) 이 그룹을 안 만들고 기존처럼 page에 바로 건다.
   */
 
   const useFixedSourceGroup =
-    previewSourcePosition ===
-      "fixed" &&
     !pageRatio.auto &&
     previewSourceVisible;
 
@@ -466,9 +481,13 @@ function createEditorPreviewPage(
   나란히 붙인다.
 */
 
+let contentGroup =
+  null;
+
+
 if (useFixedSourceGroup) {
 
-  const contentGroup =
+  contentGroup =
     document.createElement(
       "div"
     );
@@ -492,6 +511,24 @@ if (useFixedSourceGroup) {
 
   contentGroup.style.minHeight =
     "0";
+
+
+  /*
+    ★ contentGroup은 flex-shrink로 자기 자연 높이보다
+    작게 찌그러질 수 있는데(minHeight:0), overflow가
+    기본값(visible)이면 title+content가 찌그러진 박스보다
+    커도 그냥 아래로 흘러넘쳐서 source 자리를 침범해버린다
+    — page 자체의 scrollHeight/clientHeight는 여전히
+    똑같아서(넘친 내용이 page의 outer box 자체는 안 넘음)
+    아래 previewCurrentPageIsOverflowing()의 page 기준 체크로는
+    이 침범을 못 잡는다. overflow:hidden을 줘서 contentGroup의
+    scrollHeight가 "실제 필요한 높이"를 정직하게 보고하게
+    만들고, 그 값을 clientHeight(찌그러진 실제 크기)와
+    비교해서 잡아낸다.
+  */
+
+  contentGroup.style.overflow =
+    "hidden";
 
 
   contentGroup.style.justifyContent =
@@ -550,7 +587,8 @@ else {
     page,
     title,
     content,
-    source
+    source,
+    contentGroup
   };
 
 }
@@ -573,6 +611,39 @@ function previewPageIsOverflowing(
   return (
     page.scrollHeight >
     page.clientHeight + 1
+  );
+
+}
+
+
+/*
+  ★ page 기준 체크만으로는 안 잡히는 경우가 있다 — "fixed"
+  source + title이 같이 켜지면 title/content가
+  .post-editor-preview-content-group(flex-shrink 가능)
+  안에 들어가는데, 이 그룹이 찌그러져도 page 자체의 outer
+  box는 그대로라 page.scrollHeight는 안 넘친다(위
+  createEditorPreviewPage의 주석 참고). contentGroup이
+  있으면 그쪽도 같이 확인해야 title/content가 source 자리를
+  침범하기 전에 페이지를 넘긴다.
+*/
+
+function previewCurrentPageIsOverflowing(
+  current
+) {
+
+  if (!current) {
+    return false;
+  }
+
+
+  return (
+    previewPageIsOverflowing(
+      current.page
+    )
+    ||
+    previewPageIsOverflowing(
+      current.contentGroup
+    )
   );
 
 }

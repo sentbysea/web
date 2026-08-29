@@ -41,11 +41,6 @@ const quoteMobileTabButtons =
     ".quote-mobile-tab"
   );
 
-const quoteMobileTabbarCollapse =
-  document.getElementById(
-    "quoteMobileTabbarCollapse"
-  );
-
 
 /* =========================================================
    TEST CONTENT
@@ -299,9 +294,9 @@ const quoteSourceSpacing =
     "quoteSourceSpacing"
   );
 
-const quoteSourcePosition =
+const quoteSourceBottomOffset =
   document.getElementById(
-    "quoteSourcePosition"
+    "quoteSourceBottomOffset"
   );
 
 
