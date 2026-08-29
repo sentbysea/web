@@ -1742,20 +1742,11 @@ body.post-mode .music-button {
 
 
 /*
-  텍스트 선택 시 뜨는 이 메뉴 안의 스와치만 동그라미 대신
-  네모로(고정 툴바 쪽 스와치는 그대로 원형 유지).
+  ★ 예전엔 이 안의 스와치만 동그라미 대신 둥근 네모로 바꿔서
+  "네모 안에 또 네모" 처럼 보였다 — 고정 툴바와 똑같이 원형
+  그대로 두고(위 .post-highlight-custom-control/.post-highlight-swatch
+  기본값이 이미 둥근 원), 여기서 따로 각지게 덮어쓰지 않는다.
 */
-
-.post-editor-floating-menu
-.post-highlight-custom-control {
-  border-radius: 6px;
-}
-
-
-.post-editor-floating-menu
-.post-highlight-swatch {
-  border-radius: 3px;
-}
 
 /* =========================================================
    RICH TEXT EDITOR

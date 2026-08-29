@@ -343,32 +343,40 @@ function createEditorPreviewPage(
         "top";
 
 
-  if (
-    verticalAlign ===
-    "center"
-  ) {
+  const justifyContentValue =
+    verticalAlign === "center"
+      ? "center"
+      : verticalAlign === "bottom"
+        ? "flex-end"
+        : "flex-start";
+
+
+  /*
+    ★ "fixed" source(아래 조금 더 내려가면 나오는 스페이서)는
+    남는 세로 공간을 전부 흡수하는 flex:1 1 auto 아이템이라,
+    page 자체에 justifyContent를 걸어두면 스페이서가 여유
+    공간을 다 먹어버려서 center/bottom을 선택해도 항상
+    title/body가 위쪽에 붙어버렸다(정렬 설정이 무의미해짐).
+    fixed 모드일 때만 title/body를 별도 그룹(.post-editor-preview-content-group)
+    으로 묶어 그 그룹 쪽에 justifyContent를 걸고, 그룹 자체는
+    flex:1 1 auto로 소스 위 남는 공간을 전부 차지하게 한다 —
+    그룹이 "스페이서 역할"까지 겸하므로 소스는 여전히 캔버스
+    맨 아래(=패딩 경계)에 고정되면서, 그 안의 title/body는
+    원하는 정렬대로 보인다. flow 모드는 스페이서 자체가 없어서
+    이 문제가 없으므로 기존처럼 page에 바로 건다.
+  */
+
+  const useFixedSourceGroup =
+    previewSourcePosition ===
+      "fixed" &&
+    !pageRatio.auto &&
+    previewSourceVisible;
+
+
+  if (!useFixedSourceGroup) {
 
     page.style.justifyContent =
-      "center";
-
-  }
-
-
-  else if (
-    verticalAlign ===
-    "bottom"
-  ) {
-
-    page.style.justifyContent =
-      "flex-end";
-
-  }
-
-
-  else {
-
-    page.style.justifyContent =
-      "flex-start";
+      justifyContentValue;
 
   }
 
@@ -447,55 +455,95 @@ function createEditorPreviewPage(
   options.showTitle !== false;
 
 
-if (showTitle) {
-
-  page.appendChild(
-    title
-  );
-
-}
-
-
-page.appendChild(
-  content
-);
-
-
 /*
-  "fixed" source 위치: 본문 뒤에 flex:1 1 auto 스페이서를
-  끼워 넣어 남는 세로 공간을 스페이서가 흡수하게 한다 —
-  결과적으로 source가 캔버스 맨 아래로 밀린다. AUTO 비율은
-  캔버스 높이 자체가 본문 높이라 밀어낼 여유 공간이 없으므로
-  (= "고정"이 의미 없음) 스페이서를 넣지 않는다.
+  "fixed" source 위치: title/body를 담은 그룹(contentGroup)
+  자체를 flex:1 1 auto로 남는 세로 공간을 흡수하게 해서
+  source를 캔버스 맨 아래(패딩 경계)로 밀어낸다 — 이제
+  그룹이 스페이서 역할까지 겸하므로 별도 스페이서 엘리먼트가
+  필요 없다. AUTO 비율은 캔버스 높이 자체가 본문 높이라
+  밀어낼 여유 공간이 없으므로(= "고정"이 의미 없음) 이 그룹을
+  안 만들고 기존처럼 title/content/source를 page에 바로
+  나란히 붙인다.
 */
 
-if (
-  previewSourcePosition ===
-    "fixed" &&
-  !pageRatio.auto &&
-  previewSourceVisible
-) {
+if (useFixedSourceGroup) {
 
-  const sourceSpacer =
+  const contentGroup =
     document.createElement(
       "div"
     );
 
 
-  sourceSpacer.style.flex =
+  contentGroup.className =
+    "post-editor-preview-content-group";
+
+
+  contentGroup.style.display =
+    "flex";
+
+
+  contentGroup.style.flexDirection =
+    "column";
+
+
+  contentGroup.style.flex =
     "1 1 auto";
 
 
+  contentGroup.style.minHeight =
+    "0";
+
+
+  contentGroup.style.justifyContent =
+    justifyContentValue;
+
+
+  if (showTitle) {
+
+    contentGroup.appendChild(
+      title
+    );
+
+  }
+
+
+  contentGroup.appendChild(
+    content
+  );
+
+
   page.appendChild(
-    sourceSpacer
+    contentGroup
+  );
+
+
+  page.appendChild(
+    source
   );
 
 }
 
+else {
 
-page.appendChild(
-  source
-);
+  if (showTitle) {
+
+    page.appendChild(
+      title
+    );
+
+  }
+
+
+  page.appendChild(
+    content
+  );
+
+
+  page.appendChild(
+    source
+  );
+
+}
 
 
   return {

@@ -14,6 +14,41 @@
    ACTION / DIALOGUE
 ========================================================== */
 
+/*
+  텍스트 노드가 이미 point color(post-inline-color) span
+  안에 있으면 그 색을 돌려준다 — 액션/대사 처리가 새 span을
+  끼워 넣으면서 자기 색을 하드코딩해버리면, 안쪽 텍스트 노드
+  기준으로는 그 새 span이 더 가까운 조상이 되어 point color가
+  가려진다(같은 color 속성이라도 자기 자신에 직접 지정된 값이
+  상속보다 우선하기 때문). weight/자간은 그대로 preset 값을
+  쓰고 색만 point color로 덮어써서 이 문제를 피한다.
+*/
+
+function findAncestorPointColor(
+  textNode
+) {
+
+  const pointColorEl =
+    textNode.parentElement
+      ?.closest(
+        ".post-inline-color"
+      );
+
+
+  if (!pointColorEl) {
+    return null;
+  }
+
+
+  return (
+    pointColorEl.dataset.pointColor ||
+    pointColorEl.style.color ||
+    null
+  );
+
+}
+
+
 function replaceActionDialogueTextNode(
   textNode,
   settings = {}
@@ -41,6 +76,12 @@ function replaceActionDialogueTextNode(
 
   pattern.lastIndex =
     0;
+
+
+  const pointColor =
+    findAncestorPointColor(
+      textNode
+    );
 
 
   const fragment =
@@ -106,6 +147,7 @@ function replaceActionDialogueTextNode(
 
 
       span.style.color =
+        pointColor ||
         settings.actionColor ||
         "#888888";
 
@@ -128,6 +170,7 @@ function replaceActionDialogueTextNode(
 
 
       span.style.color =
+        pointColor ||
         settings.dialogueColor ||
         settings.bodyColor ||
         "#555555";

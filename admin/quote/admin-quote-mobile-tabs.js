@@ -254,6 +254,26 @@ function setQuoteMobileSheetCollapsed(
 
   }
 
+
+  /*
+    ★ 시트를 접고/펼치면 CSS(:has(.quote-controls.is-collapsed))가
+    프리뷰 stage의 높이(38dvh↔72dvh)를 즉시 바꾼다. 이전
+    fitScale은 이제 낡은 값이라 그대로 두면 접었는데도
+    프리뷰가 안 커진 것처럼 보인다 — 클래스 토글이 반영된
+    다음 프레임에 새 stage 크기 기준으로 다시 계산한다.
+  */
+
+  if (
+    typeof applyQuotePreviewScale ===
+      "function"
+  ) {
+
+    requestAnimationFrame(
+      applyQuotePreviewScale
+    );
+
+  }
+
 }
 
 

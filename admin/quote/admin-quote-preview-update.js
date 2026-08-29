@@ -367,19 +367,165 @@ function updateQuotePreview() {
 
 
 /* =========================================================
-   PREVIEW SCALE
+   PREVIEW SCALE / ZOOM
 
-   실제 글쓰기 에디터 프리뷰(posts-preview-settings.js의
-   applyEditorPreviewScale)와 완전히 같은 방식: 캔버스는
-   항상 520px로 레이아웃한 다음, stage가 그보다 좁으면
-   JS가 transform: scale()로 통째로 축소한다.
+   화면 표시 전용 축소·확대. 실제 export width/height
+   계산(exportWidth 등, 위 updateQuotePreview 참고)과는
+   완전히 분리되어 있고 서로 참조하지 않는다 — 여기서 하는
+   일은 캔버스에 transform: scale()을 거는 것뿐, export
+   시점의 실제 픽셀 크기에는 전혀 영향을 주지 않는다.
 
-   예전에는 여기 CSS가 width: 100%로 알아서 줄어드는
-   방식이라, 좁을 때 글자는 그대로고 줄바꿈만 바뀌었음
-   — 그래서 실제 에디터 프리뷰(글자까지 같이 작아짐)랑
-   다르게 보였다. 이제 두 프리뷰가 같은 계산을 쓰므로
-   같은 stage 너비에서는 항상 같은 결과가 나온다.
+   캔버스는 항상 520px 고정폭으로 레이아웃한다(실제 글쓰기
+   에디터 프리뷰인 posts-preview-settings.js의
+   applyEditorPreviewScale과 동일한 방식 — 좁을 때 줄바꿈만
+   바뀌는 게 아니라 글자 자체가 같이 작아져야 실제 에디터
+   프리뷰와 결과가 일치해 보인다).
+
+   FIT 모드: stage(프리뷰가 담기는 상자)의 width/height를
+   모두 고려해서 캔버스 전체가 항상 안에 들어오도록
+   자동으로 배율을 계산한다(=object-fit: contain과 동일한
+   개념). 예전에는 width만 기준으로 삼고 stage 높이는 JS가
+   캔버스 크기에 맞춰 매번 늘려줬는데, 9:16처럼 세로로 긴
+   비율이나 본문이 긴 AUTO에서는 stage가 뷰포트보다 훨씬
+   커져서 "캔버스 전체가 안 보이고 잘린 것처럼" 느껴지는
+   문제가 있었다. 이제 stage 크기는 CSS(clamp/dvh)가 정하고,
+   JS는 그 안에 맞춰 축소만 한다.
+
+   MANUAL 모드: 사용자가 [-]/[+]로 직접 배율을 바꾼 상태.
+   FIT 배율과 무관하게 10%~200% 범위에서 유지되고, FIT 버튼을
+   눌러야 다시 자동 계산으로 돌아간다.
 ========================================================== */
+
+const QUOTE_PREVIEW_NATURAL_WIDTH =
+  520;
+
+const QUOTE_PREVIEW_MIN_ZOOM =
+  0.1;
+
+const QUOTE_PREVIEW_MAX_ZOOM =
+  2;
+
+const QUOTE_PREVIEW_ZOOM_STEP =
+  0.1;
+
+
+let quotePreviewZoomMode =
+  "fit";
+
+let quotePreviewFitScale =
+  1;
+
+let quotePreviewManualScale =
+  1;
+
+
+function calculateQuotePreviewFitScale() {
+
+  if (
+    !quotePreviewCanvas ||
+    !quotePreviewStage
+  ) {
+    return 1;
+  }
+
+
+  const availableWidth =
+    quotePreviewStage.clientWidth;
+
+  const availableHeight =
+    quotePreviewStage.clientHeight;
+
+
+  /*
+    ★ 캔버스에 aspect-ratio가 걸린 고정 비율(1:1/4:5/9:16/custom)일
+    때는 offsetHeight를 재는 대신 비율값으로 직접 계산한다.
+    .quote-preview-canvas에는 aspect-ratio 0.15s ease 트랜지션이
+    걸려 있어서, 비율 버튼을 누른 "바로 그 틱"에 offsetHeight를
+    재면 아직 전환 전(직전 비율)의 높이가 잡힐 때가 있다 —
+    ratio.width/height는 트랜지션과 무관한 값이라 항상 정확하다.
+    콘텐츠 높이로 정해지는 AUTO만 실제 렌더 높이를 그대로 잰다.
+  */
+
+  const ratio =
+    typeof getQuoteRatio ===
+      "function"
+      ? getQuoteRatio()
+      : null;
+
+
+  const naturalHeight =
+    ratio &&
+    !ratio.auto &&
+    ratio.width > 0
+      ? QUOTE_PREVIEW_NATURAL_WIDTH *
+        ratio.height /
+        ratio.width
+      : quotePreviewCanvas.offsetHeight;
+
+
+  const widthScale =
+    availableWidth /
+    QUOTE_PREVIEW_NATURAL_WIDTH;
+
+  const heightScale =
+    availableHeight > 0 &&
+    naturalHeight > 0
+      ? availableHeight / naturalHeight
+      : widthScale;
+
+
+  /*
+    실제 에디터 프리뷰와 마찬가지로 자동 fit은 100%를
+    넘지 않는다(= 화면 표시가 실제 픽셀보다 커 보이지
+    않게). 100% 초과로 보고 싶으면 수동 +버튼을 쓴다.
+  */
+
+  return Math.min(
+    widthScale,
+    heightScale,
+    1
+  );
+
+}
+
+
+function getCurrentQuotePreviewScale() {
+
+  return quotePreviewZoomMode ===
+    "manual"
+    ? quotePreviewManualScale
+    : quotePreviewFitScale;
+
+}
+
+
+function updateQuotePreviewZoomUI() {
+
+  if (quotePreviewZoomValue) {
+
+    quotePreviewZoomValue.textContent =
+      `${
+        Math.round(
+          getCurrentQuotePreviewScale() *
+          100
+        )
+      }%`;
+
+  }
+
+
+  if (quotePreviewZoomFit) {
+
+    quotePreviewZoomFit.classList.toggle(
+      "active",
+      quotePreviewZoomMode ===
+        "fit"
+    );
+
+  }
+
+}
+
 
 function applyQuotePreviewScale() {
 
@@ -391,45 +537,103 @@ function applyQuotePreviewScale() {
   }
 
 
+  /*
+    transform은 레이아웃 크기(offsetHeight 등)에 영향을 주지
+    않지만, 만에 하나 이전 프레임 값이 측정에 섞이는 걸
+    막기 위해 매번 초기화하고 다시 잰다.
+  */
+
   quotePreviewCanvas.style.transform =
     "none";
 
 
   quotePreviewCanvas.style.transformOrigin =
-    "top center";
+    "center center";
 
 
-  const naturalWidth =
-    520;
+  quotePreviewFitScale =
+    calculateQuotePreviewFitScale();
 
 
-  const availableWidth =
-    quotePreviewStage.clientWidth;
-
-
-  const fitScale =
-    Math.min(
-      1,
-      availableWidth /
-      naturalWidth
-    );
-
-
-  const naturalHeight =
-    quotePreviewCanvas.offsetHeight;
+  const scale =
+    getCurrentQuotePreviewScale();
 
 
   quotePreviewCanvas.style.transform =
-    `scale(${fitScale})`;
+    `scale(${scale})`;
 
 
-  quotePreviewStage.style.height =
-    `${
-      naturalHeight *
-      fitScale
-    }px`;
+  updateQuotePreviewZoomUI();
 
 }
+
+
+function setQuotePreviewZoom(
+  scale
+) {
+
+  quotePreviewZoomMode =
+    "manual";
+
+  quotePreviewManualScale =
+    Math.min(
+      QUOTE_PREVIEW_MAX_ZOOM,
+      Math.max(
+        QUOTE_PREVIEW_MIN_ZOOM,
+        scale
+      )
+    );
+
+
+  applyQuotePreviewScale();
+
+}
+
+
+function fitQuotePreview() {
+
+  quotePreviewZoomMode =
+    "fit";
+
+
+  applyQuotePreviewScale();
+
+}
+
+
+quotePreviewZoomOut
+  ?.addEventListener(
+    "click",
+    () => {
+
+      setQuotePreviewZoom(
+        getCurrentQuotePreviewScale() -
+        QUOTE_PREVIEW_ZOOM_STEP
+      );
+
+    }
+  );
+
+
+quotePreviewZoomIn
+  ?.addEventListener(
+    "click",
+    () => {
+
+      setQuotePreviewZoom(
+        getCurrentQuotePreviewScale() +
+        QUOTE_PREVIEW_ZOOM_STEP
+      );
+
+    }
+  );
+
+
+quotePreviewZoomFit
+  ?.addEventListener(
+    "click",
+    fitQuotePreview
+  );
 
 
 window.addEventListener(

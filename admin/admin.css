@@ -1633,6 +1633,99 @@ button {
 
 
 /* =========================================================
+   QUOTE PREVIEW ZOOM
+
+   화면 표시 전용 확대/축소 컨트롤. export width/height와는
+   무관하고, 캔버스에 transform: scale()만 건다(admin-quote-preview-update.js
+   의 setQuotePreviewZoom / fitQuotePreview). 데스크톱/모바일
+   공통.
+========================================================== */
+
+.quote-preview-zoom {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 6px;
+
+  margin-bottom: 10px;
+}
+
+
+.quote-preview-zoom-btn,
+.quote-preview-zoom-fit {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 32px;
+  min-height: 32px;
+
+  padding: 0 9px;
+
+  border:
+    1px solid
+    #eeeeee;
+
+  border-radius: 4px;
+
+  background: #ffffff;
+
+  color: #999999;
+
+  font-family:
+    "Pretendard",
+    sans-serif;
+
+  font-size: 11px;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.quote-preview-zoom-btn:hover,
+.quote-preview-zoom-fit:hover {
+  color: #e39ab5;
+
+  border-color: #efccd9;
+}
+
+
+.quote-preview-zoom-fit.active {
+  color: #555555;
+
+  border-color: #d9d9d9;
+
+  background: #fafafa;
+}
+
+
+.quote-preview-zoom-value {
+  min-width: 40px;
+
+  text-align: center;
+
+  color: #999999;
+
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+
+  letter-spacing: 0.03em;
+}
+
+
+
+/* =========================================================
    QUOTE PREVIEW STAGE
 ========================================================== */
 
@@ -1645,11 +1738,23 @@ button {
   width: 100%;
 
   /*
-    높이는 JS(applyQuotePreviewScale, admin/quote/admin-quote-preview-update.js)가
-    실제 축소된 캔버스 크기에 맞춰 직접 지정함
-    (post-editor-preview-stage와 동일한 방식) — 여기서
-    min-height를 고정해두면 그 계산과 어긋난다.
+    ★ 높이를 JS가 콘텐츠에 맞춰 계속 늘려주던 이전 방식은,
+    9:16처럼 세로로 긴 비율이나 본문이 긴 AUTO에서 뷰포트보다
+    훨씬 큰 stage를 만들어 "캔버스 전체가 화면에 안 들어오고
+    잘려 보이는" 문제로 이어졌다(특히 뷰포트가 낮은 노트북
+    화면에서). 이제 stage 자체를 고정된(뷰포트에 따라 유동적인)
+    높이로 두고, 캔버스는 JS(applyQuotePreviewScale,
+    admin/quote/admin-quote-preview-update.js)가 이 상자의
+    width/height를 모두 고려해 안에 통째로 들어오도록
+    scale()한다 — object-fit: contain과 같은 개념.
   */
+
+  height:
+    clamp(
+      440px,
+      55vh,
+      620px
+    );
 
   padding: 26px;
 
@@ -1686,7 +1791,18 @@ button {
     실제 에디터 프리뷰(글자 자체가 작아짐)랑 결과물이
     달라 보였음 — 그래서 반드시 고정폭 + JS scale이어야 함.
     실제 축소는 admin-quote-preview-update.js의 applyQuotePreviewScale().
+
+    ★ flex-shrink는 반드시 0이어야 한다. .quote-preview-stage가
+    flex(기본 row)이고 이 캔버스에 overflow:hidden이 걸려있으면,
+    flex-basis(520px)가 stage의 여유 폭보다 클 때 flex-shrink의
+    기본값(1)이 stage 폭에 맞춰 이 요소를 "레이아웃 단계"에서부터
+    조용히 찌그러뜨린다 — JS가 재는 offsetWidth/offsetHeight와
+    실제로 scale(1)일 때 보이는 크기가 520px가 아니게 되고,
+    AUTO 비율의 내보내기 높이 추정(naturalHeight * exportWidth/520,
+    위 updateQuotePreview 참고)과 FIT 계산 둘 다 틀어진다.
   */
+
+  flex-shrink: 0;
 
   width: 520px;
 
@@ -1955,8 +2071,32 @@ button {
   }
 
 
+  /*
+    ★ preview 영역 높이. 데스크톱 clamp(440px,55vh,620px)는
+    모바일에서 하단 고정 시트(.quote-controls, 52vh)와 겹치므로
+    모바일 전용 값으로 덮어쓴다.
+
+    설정 시트가 펼쳐진 기본 상태에선 화면의 나머지 절반 정도만
+    쓸 수 있으니 38dvh, 시트를 접으면(quoteControls.is-collapsed)
+    거의 화면 전체를 쓸 수 있으니 72dvh로 키운다 — 접었는데도
+    프리뷰가 안 커지던 문제 수정. dvh를 못 읽는 구형 브라우저
+    대비로 vh를 먼저 적어두고 dvh로 덮어씀.
+  */
+
   .quote-preview-stage {
+    height: 38vh;
+    height: 38dvh;
+
     padding: 18px;
+  }
+
+
+  .quote-workspace:has(
+    .quote-controls.is-collapsed
+  )
+  .quote-preview-stage {
+    height: 72vh;
+    height: 72dvh;
   }
 
 
@@ -1965,32 +2105,38 @@ button {
   }
 
 
+  /*
+    ★ 모바일이 데스크톱(0 4px)보다 오히려 더 좁은 0 2px여서
+    섹션 타이틀/입력이 화면 왼쪽 끝에 바짝 붙어 보였다. 콘텐츠
+    좌우 여백을 20~24px대로 통일.
+  */
+
   .quote-accordion-toggle {
     min-height: 46px;
 
     padding:
-      0 2px;
+      0 22px;
   }
 
 
   .quote-test-field {
-    margin-left: 10px;
+    margin-left: 22px;
 
-    margin-right: 10px;
+    margin-right: 22px;
   }
 
 
   .quote-setting-block {
-    margin-left: 10px;
+    margin-left: 22px;
 
-    margin-right: 10px;
+    margin-right: 22px;
   }
 
 
   .quote-setting-row {
-    margin-left: 10px;
+    margin-left: 22px;
 
-    margin-right: 10px;
+    margin-right: 22px;
 
     gap: 12px;
   }
@@ -2106,14 +2252,18 @@ button {
 
   .quote-mobile-tabbar-wrap {
     display: flex;
-    flex-direction: column;
 
     /*
-      ★ 탭이 그 아래 필드들을 조작하는 컨트롤이니, 필드보다
-      아래(구 버전)가 아니라 위에 있는 게 구조적으로 더
-      자연스럽다는 피드백으로 위치를 바꿈 — 시트 맨 위에
-      붙어서(position:sticky) 스크롤해도 항상 보인다.
+      ★ 예전엔 collapse 버튼이 탭 줄 "아래"에 폭 100%짜리
+      독립된 줄로 따로 있어서 어색하고 자리를 더 차지했다.
+      탭이 그 아래 필드들을 조작하는 컨트롤이니, 필드보다
+      위에 있는 게 구조적으로 더 자연스럽다는 피드백으로
+      위치를 바꿈 — 시트 맨 위에 붙어서(position:sticky)
+      스크롤해도 항상 보인다. collapse 버튼은 이제 이 줄의
+      오른쪽 끝에 같이 붙는다.
     */
+
+    align-items: center;
 
     position: sticky;
     top: 0;
@@ -2129,20 +2279,24 @@ button {
 
 
   .quote-mobile-tabbar-collapse {
-    width: 100%;
+    flex: 0 0 auto;
 
-    padding: 3px 0;
+    width: 40px;
+    min-height: 40px;
 
-    border: 0;
-    border-top:
+    margin-right: 8px;
+
+    border:
       1px solid
-      #f5f5f5;
+      #e5e5e5;
+
+    border-radius: 4px;
 
     background: transparent;
 
-    color: #bbbbbb;
+    color: #999999;
 
-    font-size: 12px;
+    font-size: 13px;
 
     cursor: pointer;
 
@@ -2152,7 +2306,11 @@ button {
 
 
   .quote-mobile-tabbar {
+    flex: 1 1 auto;
+
     display: flex;
+
+    min-width: 0;
 
     overflow-x: auto;
 
@@ -2214,6 +2372,25 @@ button {
   */
 
   .quote-accordion[hidden] {
+    display: none;
+  }
+
+
+  /*
+    ★ QUOTE PRESET 모바일에서만 상단 admin/이메일/logout
+    헤더를 없앤다 — 좁은 화면에서 프리뷰가 차지할 수 있는
+    세로 공간을 조금이라도 더 확보하기 위함(어차피 quote
+    preset 화면엔 << back 버튼이 따로 있어 logout 접근성에
+    문제 없음). display:none이라 공간도 같이 사라진다.
+    .admin-page.quote-mode는 showQuotePanel()/showAdminHome()
+    등 기존 패널 전환 함수가 이미 토글해주는 클래스라 새로
+    만들 필요 없이 그대로 재사용 — 다른 admin 화면(HOME/
+    SETTINGS/CUSTOMIZE/INQUIRY)에는 이 클래스가 없으므로
+    영향 없음.
+  */
+
+  .admin-page.quote-mode
+  .admin-header {
     display: none;
   }
 
