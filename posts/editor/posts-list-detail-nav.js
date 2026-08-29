@@ -353,6 +353,11 @@ postDeleteButton
       }
 
 
+      invalidateCategoryPageCache(
+        categoryId
+      );
+
+
       await openCategoryPage(
         categoryId
       );

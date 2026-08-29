@@ -330,6 +330,11 @@ async function deleteSelectedPosts() {
     );
 
 
+  invalidateCategoryPageCache(
+    currentPostCategoryId
+  );
+
+
   selectedPostIdsForDelete =
     new Set();
 

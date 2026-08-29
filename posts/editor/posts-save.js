@@ -159,6 +159,18 @@ postEditorSaveButton
         null;
 
 
+      /*
+        빈 값("없음" 선택)이면 이 글은 프리셋 오버라이드 없이
+        사이트 전역 "사용 중" 프리셋을 그대로 따른다
+        (posts-view-detail.js/posts-style-preset.js 참고).
+      */
+
+      const quotePresetId =
+        postEditorPresetSelect
+          ?.value ||
+        null;
+
+
       if (!title) {
 
         showPostEditorMessage(
@@ -261,6 +273,9 @@ postEditorSaveButton
               visibility:
                 editorPostVisibility,
 
+              quote_preset_id:
+                quotePresetId,
+
               /*
                 secret을 벗어나면 예전 해시는 지운다
                 (다시 secret으로 바꾸면 새 비밀번호를
@@ -325,6 +340,21 @@ postEditorSaveButton
         }
 
 
+        /*
+          제목/공개범위/카테고리 등이 바뀌었을 수 있으므로
+          이전 카테고리와(카테고리를 옮겼다면) 새 카테고리
+          목록 캐시를 모두 지운다.
+        */
+
+        invalidateCategoryPageCache(
+          currentPostCategoryId
+        );
+
+        invalidateCategoryPageCache(
+          categoryId
+        );
+
+
         hidePostEditor();
 
 
@@ -370,6 +400,9 @@ postEditorSaveButton
 
             visibility:
               editorPostVisibility,
+
+            quote_preset_id:
+              quotePresetId,
 
             updated_at:
               new Date()
@@ -422,6 +455,11 @@ postEditorSaveButton
         return;
 
       }
+
+
+      invalidateCategoryPageCache(
+        categoryId
+      );
 
 
       hidePostEditor();

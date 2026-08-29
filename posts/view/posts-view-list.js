@@ -7,6 +7,191 @@
 
 
 /* =========================================================
+   CATEGORY PAGE - 목록/메타데이터 캐시
+
+   같은 카테고리를 다시 열 때 매번 Supabase를 재조회하지
+   않도록, 카테고리별로 (category, posts)를 메모리에 캐시해
+   재사용한다. 글 저장/삭제처럼 목록 내용이 바뀌는 지점에서
+   invalidateCategoryPageCache()로 해당 카테고리 캐시만
+   지워서 다음 방문 때 새로 받아오게 한다.
+
+   categoryPageInFlight는 같은 카테고리에 대한 요청이 겹칠 때
+   (연타 등) 같은 Promise를 공유해서 중복 조회를 막는다.
+   categoryPageRequestSeq는 응답이 늦게 와서 그 사이 다른
+   카테고리로 넘어간 화면을 덮어쓰는 것을 막는 용도.
+========================================================== */
+
+const categoryPageCache =
+  new Map();
+
+const categoryPageInFlight =
+  new Map();
+
+let categoryPageRequestSeq =
+  0;
+
+
+function invalidateCategoryPageCache(
+  categoryId
+) {
+
+  if (
+    categoryId === null ||
+    categoryId === undefined
+  ) {
+
+    return;
+
+  }
+
+
+  categoryPageCache.delete(
+    Number(
+      categoryId
+    )
+  );
+
+}
+
+
+function fetchCategoryPageData(
+  categoryId
+) {
+
+  if (
+    categoryPageInFlight.has(
+      categoryId
+    )
+  ) {
+
+    return categoryPageInFlight.get(
+      categoryId
+    );
+
+  }
+
+
+  const request =
+    (async () => {
+
+      const {
+        data: category,
+        error: categoryError
+      } =
+        await supabaseClient
+          .from(
+            "categories"
+          )
+          .select(
+            "id, name, type"
+          )
+          .eq(
+            "id",
+            categoryId
+          )
+          .maybeSingle();
+
+
+      if (
+        categoryError ||
+        !category
+      ) {
+
+        return {
+          category: null,
+          categoryError,
+          posts: null,
+          postsError: null
+        };
+
+      }
+
+
+      /*
+        배너 카테고리는 posts를 쓰지 않으므로 원래도
+        조회하지 않았음 — 그대로 유지.
+      */
+
+      if (
+        category.type ===
+        "banner"
+      ) {
+
+        return {
+          category,
+          categoryError: null,
+          posts: [],
+          postsError: null
+        };
+
+      }
+
+
+      const {
+        data: posts,
+        error: postsError
+      } =
+        await supabaseClient
+          .from(
+            "posts"
+          )
+          .select(
+            `
+            id,
+            title,
+            created_at,
+            visibility
+            `
+          )
+          .eq(
+            "category_id",
+            categoryId
+          )
+          .order(
+            "created_at",
+            {
+              ascending:
+                false
+            }
+          );
+
+
+      return {
+        category,
+        categoryError: null,
+        posts:
+          posts ||
+          [],
+        postsError
+      };
+
+    })();
+
+
+  categoryPageInFlight.set(
+    categoryId,
+    request
+  );
+
+
+  request.finally(
+    () => {
+
+      categoryPageInFlight.delete(
+        categoryId
+      );
+
+    }
+  );
+
+
+  return request;
+
+}
+
+
+
+/* =========================================================
    CATEGORY PAGE
 ========================================================== */
 
@@ -31,6 +216,22 @@ async function openCategoryPage(
   }
 
 
+  const numericCategoryId =
+    Number(
+      categoryId
+    );
+
+
+  /*
+    이 호출 이후 다른 카테고리 클릭이 먼저 끝나버리면
+    구버전(느리게 도착한) 응답으로 화면을 덮어쓰지 않도록
+    순번을 찍어둔다.
+  */
+
+  const requestId =
+    ++categoryPageRequestSeq;
+
+
   const comingFromHome =
     currentPostView ===
       "home";
@@ -44,9 +245,7 @@ async function openCategoryPage(
 
 
   currentPostCategoryId =
-    Number(
-      categoryId
-    );
+    numericCategoryId;
 
 
   currentPostId =
@@ -75,51 +274,89 @@ async function openCategoryPage(
     false;
 
 
-  postPageTitle.textContent =
-    "...";
-
-
-  postList.innerHTML =
-    `
-      <div class="post-empty">
-        loading...
-      </div>
-    `;
-
-
-  const {
-    data: category,
-    error: categoryError
-  } =
-    await supabaseClient
-      .from(
-        "categories"
-      )
-      .select(
-        "id, name, type"
-      )
-      .eq(
-        "id",
-        categoryId
-      )
-      .maybeSingle();
-
-
-  if (
-    categoryError ||
-    !category
-  ) {
-
-    console.error(
-      categoryError
+  const cached =
+    categoryPageCache.get(
+      numericCategoryId
     );
 
 
+  let category;
+  let posts;
+  let postsError = null;
+
+
+  if (cached) {
+
+    category =
+      cached.category;
+
+    posts =
+      cached.posts;
+
+  }
+
+  else {
+
     postPageTitle.textContent =
-      "CATEGORY";
+      "...";
 
 
-    return;
+    postList.innerHTML =
+      `
+        <div class="post-empty">
+          loading...
+        </div>
+      `;
+
+
+    const result =
+      await fetchCategoryPageData(
+        numericCategoryId
+      );
+
+
+    /*
+      기다리는 동안 다른 카테고리로 넘어갔으면 이 결과는
+      버린다(화면은 이미 그 카테고리를 보여주는 중).
+    */
+
+    if (
+      requestId !==
+      categoryPageRequestSeq
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      result.categoryError ||
+      !result.category
+    ) {
+
+      console.error(
+        result.categoryError
+      );
+
+
+      postPageTitle.textContent =
+        "CATEGORY";
+
+
+      return;
+
+    }
+
+
+    category =
+      result.category;
+
+    posts =
+      result.posts;
+
+    postsError =
+      result.postsError;
 
   }
 
@@ -133,7 +370,13 @@ async function openCategoryPage(
     "post";
 
 
-  await updatePostAddButton();
+  /*
+    로그인 여부 확인(글쓰기 버튼 노출용)은 목록 표시와
+    무관하므로 굳이 기다리지 않는다 — await하면 목록이
+    보이기까지 네트워크 왕복이 하나 더 늘어난다.
+  */
+
+  updatePostAddButton();
 
 
   if (updateUrl) {
@@ -144,9 +387,7 @@ async function openCategoryPage(
           "category",
 
         categoryId:
-          Number(
-            categoryId
-          )
+          numericCategoryId
       },
       "",
       buildPostRoute(
@@ -161,6 +402,19 @@ async function openCategoryPage(
     currentPostCategoryType ===
     "banner"
   ) {
+
+    if (!cached) {
+
+      categoryPageCache.set(
+        numericCategoryId,
+        {
+          category,
+          posts: []
+        }
+      );
+
+    }
+
 
     if (postList) {
 
@@ -235,35 +489,6 @@ async function openCategoryPage(
     false;
 
 
-  const {
-    data: posts,
-    error: postsError
-  } =
-    await supabaseClient
-      .from(
-        "posts"
-      )
-      .select(
-        `
-        id,
-        title,
-        created_at,
-        visibility
-        `
-      )
-      .eq(
-        "category_id",
-        categoryId
-      )
-      .order(
-        "created_at",
-        {
-          ascending:
-            false
-        }
-      );
-
-
   if (postsError) {
 
     console.error(
@@ -287,6 +512,20 @@ async function openCategoryPage(
   currentCategoryPosts =
     posts ||
     [];
+
+
+  if (!cached) {
+
+    categoryPageCache.set(
+      numericCategoryId,
+      {
+        category,
+        posts:
+          currentCategoryPosts
+      }
+    );
+
+  }
 
 
   renderPostListItems();
