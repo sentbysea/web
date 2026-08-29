@@ -57,7 +57,10 @@ postEditorPreviewPrev
     () => {
 
       showEditorPreviewPage(
-        editorPreviewPageIndex - 1
+        editorPreviewPageIndex - 1,
+        {
+          resetZoom: false
+        }
       );
 
     }
@@ -70,7 +73,10 @@ postEditorPreviewNext
     () => {
 
       showEditorPreviewPage(
-        editorPreviewPageIndex + 1
+        editorPreviewPageIndex + 1,
+        {
+          resetZoom: false
+        }
       );
 
     }

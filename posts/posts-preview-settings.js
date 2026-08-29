@@ -39,6 +39,93 @@ const MOBILE_PREVIEW_MIN_ZOOM = 0.5;
 const MOBILE_PREVIEW_MAX_ZOOM = 3;
 
 
+/*
+  ★ 데스크톱은 모바일처럼 핀치 제스처가 없어서, 우측 상단의
+  +/- 버튼으로만 fitScale 위에 곱해지는 배율을 조절한다
+  (posts-toolbar-toggles.js에서 버튼 클릭에 연결).
+*/
+
+let desktopPreviewZoom = 1;
+
+const DESKTOP_PREVIEW_MIN_ZOOM = 0.5;
+const DESKTOP_PREVIEW_MAX_ZOOM = 2.5;
+const DESKTOP_PREVIEW_ZOOM_STEP = 0.1;
+
+
+function setDesktopPreviewZoom(
+  nextZoom
+) {
+
+  desktopPreviewZoom =
+    Math.min(
+      DESKTOP_PREVIEW_MAX_ZOOM,
+      Math.max(
+        DESKTOP_PREVIEW_MIN_ZOOM,
+        nextZoom
+      )
+    );
+
+
+  applyEditorPreviewScale();
+
+}
+
+
+function zoomEditorPreviewIn() {
+
+  setDesktopPreviewZoom(
+    desktopPreviewZoom +
+    DESKTOP_PREVIEW_ZOOM_STEP
+  );
+
+}
+
+
+function zoomEditorPreviewOut() {
+
+  setDesktopPreviewZoom(
+    desktopPreviewZoom -
+    DESKTOP_PREVIEW_ZOOM_STEP
+  );
+
+}
+
+
+function syncEditorPreviewZoomControls() {
+
+  if (
+    postEditorPreviewZoomLevel
+  ) {
+
+    postEditorPreviewZoomLevel.textContent =
+      `${
+        Math.round(
+          desktopPreviewZoom *
+          100
+        )
+      }%`;
+
+  }
+
+
+  postEditorPreviewZoomOut
+    ?.toggleAttribute(
+      "disabled",
+      desktopPreviewZoom <=
+        DESKTOP_PREVIEW_MIN_ZOOM
+    );
+
+
+  postEditorPreviewZoomIn
+    ?.toggleAttribute(
+      "disabled",
+      desktopPreviewZoom >=
+        DESKTOP_PREVIEW_MAX_ZOOM
+    );
+
+}
+
+
 function applyEditorPreviewScale() {
 
   if (
@@ -118,19 +205,27 @@ function applyEditorPreviewScale() {
       fitScale;
 
 
+    const appliedScale =
+      fitScale *
+      desktopPreviewZoom;
+
+
     postEditorPreviewPages.style.transformOrigin =
       "top center";
 
 
     postEditorPreviewPages.style.transform =
-      `scale(${fitScale})`;
+      `scale(${appliedScale})`;
 
 
     stage.style.height =
       `${
         naturalHeight *
-        fitScale
+        appliedScale
       }px`;
+
+
+    syncEditorPreviewZoomControls();
 
 
     return;

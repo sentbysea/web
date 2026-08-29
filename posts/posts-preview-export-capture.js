@@ -421,7 +421,7 @@ function restoreAncestorTransformsAfterCapture(
 async function captureVisiblePageAsBlob(
   page,
   pageWidth,
-  pageHeight
+  ratio
 ) {
 
   bakeHighlightSpansForCapture(
@@ -438,6 +438,26 @@ async function captureVisiblePageAsBlob(
   const bakedCssVarStyles =
     bakeCssVarStylesForCapture(
       page
+    );
+
+
+  /*
+    ★ AUTO 비율 버그: pageHeight를 이 함수 호출 전에
+    (베이킹 전에) 미리 재두면, 위 bakeHighlightSpansForCapture가
+    하이라이트 span을 글자 단위로 재감싸면서 줄바꿈이 미묘하게
+    달라져(특히 word-break:keep-all과 상호작용) 실제 레이아웃
+    높이가 그 이후에 조금 더 늘어날 수 있다. AUTO는 여백 없이
+    딱 맞는 높이라 이 몇 픽셀 차이만으로도 html2canvas가 그
+    초과분(하이라이트 뒤에 오는 문장)을 통째로 잘라버렸다
+    (직접 재현/확인함). 그래서 pageHeight는 반드시 모든 베이킹이
+    끝난 지금 이 시점에 측정해야 한다.
+  */
+
+  const pageHeight =
+    resolveExportPageHeight(
+      page,
+      ratio,
+      pageWidth
     );
 
 

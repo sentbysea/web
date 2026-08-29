@@ -1207,6 +1207,52 @@
           >
 
 
+            <!-- ===============================================
+                 DESKTOP ZOOM CONTROL
+
+                 모바일은 핀치 줌으로 배율을 바꾸지만
+                 데스크톱은 그 제스처가 없으므로, 캔버스
+                 우측 상단에 소형 +/- 버튼을 대신 둔다.
+                 (posts-toolbar-toggles.js에서 동작 연결)
+            ================================================ -->
+
+            <div
+              class="post-editor-preview-zoom"
+              id="postEditorPreviewZoom"
+            >
+
+
+              <button
+                class="post-editor-preview-zoom-button"
+                id="postEditorPreviewZoomOut"
+                type="button"
+                aria-label="축소"
+              >
+                −
+              </button>
+
+
+              <span
+                class="post-editor-preview-zoom-level"
+                id="postEditorPreviewZoomLevel"
+              >
+                100%
+              </span>
+
+
+              <button
+                class="post-editor-preview-zoom-button"
+                id="postEditorPreviewZoomIn"
+                type="button"
+                aria-label="확대"
+              >
+                +
+              </button>
+
+
+            </div>
+
+
             <div
               class="post-editor-preview-pages"
               id="postEditorPreviewPages"

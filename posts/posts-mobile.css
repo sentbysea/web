@@ -596,6 +596,16 @@
 }
 
 
+/*
+  핀치 줌으로 배율을 바꾸므로
+  데스크톱 전용 +/- 버튼은 불필요.
+*/
+
+.post-editor-preview-zoom {
+  display: none;
+}
+
+
 .post-editor-preview-page-button {
   width: 34px;
   height: 34px;

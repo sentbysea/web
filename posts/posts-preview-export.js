@@ -250,19 +250,11 @@ async function captureCurrentEditorPreviewPageAsFile(
       520;
 
 
-    const pageHeight =
-      resolveExportPageHeight(
-        page,
-        ratio,
-        pageWidth
-      );
-
-
     const blob =
       await captureVisiblePageAsBlob(
         page,
         pageWidth,
-        pageHeight
+        ratio
       );
 
 
@@ -498,18 +490,10 @@ async function copyCurrentEditorPreviewPageToClipboard() {
             520;
 
 
-          const pageHeight =
-            resolveExportPageHeight(
-              page,
-              ratio,
-              pageWidth
-            );
-
-
           return await captureVisiblePageAsBlob(
             page,
             pageWidth,
-            pageHeight
+            ratio
           );
 
         } finally {
@@ -828,14 +812,6 @@ async function exportEditorPreviewAsImages() {
         520;
 
 
-      const pageHeight =
-        resolveExportPageHeight(
-          page,
-          ratio,
-          pageWidth
-        );
-
-
       let blob;
 
       try {
@@ -844,7 +820,7 @@ async function exportEditorPreviewAsImages() {
           await captureVisiblePageAsBlob(
             page,
             pageWidth,
-            pageHeight
+            ratio
           );
 
       } finally {

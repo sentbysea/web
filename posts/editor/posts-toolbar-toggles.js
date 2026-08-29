@@ -133,6 +133,20 @@ postEditorPreviewBackdrop
   );
 
 
+postEditorPreviewZoomOut
+  ?.addEventListener(
+    "click",
+    zoomEditorPreviewOut
+  );
+
+
+postEditorPreviewZoomIn
+  ?.addEventListener(
+    "click",
+    zoomEditorPreviewIn
+  );
+
+
 
 /* =========================================================
    PREVIEW TITLE / SOURCE VISIBILITY TOGGLE

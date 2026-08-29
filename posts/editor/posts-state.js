@@ -57,6 +57,24 @@ const postEditorPreviewPageIndicator =
   );
 
 
+const postEditorPreviewZoomOut =
+  document.getElementById(
+    "postEditorPreviewZoomOut"
+  );
+
+
+const postEditorPreviewZoomIn =
+  document.getElementById(
+    "postEditorPreviewZoomIn"
+  );
+
+
+const postEditorPreviewZoomLevel =
+  document.getElementById(
+    "postEditorPreviewZoomLevel"
+  );
+
+
 const categoryMenuLinks =
   document.getElementById(
     "categoryMenuLinks"
