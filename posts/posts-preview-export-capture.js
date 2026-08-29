@@ -418,6 +418,88 @@ function restoreAncestorTransformsAfterCapture(
 }
 
 
+/*
+  ★ 모바일 프리뷰는 바텀시트(.post-editor-preview-sheet — 높이
+  70~90dvh + overflow:hidden)와 그 안의 핀치줌 뷰포트
+  (.post-editor-preview-stage — overflow:hidden)에 담겨 있다.
+  화면에서는 핀치줌/드래그로 시트 밖 내용도 볼 수 있지만,
+  html2canvas는 캡처 대상 노드만 따로 그리는 게 아니라 조상까지
+  포함해서 그대로 다시 그린다. RATIO가 AUTO라 페이지 높이가
+  시트보다 커지면 이 overflow:hidden들이 캡처본에서도 그대로
+  클리핑 경계가 되어 본문 아랫부분이 통째로 잘려나갔다(데스크톱은
+  이런 높이 제한 시트 자체가 없어서 증상이 없었음 — 직접
+  재현/확인함). 캡처 직전에만 조상들의 overflow를 모두 visible로
+  풀고, 캡처 후 원래 값으로 되돌린다.
+*/
+
+function stripAncestorOverflowForCapture(
+  element
+) {
+
+  const affected =
+    [];
+
+  let node =
+    element.parentElement;
+
+
+  while (node) {
+
+    const computed =
+      window.getComputedStyle(
+        node
+      );
+
+
+    if (
+      computed.overflowX !==
+        "visible" ||
+      computed.overflowY !==
+        "visible"
+    ) {
+
+      affected.push(
+        {
+          node,
+          value:
+            node.style.overflow
+        }
+      );
+
+
+      node.style.overflow =
+        "visible";
+
+    }
+
+
+    node =
+      node.parentElement;
+
+  }
+
+
+  return affected;
+
+}
+
+
+function restoreAncestorOverflowAfterCapture(
+  affected
+) {
+
+  affected.forEach(
+    entry => {
+
+      entry.node.style.overflow =
+        entry.value;
+
+    }
+  );
+
+}
+
+
 async function captureVisiblePageAsBlob(
   page,
   pageWidth,
@@ -431,6 +513,12 @@ async function captureVisiblePageAsBlob(
 
   const strippedTransforms =
     stripAncestorTransformsForCapture(
+      page
+    );
+
+
+  const strippedOverflow =
+    stripAncestorOverflowForCapture(
       page
     );
 
@@ -519,6 +607,11 @@ async function captureVisiblePageAsBlob(
 
     restoreAncestorTransformsAfterCapture(
       strippedTransforms
+    );
+
+
+    restoreAncestorOverflowAfterCapture(
+      strippedOverflow
     );
 
 
