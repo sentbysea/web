@@ -871,8 +871,27 @@ async function exportEditorPreviewAsImages() {
     );
 
 
+    /*
+      isMobilePostEditor()는 뷰포트 너비만 본다 — 데스크톱
+      브라우저 창을 좁게 줄이거나(devtools 등) 데스크톱
+      Chrome/Edge가 Web Share API를 지원하는 경우에도 true가
+      나올 수 있어서, 실제 터치 기기인지(navigator.maxTouchPoints)
+      까지 같이 확인해야 데스크톱에서 공유 시트 대신 항상
+      다운로드가 되도록 보장된다.
+    */
+
+    const isTouchDevice =
+      (
+        navigator.maxTouchPoints ||
+        0
+      ) > 0 ||
+      "ontouchstart" in
+        window;
+
+
     const canShareFiles =
       isMobilePostEditor() &&
+      isTouchDevice &&
       navigator.share &&
       navigator.canShare &&
       navigator.canShare(
