@@ -500,6 +500,52 @@ function restoreAncestorOverflowAfterCapture(
 }
 
 
+/*
+  ★ html2canvas는 라이브 DOM을 그대로 찍는 게 아니라, 문서
+  전체를 숨겨진 iframe으로 통째로 복제(clone)한 뒤 그 clone을
+  Range.getClientRects()로 다시 읽어서 텍스트 줄바꿈 위치를
+  계산한다. clone은 완전히 별도의 document라 자기만의
+  FontFaceSet을 갖는데, 캡처 직전 메인 문서에서
+  document.fonts.ready를 기다려도 그건 clone의 폰트 로딩과는
+  무관하다. Pretendard는 CDN CSS를 font-display:swap으로
+  불러오므로, onclone 없이 바로 렌더링하면 clone이 fallback
+  sans-serif로 레이아웃된 상태에서 줄바꿈을 읽어버릴 수 있다
+  (데스크톱은 폰트 캐시가 따뜻하고 CPU가 빨라 이 레이스에서
+  거의 항상 이기지만, 모바일 사파리/셀룰러망은 자주 진다).
+  이러면 첫 문단부터 preview와 다른 위치에서 줄이 바뀌고,
+  AUTO 비율의 pageHeight는 이미 폰트가 로드된 원본 페이지
+  기준으로 재둔 값이라 clone이 fallback 폰트로 더 많은 줄을
+  쓰면 그 초과분이 캡처본 아래쪽에서 통째로 잘린다. onclone
+  콜백에서 clone 자신의 fonts.ready를 기다리게 하면 html2canvas가
+  실제 렌더링을 시작하기 전에 이 대기를 끝낸다(html2canvas가
+  onclone의 반환값을 Promise로 await함).
+*/
+
+async function waitForClonedDocumentFontsBeforeCapture(
+  clonedDocument
+) {
+
+  try {
+
+    if (
+      clonedDocument &&
+      clonedDocument.fonts &&
+      clonedDocument.fonts.ready
+    ) {
+
+      await clonedDocument.fonts.ready;
+
+    }
+
+  } catch (error) {
+
+    // 폰트 로딩 확인 실패해도 캡처 자체는 계속 진행
+
+  }
+
+}
+
+
 async function captureVisiblePageAsBlob(
   page,
   pageWidth,
@@ -594,7 +640,13 @@ async function captureVisiblePageAsBlob(
             pageHeight,
 
           logging:
-            false
+            false,
+
+          onclone:
+            clonedDocument =>
+              waitForClonedDocumentFontsBeforeCapture(
+                clonedDocument
+              )
         }
       );
 
