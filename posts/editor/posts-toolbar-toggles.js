@@ -298,10 +298,13 @@ postEditorPreviewSourceBottomOffset
     () => {
 
       previewSourceBottomOffset =
-        Number(
-          postEditorPreviewSourceBottomOffset.value
-        ) ||
-        0;
+        Math.max(
+          0,
+          Number(
+            postEditorPreviewSourceBottomOffset.value
+          ) ||
+          0
+        );
 
 
       updateEditorPreview(

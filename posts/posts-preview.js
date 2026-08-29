@@ -251,11 +251,14 @@ function createPreviewSource(
 
   source.style.marginBottom =
     `${
-      previewSourceBottomOffset ??
-      (
-        Number(
-          settings.sourceBottomOffset
-        ) || 0
+      Math.max(
+        0,
+        previewSourceBottomOffset ??
+        (
+          Number(
+            settings.sourceBottomOffset
+          ) || 0
+        )
       )
     }px`;
 

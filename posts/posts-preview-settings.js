@@ -201,28 +201,51 @@ function applyEditorPreviewScale() {
     !isMobilePostEditor()
   ) {
 
+    /*
+      ★ stage 높이를 콘텐츠에 맞춰 JS가 늘려주던 예전 방식은
+      세로로 긴 비율/AUTO에서 stage가 뷰포트보다 커져 캔버스
+      아랫부분이 화면 밖으로 밀려 잘려 보이는 문제가 있었다
+      (admin-quote-preview-update.js에서 이미 같은 이유로
+      고친 적 있음 — calculateQuotePreviewFitScale 참고).
+      여기서도 동일하게, stage 크기는 CSS(posts.css의
+      clamp/dvh)가 고정으로 정하고, JS는 그 상자의 width/height를
+      모두 고려해 캔버스 전체가 안에 들어오도록 scale만 한다
+      (object-fit: contain과 같은 개념) — stage 자체는 절대
+      건드리지 않는다.
+    */
+
+    const availableHeight =
+      stage.clientHeight;
+
+
+    const heightFitScale =
+      availableHeight > 0
+        ? availableHeight / naturalHeight
+        : fitScale;
+
+
+    const desktopFitScale =
+      Math.min(
+        fitScale,
+        heightFitScale
+      );
+
+
     mobilePreviewFitScale =
-      fitScale;
+      desktopFitScale;
 
 
     const appliedScale =
-      fitScale *
+      desktopFitScale *
       desktopPreviewZoom;
 
 
     postEditorPreviewPages.style.transformOrigin =
-      "top center";
+      "center center";
 
 
     postEditorPreviewPages.style.transform =
       `scale(${appliedScale})`;
-
-
-    stage.style.height =
-      `${
-        naturalHeight *
-        appliedScale
-      }px`;
 
 
     syncEditorPreviewZoomControls();
