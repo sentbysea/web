@@ -7,10 +7,12 @@
 
    내용: html2canvas가 못 읽는 CSS 변수(padding 등)를 캡처
    직전에 실제 값으로 임시 치환/복원, 여러 줄 하이라이트가
-   깨지는 html2canvas 버그를 피하려고 글자 단위로 임시
-   재감싸기/복원, 조상 확대축소 transform 임시 제거/복원,
-   페이지 한 장을 실제로 캡처해서 PNG Blob으로 만들기
-   (captureVisiblePageAsBlob).
+   깨지는 html2canvas 버그를 피하려고 실제 줄바꿈 지점 기준
+   줄 단위로 임시 재감싸기/복원(글자 단위로 쪼개면 PC/모바일
+   폰트 렌더링 차이로 자간이 어긋나 보이는 부작용이 있어서
+   최소 단위를 줄로 올림), 조상 확대축소 transform 임시
+   제거/복원, 페이지 한 장을 실제로 캡처해서 PNG Blob으로
+   만들기(captureVisiblePageAsBlob).
 
    exportEditorPreviewAsImages() 등은
    posts-preview-export.js에 있음(같은 페이지에서 함께
@@ -298,11 +300,159 @@ function restoreCssVarStylesAfterCapture(
   ★ html2canvas는 "여러 줄에 걸쳐 줄바꿈되는, 배경색이 있는
   인라인 span"(우리의 하이라이트)을 렌더링할 때 텍스트가
   사라지거나 다른 줄과 겹쳐 보이는 알려진 버그가 있다
-  (직접 재현/확인함). 캡처 직전에만 하이라이트 span의
-  글자 하나하나를 개별 span으로 재감싸서 배경색을 주면
-  이 버그를 피해갈 수 있다 — 캡처가 끝나면 즉시 원래
+  (직접 재현/확인함). 캡처 직전에만 실제 줄바꿈 지점에서
+  하이라이트 span을 나눠서(줄마다 하나씩) 배경색을 다시
+  주면 이 버그를 피해갈 수 있다 — 캡처가 끝나면 즉시 원래
   구조로 되돌린다.
+
+  ★ 예전에는 글자 하나하나를 전부 개별 span으로 쪼갰었는데,
+  그러면 글자 하나하나가 독립된 인라인 박스가 되어서 그
+  박스 폭이 "실제 글자 모양"이 아니라 "그 브라우저가 계산한
+  글자 자간 포함 폭(advance width)"을 그대로 따르게 된다.
+  데스크톱 Chrome과 모바일 Safari는 같은 폰트 파일을 써도
+  이 계산이 미묘하게 달라서, 모바일에서 유독 글자 사이가
+  더 벌어져 보이고 하이라이트 배경도 실제 글자보다 넓게
+  "튀어나와" 보이는 원인이었다(직접 재현/확인함). 줄 단위로만
+  나누면 대부분의 텍스트가 원래처럼 하나의 연속된 텍스트로
+  남아 브라우저가 정상적으로 자간/커닝을 계산하고, 실제
+  줄바꿈이 일어나는 지점에서만 분리되므로 PC/모바일 상관없이
+  그 브라우저가 화면에 실제로 그린 모양 그대로 하이라이트가
+  씌워진다.
 */
+
+function getHighlightLineRuns(
+  span
+) {
+
+  const walker =
+    document.createTreeWalker(
+      span,
+      NodeFilter.SHOW_TEXT
+    );
+
+  const runs =
+    [];
+
+  let currentText =
+    "";
+
+  let currentTop =
+    null;
+
+
+  function flush() {
+
+    if (currentText) {
+
+      runs.push(
+        {
+          text: currentText,
+          top: currentTop
+        }
+      );
+
+    }
+
+    currentText =
+      "";
+
+    currentTop =
+      null;
+
+  }
+
+
+  let node;
+
+  while (
+    (
+      node =
+        walker.nextNode()
+    )
+  ) {
+
+    const text =
+      node.textContent;
+
+
+    for (
+      let i = 0;
+      i < text.length;
+      i += 1
+    ) {
+
+      const char =
+        text[i];
+
+
+      if (
+        char === "\n"
+      ) {
+
+        flush();
+
+        runs.push(
+          {
+            text: char,
+            top: null
+          }
+        );
+
+        continue;
+
+      }
+
+
+      const range =
+        document.createRange();
+
+      range.setStart(
+        node,
+        i
+      );
+
+      range.setEnd(
+        node,
+        i + 1
+      );
+
+
+      const top =
+        Math.round(
+          range
+            .getBoundingClientRect()
+            .top
+        );
+
+
+      if (
+        currentTop !== null &&
+        top !== currentTop
+      ) {
+
+        flush();
+
+      }
+
+
+      currentText +=
+        char;
+
+      currentTop =
+        top;
+
+    }
+
+  }
+
+
+  flush();
+
+
+  return runs;
+
+}
+
 
 function bakeHighlightSpansForCapture(
   container
@@ -338,26 +488,26 @@ function bakeHighlightSpansForCapture(
       );
 
 
-      const chars =
-        Array.from(
-          span.textContent
+      const runs =
+        getHighlightLineRuns(
+          span
         );
 
 
       const wrapped =
-        chars
+        runs
           .map(
-            char => {
+            run => {
 
               if (
-                char === "\n"
+                run.text === "\n"
               ) {
-                return char;
+                return run.text;
               }
 
 
               const safe =
-                char
+                run.text
                   .replace(
                     /&/g,
                     "&amp;"
@@ -372,7 +522,7 @@ function bakeHighlightSpansForCapture(
                   );
 
 
-              return `<span style="background-color:${bg};display:inline;color:inherit;font:inherit;letter-spacing:inherit;">${safe}</span>`;
+              return `<span style="background-color:${bg};display:inline;color:inherit;font:inherit;">${safe}</span>`;
 
             }
           )
