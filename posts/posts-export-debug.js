@@ -1099,7 +1099,10 @@
       "DEBUG";
 
     toggle.style.cssText =
-      "position:fixed;right:8px;bottom:8px;z-index:999998;" +
+      "position:fixed;" +
+      "right:calc(8px + env(safe-area-inset-right));" +
+      "top:calc(8px + env(safe-area-inset-top));" +
+      "z-index:999998;" +
       "background:#0f0;color:#000;border:none;" +
       "padding:8px 10px;font:11px monospace;font-weight:bold;" +
       "border-radius:6px;opacity:0.85;";
