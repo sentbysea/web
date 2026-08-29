@@ -1182,7 +1182,7 @@
       "right:calc(8px + env(safe-area-inset-right));" +
       "top:calc(8px + env(safe-area-inset-top));" +
       "z-index:999998;" +
-      "background:#1e90ff;color:#fff;border:none;" +
+      "background:#ffd400;color:#000;border:none;" +
       "padding:8px 10px;font:11px monospace;font-weight:bold;" +
       "border-radius:6px;opacity:0.85;";
 
