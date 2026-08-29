@@ -158,76 +158,95 @@ function bakeCssVarStylesForCapture(
     word-break: keep-all / -webkit-text-size-adjust: 100%
     선언이 적용되지 않고 각각 normal / auto로 나왔다(스타일시트
     규칙이 클론에서 안 읽히는 것으로 보임 — padding/aspect-ratio
-    때와 같은 종류의 html2canvas 한계로 추정). text-size-adjust:
-    auto는 iOS Safari의 자동 텍스트 확대를 켜버릴 수 있고,
-    word-break: normal은 한글 줄바꿈 위치 자체를 바꾸므로, 라이브
-    화면과 다른 지점에서 줄이 바뀌고 필요한 높이도 달라지는
-    유력한 원인으로 보인다(이 두 속성을 인라인으로 박는 것만으로
-    실제로 해결되는지는 아직 실기기 검증 전). 인라인으로 박아넣어
-    클론에서도 확실히 적용시킨다.
+    때와 같은 종류의 html2canvas 한계로 추정, 그리고
+    applyPreviewTitleStyle/createPreviewSource 주석에 적힌
+    "상속만 되어 있으면 폰트가 깨진다"는 것과도 같은 계열).
+    text-size-adjust: auto는 iOS Safari의 자동 텍스트 확대를
+    켜버릴 수 있고, word-break: normal은 한글 줄바꿈 위치 자체를
+    바꾼다. content뿐 아니라 title/source도 같은 방식(상속에
+    의존)으로 렌더링되므로 셋 다 인라인으로 박아넣는다.
   */
 
-  const content =
-    page.querySelector(
-      ".post-editor-preview-content"
-    );
+  function bakeTextRenderingForElement(
+    el
+  ) {
 
-  if (content) {
+    if (!el) {
+      return;
+    }
 
-    const contentComputed =
+
+    const elComputed =
       window.getComputedStyle(
-        content
+        el
       );
 
     affected.push(
       {
-        node: content,
+        node: el,
         prop: "wordBreak",
         previousValue:
-          content.style.wordBreak
+          el.style.wordBreak
       }
     );
 
-    content.style.wordBreak =
-      contentComputed.wordBreak;
+    el.style.wordBreak =
+      elComputed.wordBreak;
 
 
     affected.push(
       {
-        node: content,
+        node: el,
         prop:
           "webkitTextSizeAdjust",
         previousValue:
-          content.style
+          el.style
             .webkitTextSizeAdjust
       }
     );
 
-    content.style.webkitTextSizeAdjust =
+    el.style.webkitTextSizeAdjust =
       "100%";
 
 
     affected.push(
       {
-        node: content,
+        node: el,
         prop:
           "textSizeAdjust",
         previousValue:
-          content.style
+          el.style
             .textSizeAdjust
       }
     );
 
-    content.style.textSizeAdjust =
+    el.style.textSizeAdjust =
       "100%";
 
   }
 
 
+  bakeTextRenderingForElement(
+    page.querySelector(
+      ".post-editor-preview-content"
+    )
+  );
+
   const title =
     page.querySelector(
       ".post-editor-preview-title"
     );
+
+  bakeTextRenderingForElement(
+    title
+  );
+
+  bakeTextRenderingForElement(
+    page.querySelector(
+      ".post-editor-preview-source"
+    )
+  );
+
 
   if (title) {
 
