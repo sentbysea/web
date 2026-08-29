@@ -42,6 +42,24 @@ const quoteMobileTabButtons =
   );
 
 
+/* RESIZE HANDLE (모바일 전용, admin-quote-resize.js 참고) */
+
+const quoteResizeHandle =
+  document.getElementById(
+    "quoteResizeHandle"
+  );
+
+const quoteWorkspace =
+  document.querySelector(
+    ".quote-workspace"
+  );
+
+const quotePreviewPanel =
+  document.querySelector(
+    ".quote-preview-panel"
+  );
+
+
 /* =========================================================
    TEST CONTENT
 ========================================================== */
@@ -362,6 +380,11 @@ const quotePreviewZoomValue =
 const quotePresetName =
   document.getElementById(
     "quotePresetName"
+  );
+
+const quoteNewButton =
+  document.getElementById(
+    "quoteNewButton"
   );
 
 const quoteSaveButton =

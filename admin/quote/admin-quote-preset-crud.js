@@ -12,10 +12,11 @@
 
 
 /* =========================================================
-   SAVE PRESET
+   SAVE PRESET — 공통 준비 (이름 검증 + 로그인 확인 + 현재
+   설정 수집). new/save 둘 다 이 절차를 그대로 쓴다.
 ========================================================== */
 
-async function saveQuotePreset() {
+async function prepareQuotePresetSave() {
 
   const presetName =
     quotePresetName
@@ -31,7 +32,7 @@ async function saveQuotePreset() {
     );
 
 
-    return;
+    return null;
 
   }
 
@@ -55,17 +56,155 @@ async function saveQuotePreset() {
     );
 
 
+    return null;
+
+  }
+
+
+  return {
+
+    presetName,
+
+    user:
+      userData.user,
+
+    settings:
+      collectQuoteSettings()
+
+  };
+
+}
+
+
+/* =========================================================
+   NEW — 항상 새 프리셋을 만들어 목록에 추가한다(기존에
+   선택돼 있던 프리셋과는 무관).
+========================================================== */
+
+async function createQuotePreset() {
+
+  const ctx =
+    await prepareQuotePresetSave();
+
+
+  if (!ctx) {
+    return;
+  }
+
+
+  if (quoteNewButton) {
+
+    quoteNewButton.disabled =
+      true;
+
+  }
+
+
+  showQuoteMessage(
+    "저장 중..."
+  );
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .insert({
+
+        user_id:
+          ctx.user.id,
+
+        name:
+          ctx.presetName,
+
+        settings:
+          ctx.settings,
+
+        updated_at:
+          new Date()
+            .toISOString()
+
+      })
+      .select(
+        "id"
+      )
+      .single();
+
+
+  if (quoteNewButton) {
+
+    quoteNewButton.disabled =
+      false;
+
+  }
+
+
+  if (error) {
+
+    console.error(
+      "quote preset insert error:",
+      error
+    );
+
+
+    showQuoteMessage(
+      "저장에 실패했습니다."
+    );
+
+
     return;
 
   }
 
 
-  const user =
-    userData.user;
+  currentQuotePresetId =
+    data.id;
 
 
-  const settings =
-    collectQuoteSettings();
+  showQuoteMessage(
+    "new preset saved ♡",
+    true
+  );
+
+
+  await loadQuotePresets();
+
+}
+
+
+/* =========================================================
+   SAVE — 지금 선택돼 있는 프리셋 슬롯에 덮어쓴다. 선택된
+   프리셋이 없으면(currentQuotePresetId 없음) new를 먼저
+   쓰라고 안내하고 끝낸다.
+========================================================== */
+
+async function updateQuotePreset() {
+
+  if (
+    !currentQuotePresetId
+  ) {
+
+    showQuoteMessage(
+      "덮어쓸 프리셋을 목록에서 먼저 선택하거나 new로 추가해주세요."
+    );
+
+
+    return;
+
+  }
+
+
+  const ctx =
+    await prepareQuotePresetSave();
+
+
+  if (!ctx) {
+    return;
+  }
 
 
   if (quoteSaveButton) {
@@ -81,130 +220,60 @@ async function saveQuotePreset() {
   );
 
 
-  /* UPDATE */
+  const {
+    error
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .update({
 
-  if (
-    currentQuotePresetId
-  ) {
+        name:
+          ctx.presetName,
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from(
-          "quote_presets"
-        )
-        .update({
+        settings:
+          ctx.settings,
 
-          name:
-            presetName,
+        updated_at:
+          new Date()
+            .toISOString()
 
-          settings:
-            settings,
-
-          updated_at:
-            new Date()
-              .toISOString()
-
-        })
-        .eq(
-          "id",
-          currentQuotePresetId
-        )
-        .eq(
-          "user_id",
-          user.id
-        );
-
-
-    if (error) {
-
-      console.error(
-        "quote preset update error:",
-        error
+      })
+      .eq(
+        "id",
+        currentQuotePresetId
+      )
+      .eq(
+        "user_id",
+        ctx.user.id
       );
 
 
-      showQuoteMessage(
-        "저장에 실패했습니다."
-      );
+  if (quoteSaveButton) {
 
-
-      quoteSaveButton.disabled =
-        false;
-
-
-      return;
-
-    }
+    quoteSaveButton.disabled =
+      false;
 
   }
 
 
-  /* INSERT */
+  if (error) {
 
-  else {
-
-    const {
-      data,
+    console.error(
+      "quote preset update error:",
       error
-    } =
-      await supabaseClient
-        .from(
-          "quote_presets"
-        )
-        .insert({
-
-          user_id:
-            user.id,
-
-          name:
-            presetName,
-
-          settings:
-            settings,
-
-          updated_at:
-            new Date()
-              .toISOString()
-
-        })
-        .select(
-          "id"
-        )
-        .single();
+    );
 
 
-    if (error) {
-
-      console.error(
-        "quote preset insert error:",
-        error
-      );
+    showQuoteMessage(
+      "저장에 실패했습니다."
+    );
 
 
-      showQuoteMessage(
-        "저장에 실패했습니다."
-      );
-
-
-      quoteSaveButton.disabled =
-        false;
-
-
-      return;
-
-    }
-
-
-    currentQuotePresetId =
-      data.id;
+    return;
 
   }
-
-
-  quoteSaveButton.disabled =
-    false;
 
 
   showQuoteMessage(
@@ -427,13 +496,20 @@ async function activateQuotePreset(
 
 
 /* =========================================================
-   SAVE EVENT
+   SAVE EVENTS
 ========================================================== */
+
+quoteNewButton
+  ?.addEventListener(
+    "click",
+    createQuotePreset
+  );
+
 
 quoteSaveButton
   ?.addEventListener(
     "click",
-    saveQuotePreset
+    updateQuotePreset
   );
 
 

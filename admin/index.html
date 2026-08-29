@@ -1892,13 +1892,28 @@
                   </div>
 
 
-                  <button
-                    class="save-button quote-preset-save-button"
-                    id="quoteSaveButton"
-                    type="button"
-                  >
-                    save preset
-                  </button>
+                  <div class="quote-preset-save-buttons">
+
+                    <button
+                      class="save-button quote-preset-new-button"
+                      id="quoteNewButton"
+                      type="button"
+                      title="목록에 새 프리셋으로 추가"
+                    >
+                      new
+                    </button>
+
+                    <button
+                      class="save-button quote-preset-save-button"
+                      id="quoteSaveButton"
+                      type="button"
+                      title="현재 선택된 프리셋에 덮어쓰기"
+                      disabled
+                    >
+                      save
+                    </button>
+
+                  </div>
 
 
                 </div>
@@ -1930,6 +1945,25 @@
 
 
           </section>
+
+
+
+          <!-- =================================================
+               RESIZE HANDLE (모바일 전용)
+
+               대지/설정창 사이 경계 — 드래그하면 설정창 높이가
+               바뀌고 대지가 flex:1이라 남은 공간을 자동으로
+               채운다(admin-quote-resize.js). 데스크톱에서는
+               display:none(admin.css).
+          ================================================== -->
+
+          <div
+            class="quote-resize-handle"
+            id="quoteResizeHandle"
+            role="separator"
+            aria-orientation="horizontal"
+            aria-label="설정창 크기 조정"
+          ></div>
 
 
 
@@ -2055,12 +2089,12 @@
 
             </div>
 
-            </div>
-
 
             <p class="quote-preview-help">
               settings are reflected here
             </p>
+
+            </div>
 
           </section>
 
@@ -2624,6 +2658,7 @@
     로드돼야 함.
   -->
   <script src="./quote/admin-quote-mobile-tabs.js"></script>
+  <script src="./quote/admin-quote-resize.js"></script>
 
   <script src="../site-footer.js"></script>
 

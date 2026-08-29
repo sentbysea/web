@@ -1172,6 +1172,17 @@ button {
 }
 
 
+/*
+  대지/설정창 사이의 드래그 리사이즈 바. 데스크톱은 좌우
+  그리드라 필요 없어서 기본은 숨김 — 모바일 media query에서만
+  display:flex로 켠다(아래 QUOTE 모바일 섹션 참고).
+*/
+
+.quote-resize-handle {
+  display: none;
+}
+
+
 
 /* =========================================================
    QUOTE ACCORDION
@@ -1302,7 +1313,7 @@ button {
     1px solid
     #ececec;
 
-  border-radius: 2px;
+  border-radius: 0;
 
   outline: none;
 
@@ -1393,7 +1404,7 @@ button {
     1px solid
     #eeeeee;
 
-  border-radius: 2px;
+  border-radius: 0;
 
   background: #ffffff;
 
@@ -1484,7 +1495,7 @@ button {
     1px solid
     #ececec;
 
-  border-radius: 2px;
+  border-radius: 0;
 
   background: #ffffff;
 
@@ -1532,7 +1543,7 @@ button {
     1px solid
     #ececec;
 
-  border-radius: 2px;
+  border-radius: 0;
 
   background: #ffffff;
 
@@ -1602,10 +1613,10 @@ button {
 
 
 /*
-  모바일에서 quote-preview-zoom이 stage 모서리에 겹쳐 뜰 때
-  기준이 되는 위치 컨테이너(admin.css 모바일 미디어쿼리 참고).
-  데스크톱에서는 zoom이 static이라 이 position:relative가
-  아무 영향도 없음.
+  quote-preview-zoom(모바일에서 stage 위쪽 가운데 겹침)과
+  quote-preview-help(우측 하단 겹침)가 기준으로 삼는 위치
+  컨테이너. 데스크톱에서는 zoom이 static이라 이
+  position:relative가 zoom에는 영향이 없고 help에만 쓰임.
 */
 
 .quote-preview-stage-wrap {
@@ -1681,7 +1692,7 @@ button {
     1px solid
     #eeeeee;
 
-  border-radius: 4px;
+  border-radius: 0;
 
   background: #ffffff;
 
@@ -1950,19 +1961,41 @@ button {
 
 /* =========================================================
    QUOTE PREVIEW HELP
+
+   설정창 바로 위에 붙어 보이던 걸(예전엔 stage-wrap 아래
+   일반 흐름에 있었음) 대지 자체의 캡션으로 옮겼다 — 이제
+   .quote-preview-stage-wrap(position:relative) 기준으로
+   우측 하단에 겹쳐 뜬다. pointer-events:none이라 캔버스
+   클릭/드래그를 가리지 않음.
 ========================================================== */
 
 .quote-preview-help {
-  margin:
-    9px 0 0;
+  position: absolute;
+
+  right: 8px;
+  bottom: 8px;
+
+  z-index: 4;
+
+  margin: 0;
+
+  padding: 4px 8px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.85
+    );
 
   color: #c1c1c1;
 
   font-size: 9px;
 
-  text-align: right;
-
   letter-spacing: 0.03em;
+
+  pointer-events: none;
 }
 
 
@@ -2052,14 +2085,71 @@ button {
 
   /* =======================================================
      QUOTE 모바일
+
+     대지(.quote-preview-panel)와 설정창(.quote-controls)이
+     겹치지 않도록 화면을 진짜로 위아래 분할한다 — 페이지 자체를
+     스크롤하는 대신 #quotePanel 높이를 100dvh에 고정하고
+     그 안에서 대지/리사이즈 바/설정창이 flex-column으로 남은
+     공간을 나눠 갖는다(.admin-page.quote-mode 규칙, 아래 참고).
+     대지 높이는 --quote-preview-height로 조절되고
+     (admin-quote-resize.js가 드래그로 값을 바꿈), 설정창은
+     flex:1이라 남은 공간을 전부 가져간다 — 대지를 flex:1로
+     두지 않는 이유는 아래 .quote-preview-panel 주석 참고.
   ======================================================== */
+
+  .admin-page.quote-mode {
+    height: 100vh;
+    height: 100dvh;
+
+    overflow: hidden;
+
+    padding: 0;
+  }
+
+
+  .admin-page.quote-mode #adminDashboard {
+    height: 100%;
+  }
+
+
+  .admin-page.quote-mode #quotePanel {
+    display: flex;
+
+    flex-direction: column;
+
+    height: 100%;
+
+    padding-top: 0;
+
+    overflow: hidden;
+  }
+
+
+  .admin-page.quote-mode .view-top {
+    flex: 0 0 auto;
+
+    margin: 16px 14px 12px;
+  }
+
 
   .quote-workspace {
     display: flex;
 
     flex-direction: column;
 
-    gap: 34px;
+    /*
+      데스크톱 grid 규칙(1137번째 줄)의 align-items:start가
+      display만 flex로 바뀐다고 사라지지 않고 그대로 남아서,
+      너비를 안 정해준 자식(리사이즈 바 등)이 콘텐츠 크기만큼만
+      줄어들어 왼쪽에 붙어 보이는 문제가 있었다 — stretch로
+      명시적으로 되돌려서 모든 자식이 항상 폭 100%를 채우게 함.
+    */
+
+    align-items: stretch;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
 
     width: 100%;
 
@@ -2068,39 +2158,130 @@ button {
 
 
   .quote-preview-panel {
+    display: flex;
+
+    flex-direction: column;
+
     position: static;
 
     order: 1;
 
+    /*
+      대지를 flex:1로 남는 공간을 다 채우게 하면, 캔버스는
+      비율이 고정이라 못 채우는 만큼 그대로 빈 여백(레터박싱)이
+      됐다 — 특히 짧은 글/AUTO 비율일 때 손잡이 위아래로 커다란
+      흰 여백이 보이던 원인. 대지는 --quote-preview-height로
+      직접 크기를 정하고(기본값 40vh), 대신 설정창(.quote-controls)을
+      flex:1로 둬서 남는 공간을 실제 입력 필드로 채우게 함.
+    */
+
+    flex: 0 0 auto;
+
+    height:
+      var(
+        --quote-preview-height,
+        40vh
+      );
+
+    min-height: 160px;
+    max-height: 78vh;
+
     width: 100%;
+
+    overflow: hidden;
+  }
+
+
+  .quote-resize-handle {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    order: 2;
+
+    flex: 0 0 auto;
+
+    width: 100%;
+    height: 8px;
+
+    touch-action: none;
+
+    cursor: row-resize;
+
+    background: #ffffff;
+
+    border-top:
+      1px solid
+      #eeeeee;
+
+    border-bottom:
+      1px solid
+      #eeeeee;
+  }
+
+
+  .quote-resize-handle::before {
+    content: "";
+
+    width: 28px;
+    height: 3px;
+
+    background: #dddddd;
+
+    transition: background 0.15s ease;
+  }
+
+
+  .quote-resize-handle.is-dragging {
+    background: #fff5f8;
+  }
+
+
+  .quote-resize-handle.is-dragging::before {
+    background: #e39ab5;
   }
 
 
   .quote-controls {
-    order: 2;
+    order: 3;
 
     width: 100%;
   }
 
 
-  /*
-    ★ preview 영역 높이. 데스크톱 clamp(440px,55vh,620px)는
-    모바일에서 하단 고정 시트(.quote-controls)와 겹치므로
-    모바일 전용 값으로 덮어쓴다.
+  .quote-preview-stage-wrap {
+    display: flex;
 
-    프리뷰/설정을 접었다 펼쳤다 하지 않고 화면을 위아래로
-    항상 나눠 보여주기로 하면서(.quote-controls 높이를 기존
-    52vh의 0.6배인 31vh로 줄임 — 아래 참고), 그만큼 남는
-    공간을 프리뷰 쪽에 몰아준다(기존 38vh + 줄어든 21vh ≈
-    59vh). dvh를 못 읽는 구형 브라우저 대비로 vh를 먼저
-    적어두고 dvh로 덮어씀.
-  */
+    flex-direction: column;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+  }
+
 
   .quote-preview-stage {
-    height: 59vh;
-    height: 59dvh;
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    height: auto;
 
     padding: 18px;
+
+    /*
+      캔버스 비율이 stage보다 옆으로 넓으면(모바일은 거의 항상
+      그럼 — 폭 기준으로 맞춰 축소되니까) 위아래로 남는 공간이
+      생긴다. desktop처럼 center로 두면 그 여백이 절반씩
+      위/아래로 갈라져서 캔버스 바로 아래·손잡이 바로 위에도
+      여백이 보였다 — flex-end로 캔버스를 손잡이 쪽(아래)에
+      붙이면 남는 여백은 전부 위쪽(줌 컨트롤 있는 곳)으로만
+      모이고, 손잡이 바로 위는 stage 자체의 padding(18px)만
+      남는다.
+    */
+
+    align-items: flex-end;
   }
 
 
@@ -2111,8 +2292,8 @@ button {
 
   /*
     ★ 줌 컨트롤(−/%/+/FIT)을 stage 위 별도 줄로 두면 그만큼
-    프리뷰가 차지할 세로 공간이 줄어든다 — stage 오른쪽 위
-    모서리에 작게 겹쳐 띄워서 그 줄 자체를 없앤다(기준 위치는
+    프리뷰가 차지할 세로 공간이 줄어든다 — stage 위쪽 가운데에
+    작게 겹쳐 띄워서 그 줄 자체를 없앤다(기준 위치는
     .quote-preview-stage-wrap, 위 desktop 섹션 참고).
   */
 
@@ -2120,7 +2301,9 @@ button {
     position: absolute;
 
     top: 8px;
-    right: 8px;
+    left: 50%;
+
+    transform: translateX(-50%);
 
     z-index: 5;
 
@@ -2138,7 +2321,7 @@ button {
         0.92
       );
 
-    border-radius: 8px;
+    border-radius: 0;
 
     box-shadow:
       0
@@ -2242,44 +2425,22 @@ button {
 
 
   /* =======================================================
-     QUOTE CONTROLS — 모바일 하단 고정 시트
+     QUOTE CONTROLS — 모바일 설정창
 
-     프리뷰는 원래 순서대로(order:1) 위쪽 일반 문서 흐름에
-     그대로 남고, 컨트롤(7개 아코디언)만 화면 하단에 고정된
-     시트로 바뀐다 — 아코디언을 찾아 계속 스크롤하는 동안
-     프리뷰가 화면 밖으로 밀려 안 보이던 문제 해결.
-     탭바(.quote-mobile-tabbar-wrap)가 이 시트의 맨 아래에
-     sticky로 붙어서 항상 보이고, 탭을 누르면
-     admin-quote-mobile-tabs.js가 그 그룹의 아코디언만 보여준다.
-
-     ★ 예전엔 화살표 버튼으로 이 시트를 접었다 펼쳤다 할 수
-     있었는데(52vh↔44px), 접지 않고도 프리뷰가 잘 보이도록
-     기본 높이 자체를 0.6배(31vh)로 줄이고 접기 기능은
-     제거했다 — 화면이 항상 프리뷰/설정 두 영역으로 고정
-     분할된다(admin-quote-mobile-tabs.js에는 더 이상
-     collapse 관련 코드가 없음).
+     대지(.quote-preview-panel) 아래 자기 영역만 차지하는
+     일반 flex 아이템이라, 더 이상 대지 위에 겹쳐 뜨지 않는다
+     (예전엔 position:fixed로 화면 하단에 띄워서 대지 아래쪽을
+     가렸었음). flex:1이라 대지가 고정 높이를 쓰고 남은 공간을
+     전부 가져간다 — overflow-y:auto라 남는 공간이 빈 여백으로
+     버려지지 않고 실제 입력 필드를 더 보여주는 데 쓰인다(위
+     .quote-preview-panel 주석 참고). 탭바(.quote-mobile-tabbar-wrap)는
+     이 영역 맨 위에 sticky로 붙어서 항상 보인다.
   ======================================================== */
 
   .quote-controls {
-    position: fixed;
+    flex: 1 1 auto;
 
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    z-index: 60;
-
-    /*
-      ★ max-height는 "천장"일 뿐이라, 탭 하나짜리 짧은
-      섹션만 보이는 상태에서는 내용물 높이만큼만 줄어들어서
-      시트가 탭바 바로 위에 거의 안 보일 만큼 얇게 찌그러져
-      있었다(TEST CONTENT 탭이 특히 짧아서 심하게 티가 남).
-      탭 내용과 무관하게 항상 화면의 일정 비율을 차지하도록
-      고정 height로 바꾸고, 모자란/넘치는 내용은 내부 스크롤로
-      처리한다.
-    */
-
-    height: 31vh;
+    min-height: 110px;
 
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -2295,17 +2456,6 @@ button {
     border-top:
       1px solid
       #eeeeee;
-
-    box-shadow:
-      0
-      -6px
-      24px
-      rgba(
-        0,
-        0,
-        0,
-        0.10
-      );
   }
 
 
@@ -2363,7 +2513,7 @@ button {
       1px solid
       #e5e5e5;
 
-    border-radius: 4px;
+    border-radius: 0;
 
     background: transparent;
 
@@ -2531,7 +2681,7 @@ button {
     1px solid
     #e5e5e5;
 
-  border-radius: 999px;
+  border-radius: 0;
 
   background:
     transparent;
@@ -2712,6 +2862,18 @@ button {
     margin-right: 10px;
   }
 
+
+  .quote-preset-save-row {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+
+  .quote-preset-message {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
 }
 
 /* =========================================================
@@ -2848,6 +3010,51 @@ button {
   letter-spacing: 0.08em;
 
   color: #777777;
+}
+
+
+
+/*
+  PRESET NAME 입력 + new/save 버튼 줄. 다른 설정 블록들처럼
+  좌우 14px 여백을 줘서 화면 왼쪽 끝에 붙어 보이지 않게 한다
+  (.quote-setting-block 등과 동일한 간격 규칙).
+*/
+
+.quote-preset-save-row {
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 12px;
+
+  margin: 0 14px 10px;
+}
+
+
+.quote-preset-name-field {
+  flex: 1 1 auto;
+
+  min-width: 0;
+}
+
+
+.quote-preset-save-buttons {
+  display: flex;
+
+  flex: 0 0 auto;
+
+  gap: 8px;
+}
+
+
+.quote-preset-save-buttons
+.save-button {
+  margin: 0;
+}
+
+
+.quote-preset-message {
+  margin: 8px 14px 0;
 }
 
 /* =========================================================

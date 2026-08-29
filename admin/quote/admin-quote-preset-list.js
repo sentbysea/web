@@ -10,6 +10,27 @@
 
 
 /* =========================================================
+   SAVE 버튼 활성/비활성
+
+   save는 "지금 선택된 프리셋에 덮어쓰기"라 선택된 프리셋이
+   없을 때는(currentQuotePresetId 없음) 누를 게 없으므로
+   비활성화한다. new는 항상 누를 수 있어서 손대지 않음.
+========================================================== */
+
+function syncQuotePresetSaveButton() {
+
+  if (!quoteSaveButton) {
+    return;
+  }
+
+
+  quoteSaveButton.disabled =
+    !currentQuotePresetId;
+
+}
+
+
+/* =========================================================
    RENDER PRESETS
 ========================================================== */
 
@@ -18,6 +39,8 @@ function renderQuotePresets(
 ) {
 
   ensureQuotePresetList();
+
+  syncQuotePresetSaveButton();
 
 
   if (!quotePresetList) {
