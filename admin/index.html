@@ -1949,25 +1949,6 @@
 
 
           <!-- =================================================
-               RESIZE HANDLE (모바일 전용)
-
-               대지/설정창 사이 경계 — 드래그하면 설정창 높이가
-               바뀌고 대지가 flex:1이라 남은 공간을 자동으로
-               채운다(admin-quote-resize.js). 데스크톱에서는
-               display:none(admin.css).
-          ================================================== -->
-
-          <div
-            class="quote-resize-handle"
-            id="quoteResizeHandle"
-            role="separator"
-            aria-orientation="horizontal"
-            aria-label="설정창 크기 조정"
-          ></div>
-
-
-
-          <!-- =================================================
                RIGHT : PREVIEW
           ================================================== -->
 
@@ -2658,7 +2639,7 @@
     로드돼야 함.
   -->
   <script src="./quote/admin-quote-mobile-tabs.js"></script>
-  <script src="./quote/admin-quote-resize.js"></script>
+  <script src="./quote/admin-quote-preview-gesture.js"></script>
 
   <script src="../site-footer.js"></script>
 

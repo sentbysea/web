@@ -1172,18 +1172,6 @@ button {
 }
 
 
-/*
-  대지/설정창 사이의 드래그 리사이즈 바. 데스크톱은 좌우
-  그리드라 필요 없어서 기본은 숨김 — 모바일 media query에서만
-  display:flex로 켠다(아래 QUOTE 모바일 섹션 참고).
-*/
-
-.quote-resize-handle {
-  display: none;
-}
-
-
-
 /* =========================================================
    QUOTE ACCORDION
 ========================================================== */
@@ -1788,6 +1776,14 @@ button {
   background: #fafafa;
 
   overflow: hidden;
+
+  /*
+    핀치 확대/축소·드래그 이동(admin-quote-preview-gesture.js)을
+    직접 처리하므로, 브라우저 기본 핀치줌/스크롤 제스처가
+    가로채지 않도록 막는다.
+  */
+
+  touch-action: none;
 }
 
 
@@ -2089,12 +2085,16 @@ button {
      대지(.quote-preview-panel)와 설정창(.quote-controls)이
      겹치지 않도록 화면을 진짜로 위아래 분할한다 — 페이지 자체를
      스크롤하는 대신 #quotePanel 높이를 100dvh에 고정하고
-     그 안에서 대지/리사이즈 바/설정창이 flex-column으로 남은
-     공간을 나눠 갖는다(.admin-page.quote-mode 규칙, 아래 참고).
-     대지 높이는 --quote-preview-height로 조절되고
-     (admin-quote-resize.js가 드래그로 값을 바꿈), 설정창은
+     그 안에서 대지/설정창이 flex-column으로 남은 공간을 나눠
+     갖는다(.admin-page.quote-mode 규칙, 아래 참고). 대지 높이는
+     고정값(아래 .quote-preview-panel 참고)이고, 설정창은
      flex:1이라 남은 공간을 전부 가져간다 — 대지를 flex:1로
      두지 않는 이유는 아래 .quote-preview-panel 주석 참고.
+
+     예전에는 이 경계를 손잡이로 드래그해서 나눴는데, 손잡이가
+     화면 상당 부분을 차지해버려서 캔버스가 잘려 보이는 문제가
+     있었다 — 이제 경계는 고정하고, 대신 대지 안에서 핀치
+     확대/축소·드래그 이동을 하게 바꿨다(admin-quote-preview-gesture.js).
   ======================================================== */
 
   .admin-page.quote-mode {
@@ -2169,19 +2169,15 @@ button {
     /*
       대지를 flex:1로 남는 공간을 다 채우게 하면, 캔버스는
       비율이 고정이라 못 채우는 만큼 그대로 빈 여백(레터박싱)이
-      됐다 — 특히 짧은 글/AUTO 비율일 때 손잡이 위아래로 커다란
-      흰 여백이 보이던 원인. 대지는 --quote-preview-height로
-      직접 크기를 정하고(기본값 40vh), 대신 설정창(.quote-controls)을
-      flex:1로 둬서 남는 공간을 실제 입력 필드로 채우게 함.
+      됐다 — 특히 짧은 글/AUTO 비율일 때 위아래로 커다란 흰
+      여백이 보이던 원인. 대지는 고정 높이(40vh)로 두고, 대신
+      설정창(.quote-controls)을 flex:1로 둬서 남는 공간을 실제
+      입력 필드로 채우게 함.
     */
 
     flex: 0 0 auto;
 
-    height:
-      var(
-        --quote-preview-height,
-        40vh
-      );
+    height: 40vh;
 
     min-height: 160px;
     max-height: 78vh;
@@ -2192,59 +2188,8 @@ button {
   }
 
 
-  .quote-resize-handle {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    order: 2;
-
-    flex: 0 0 auto;
-
-    width: 100%;
-    height: 8px;
-
-    touch-action: none;
-
-    cursor: row-resize;
-
-    background: #ffffff;
-
-    border-top:
-      1px solid
-      #eeeeee;
-
-    border-bottom:
-      1px solid
-      #eeeeee;
-  }
-
-
-  .quote-resize-handle::before {
-    content: "";
-
-    width: 28px;
-    height: 3px;
-
-    background: #dddddd;
-
-    transition: background 0.15s ease;
-  }
-
-
-  .quote-resize-handle.is-dragging {
-    background: #fff5f8;
-  }
-
-
-  .quote-resize-handle.is-dragging::before {
-    background: #e39ab5;
-  }
-
-
   .quote-controls {
-    order: 3;
+    order: 2;
 
     width: 100%;
   }

@@ -432,6 +432,20 @@ let quotePreviewManualScale =
   1;
 
 
+/*
+  핀치/드래그(admin-quote-preview-gesture.js)로 움직인 캔버스
+  이동량 — 화면 픽셀 단위. FIT 버튼(fitQuotePreview)을 눌러야
+  0,0으로 되돌아가고, 그 외에는 확대/축소나 설정 변경을 거쳐도
+  그대로 유지된다.
+*/
+
+let quotePreviewPanX =
+  0;
+
+let quotePreviewPanY =
+  0;
+
+
 function calculateQuotePreviewFitScale() {
 
   if (
@@ -573,10 +587,64 @@ function applyQuotePreviewScale() {
 
 
   quotePreviewCanvas.style.transform =
-    `scale(${scale})`;
+    `translate(${quotePreviewPanX}px, ${quotePreviewPanY}px) scale(${scale})`;
 
 
   updateQuotePreviewZoomUI();
+
+}
+
+
+/*
+  핀치 확대/축소 중에는 배율과 이동량이 한 프레임 안에서
+  같이 바뀐다(admin-quote-preview-gesture.js의 핀치 공식
+  참고) — 둘을 한 번에 반영해야 중간 프레임에서 잠깐 어긋난
+  상태로 그려지는 걸 막을 수 있다.
+*/
+
+function setQuotePreviewZoomAndPan(
+  scale,
+  panX,
+  panY
+) {
+
+  quotePreviewZoomMode =
+    "manual";
+
+  quotePreviewManualScale =
+    Math.min(
+      QUOTE_PREVIEW_MAX_ZOOM,
+      Math.max(
+        QUOTE_PREVIEW_MIN_ZOOM,
+        scale
+      )
+    );
+
+  quotePreviewPanX =
+    panX;
+
+  quotePreviewPanY =
+    panY;
+
+
+  applyQuotePreviewScale();
+
+}
+
+
+function setQuotePreviewPan(
+  panX,
+  panY
+) {
+
+  quotePreviewPanX =
+    panX;
+
+  quotePreviewPanY =
+    panY;
+
+
+  applyQuotePreviewScale();
 
 }
 
@@ -607,6 +675,12 @@ function fitQuotePreview() {
 
   quotePreviewZoomMode =
     "fit";
+
+  quotePreviewPanX =
+    0;
+
+  quotePreviewPanY =
+    0;
 
 
   applyQuotePreviewScale();
