@@ -201,7 +201,8 @@ async function openPostPage(
         title,
         content_type,
         visibility,
-        created_at
+        created_at,
+        quote_preset_id
         `
       )
       .eq(
@@ -288,7 +289,8 @@ async function openPostPage(
 
     showPostSecretGate(
       post.id,
-      post.content_type
+      post.content_type,
+      post.quote_preset_id
     );
 
   }
@@ -325,7 +327,8 @@ async function openPostPage(
     await renderPostDetailBody(
       post.content_type,
       postContent?.content ||
-        ""
+        "",
+      post.quote_preset_id
     );
 
   }
@@ -410,7 +413,8 @@ async function openPostPage(
 
 async function renderPostDetailBody(
   contentType,
-  contentText
+  contentText,
+  quotePresetId
 ) {
 
   if (
@@ -475,7 +479,23 @@ async function renderPostDetailBody(
     resetHtmlPostContentFit();
 
 
-    await loadPostStylePreset();
+    /*
+      이 글에 프리셋이 지정돼 있으면(quote_preset_id) 사이트
+      전역 "사용 중" 프리셋과 무관하게 그걸 최우선으로 쓴다
+      (posts-style-preset.js 참고).
+    */
+
+    if (quotePresetId) {
+
+      await loadPostStylePresetById(
+        quotePresetId
+      );
+
+    } else {
+
+      await loadPostStylePreset();
+
+    }
 
 
     renderStyledPostContent(

@@ -23,9 +23,14 @@ let secretGatePostContentType =
   "richtext";
 
 
+let secretGatePostQuotePresetId =
+  null;
+
+
 function showPostSecretGate(
   postId,
-  contentType
+  contentType,
+  quotePresetId
 ) {
 
   secretGatePostId =
@@ -34,6 +39,11 @@ function showPostSecretGate(
 
   secretGatePostContentType =
     contentType;
+
+
+  secretGatePostQuotePresetId =
+    quotePresetId ||
+    null;
 
 
   if (
@@ -228,7 +238,8 @@ async function handleSecretGateSubmit(
 
   await renderPostDetailBody(
     secretGatePostContentType,
-    row.content
+    row.content,
+    secretGatePostQuotePresetId
   );
 
 }

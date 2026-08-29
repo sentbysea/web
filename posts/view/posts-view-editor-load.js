@@ -155,6 +155,23 @@ async function openNewPostEditor(
   await prepareEditorUI();
 
 
+  /*
+    새 글은 프리셋 오버라이드 없이 시작(사이트 전역 "사용 중"
+    프리셋을 그대로 따라감) — prepareEditorUI의 loadPostStylePreset()이
+    이미 그 값을 postStyleSettings에 채워뒀으므로 드롭다운만
+    "없음"으로 맞춘다.
+  */
+
+  if (
+    postEditorPresetSelect
+  ) {
+
+    postEditorPresetSelect.value =
+      "";
+
+  }
+
+
   postEditorTitle.focus();
 
 }
@@ -199,7 +216,8 @@ async function openPostEditor(
         category_id,
         title,
         content_type,
-        visibility
+        visibility,
+        quote_preset_id
         `
       )
       .eq(
@@ -501,6 +519,44 @@ async function openPostEditor(
 
 
   await prepareEditorUI();
+
+
+  /*
+    이 글에 프리셋이 지정돼 있으면(quote_preset_id) 그걸
+    최우선으로 불러온다 — prepareEditorUI가 방금 채워둔
+    "사이트 전역 활성 프리셋" 기준값 위에 덮어쓰는 것.
+    없으면 드롭다운을 "없음"으로 맞춰서 전역 프리셋을
+    그대로 따르고 있음을 보여준다.
+  */
+
+  if (
+    post.quote_preset_id
+  ) {
+
+    if (
+      postEditorPresetSelect
+    ) {
+
+      postEditorPresetSelect.value =
+        String(
+          post.quote_preset_id
+        );
+
+    }
+
+
+    await applyPostPresetById(
+      post.quote_preset_id
+    );
+
+  } else if (
+    postEditorPresetSelect
+  ) {
+
+    postEditorPresetSelect.value =
+      "";
+
+  }
 
 
   postEditorTitle.focus();

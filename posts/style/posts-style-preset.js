@@ -108,13 +108,73 @@ async function loadPostStylePreset() {
 }
 
 
+/*
+  글 하나에 지정해둔 프리셋(posts.quote_preset_id)을 불러온다
+  — loadPostStylePreset과 달리 "사용 중" 여부와 무관하게 이
+  글에 박아둔 그 프리셋을 그대로 쓴다. 삭제 등으로 못 찾으면
+  기존처럼 활성 프리셋으로 폴백.
+*/
+
+async function loadPostStylePresetById(
+  presetId
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from(
+        "quote_presets"
+      )
+      .select(
+        "settings"
+      )
+      .eq(
+        "id",
+        presetId
+      )
+      .maybeSingle();
+
+
+  if (
+    error ||
+    !data
+  ) {
+
+    return loadPostStylePreset();
+
+  }
+
+
+  postStyleSettings =
+    data.settings ||
+    {};
+
+
+  updatePresetHighlightSwatch();
+
+
+  updatePresetPointColorSwatch();
+
+
+  return postStyleSettings;
+
+}
+
+
 
 /* =========================================================
-   PRESET 드롭다운 (세션 한정 서식 바꿔끼우기)
+   PRESET 드롭다운
 
    내가 admin에서 저장해둔 QUOTE 프리셋 중 아무거나 골라서
-   프리뷰/export 서식만 바꾸고, 본문 내용은 건드리지 않음.
-   DB에 선택을 저장하진 않음(글마다 다시 열면 기본 Vibe로 시작).
+   프리뷰/export 서식을 바꿔 낄 수 있음. 고른 프리셋의 id는
+   글 저장 시 posts.quote_preset_id에 그대로 저장되어(posts-save.js)
+   그 글의 뷰어/발췌 export에도 영구 반영된다(posts-view-detail.js가
+   글을 열 때 quote_preset_id가 있으면 loadPostStylePresetById로
+   그 프리셋을 최우선으로 쓴다) — "프리셋 없음"을 고르면
+   quote_preset_id가 null로 저장되고, 그때는 사이트 전역
+   "사용 중" 프리셋을 그대로 따라간다.
 ========================================================== */
 
 let postPresetOptions =
@@ -191,6 +251,32 @@ function renderPostPresetSelect() {
     "";
 
 
+  /*
+    "없음" = 이 글에는 프리셋을 박아두지 않고, 사이트 전역
+    "사용 중" 프리셋을 그대로 따라간다는 뜻(quote_preset_id
+    null로 저장됨). posts-view-editor-load.js가 글을 열 때
+    이 글의 저장된 선택으로 값을 다시 맞춰준다.
+  */
+
+  const noneOption =
+    document.createElement(
+      "option"
+    );
+
+
+  noneOption.value =
+    "";
+
+
+  noneOption.textContent =
+    "프리셋 없음 (사용 중인 스타일)";
+
+
+  postEditorPresetSelect.appendChild(
+    noneOption
+  );
+
+
   postPresetOptions.forEach(
     preset => {
 
@@ -216,34 +302,33 @@ function renderPostPresetSelect() {
   );
 
 
-  /*
-    현재 postStyleSettings의 출처(기본 Vibe)와
-    이름이 같은 옵션을 기본 선택 상태로 맞춰줌.
-  */
-
-  const activePreset =
-    postPresetOptions.find(
-      preset =>
-        preset.name ===
-        "Vibe"
-    );
-
-
-  if (activePreset) {
-
-    postEditorPresetSelect.value =
-      String(
-        activePreset.id
-      );
-
-  }
+  postEditorPresetSelect.value =
+    "";
 
 }
 
 
-function applyPostPresetById(
+/*
+  presetId가 없으면("없음" 선택) 이 글의 프리셋 오버라이드를
+  풀고 사이트 전역 활성 프리셋으로 되돌린다.
+*/
+
+async function applyPostPresetById(
   presetId
 ) {
+
+  if (!presetId) {
+
+    await loadPostStylePreset();
+
+
+    updateEditorPreview();
+
+
+    return;
+
+  }
+
 
   const preset =
     postPresetOptions.find(
@@ -264,6 +349,9 @@ function applyPostPresetById(
 
 
   updatePresetHighlightSwatch();
+
+
+  updatePresetPointColorSwatch();
 
 
   updateEditorPreview();
