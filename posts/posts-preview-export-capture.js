@@ -614,6 +614,23 @@ async function captureVisiblePageAsBlob(
       pageWidth;
 
 
+    /*
+      ★ AUTO 비율은 html2canvas에 height/windowHeight를
+      못박지 않는다. html2canvas는 별도의 숨겨진 iframe에
+      페이지를 통째로 복제해 자기 나름대로 다시 레이아웃하는데,
+      이 재레이아웃 결과가 실제 라이브 페이지보다 몇 줄 더
+      필요로 하는 경우가 실기기(특히 아이폰 사파리)에서
+      확인됐다(posts-export-debug.js로 재현/확인함). 라이브
+      페이지 기준으로 잰 pageHeight를 그대로 못박으면 클론이
+      필요로 하는 초과분이 그 경계 밖에서 통째로 잘려나간다 —
+      실제로 export 이미지 아랫부분 문장이 사라지는 버그의
+      원인이었다. height를 생략하면 html2canvas가 클론 안에서
+      그 엘리먼트가 실제로 필요로 하는 높이를 스스로 재서 쓰므로
+      라이브와 클론의 레이아웃이 몇 픽셀 어긋나도 잘리지 않는다.
+      고정 비율(AUTO가 아닌 경우)은 의도된 카드 비율이라 그대로
+      못박아야 한다.
+    */
+
     canvas =
       await window.html2canvas(
         page,
@@ -630,14 +647,26 @@ async function captureVisiblePageAsBlob(
           width:
             pageWidth,
 
-          height:
-            pageHeight,
+          ...(
+            ratio.auto
+              ? {}
+              : {
+                  height:
+                    pageHeight
+                }
+          ),
 
           windowWidth:
             pageWidth,
 
-          windowHeight:
-            pageHeight,
+          ...(
+            ratio.auto
+              ? {}
+              : {
+                  windowHeight:
+                    pageHeight
+                }
+          ),
 
           logging:
             false,
