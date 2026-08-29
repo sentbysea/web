@@ -439,6 +439,8 @@
           cloneSnapshots:
             [],
           identity:
+            [],
+          bakeSteps:
             []
         };
 
@@ -521,6 +523,8 @@
               cloneSnapshots:
                 [],
               identity:
+                [],
+              bakeSteps:
                 []
             }
         );
@@ -556,6 +560,105 @@
       );
 
     };
+
+
+  /*
+    ★ 캡처 직전 라이브 page 자체를 수정하는 두 단계
+    (하이라이트 글자 단위 재감싸기 / padding·aspect-ratio·
+    box-sizing 인라인 굽기)를 각각 감싸서, 그 단계 전후로
+    page.offsetHeight / content.clientHeight가 바뀌는지 잰다.
+    "CAPTURE SOURCE"(위 wrap)는 이 단계들이 실행되기 전 상태라
+    베이킹 자체가 높이를 부풀리는지는 이 계측 없이는 알 수 없다.
+  */
+
+  function measureBakeStep(
+    page
+  ) {
+
+    const contentEl =
+      page.querySelector(
+        ".post-editor-preview-content"
+      );
+
+    return {
+      pageOffsetHeight:
+        page.offsetHeight,
+      contentClientHeight:
+        contentEl
+          ? contentEl.clientHeight
+          : null
+    };
+
+  }
+
+
+  function wrapBakeStep(
+    fnName
+  ) {
+
+    const real =
+      window[fnName];
+
+    if (
+      typeof real !==
+      "function"
+    ) {
+      return;
+    }
+
+
+    window[fnName] =
+      function (
+        page
+      ) {
+
+        const before =
+          measureBakeStep(
+            page
+          );
+
+        const result =
+          real(
+            page
+          );
+
+        const after =
+          measureBakeStep(
+            page
+          );
+
+        const run =
+          DEBUG_STATE.currentRun;
+
+        if (run) {
+
+          run.bakeSteps.push(
+            {
+              step: fnName,
+              pageIndex:
+                page.dataset
+                  ?.pageIndex,
+              before,
+              after
+            }
+          );
+
+        }
+
+        return result;
+
+      };
+
+  }
+
+
+  wrapBakeStep(
+    "bakeHighlightSpansForCapture"
+  );
+
+  wrapBakeStep(
+    "bakeCssVarStylesForCapture"
+  );
 
 
   /*
@@ -836,6 +939,34 @@
         "-- IDENTITY (CAPTURE SOURCE page === editorPreviewPages 배열의 같은 객체?) --",
         JSON.stringify(
           run.identity
+        ),
+        "",
+        "-- BAKE STEPS (라이브 page를 캡처 직전에 수정하는 단계별 전/후 높이) --",
+        ...(
+          run.bakeSteps ||
+          []
+        ).map(
+          b =>
+            "  [" +
+              b.step +
+              " page" +
+              b.pageIndex +
+              "] before=" +
+              JSON.stringify(
+                b.before
+              ) +
+              " -> after=" +
+              JSON.stringify(
+                b.after
+              ) +
+              (
+                b.before
+                  .pageOffsetHeight ===
+                b.after
+                  .pageOffsetHeight
+                  ? ""
+                  : "  ★ 이 단계에서 높이가 바뀜"
+              )
         ),
         ""
       ];
@@ -1182,7 +1313,7 @@
       "right:calc(8px + env(safe-area-inset-right));" +
       "top:calc(8px + env(safe-area-inset-top));" +
       "z-index:999998;" +
-      "background:#ffd400;color:#000;border:none;" +
+      "background:#ff6a00;color:#fff;border:none;" +
       "padding:8px 10px;font:11px monospace;font-weight:bold;" +
       "border-radius:6px;opacity:0.85;";
 

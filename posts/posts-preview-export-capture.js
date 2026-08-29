@@ -152,33 +152,6 @@ function bakeCssVarStylesForCapture(
     pageComputed.aspectRatio;
 
 
-  /*
-    ★ .post-editor-preview-page는 contain: layout paint가
-    걸려 있다. posts-export-debug.js로 재현해보니 같은 세션에서
-    두 번째 export부터 offsetHeight가 콘텐츠 실제 높이보다
-    크게 나오는 현상이 있었는데(아이폰 사파리), contain: layout +
-    aspect-ratio: auto 조합이 [hidden] 전환 후 예전 intrinsic
-    size를 캐싱하는 WebKit 버그와 패턴이 일치한다(단, contain
-    하나만 껐을 때 확실히 고쳐지는지 격리 검증은 아직 안 함).
-    캡처 직전에만 contain을 꺼서 강제로 리플로우시켜 캐시된 값을
-    버리고 정확한 높이를 다시 재게 한다.
-  */
-
-  affected.push(
-    {
-      node: page,
-      prop: "contain",
-      previousValue:
-        page.style.contain
-    }
-  );
-
-  page.style.contain =
-    "none";
-
-  void page.offsetHeight;
-
-
   const title =
     page.querySelector(
       ".post-editor-preview-title"
