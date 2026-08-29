@@ -329,8 +329,53 @@ async function loadQuotePresets() {
   }
 
 
+  const presets =
+    data || [];
+
+
+  /*
+    처음 이 화면에 들어왔을 때(currentQuotePresetId 없음)는
+    폼이 index.html의 기본값(fontSize 16, padding 48 등)
+    그대로라, 실제 글에 반영되는 "사용 중" 프리셋과 미리보기가
+    달라 보였다 — is_active 프리셋을 찾아서 loadButton을 누른
+    것과 똑같이 자동으로 불러온다. 이미 뭔가 불러온 상태라면
+    (수동으로 다른 프리셋을 편집 중일 수 있음) 덮어쓰지 않는다.
+  */
+
+  if (!currentQuotePresetId) {
+
+    const activePreset =
+      presets.find(
+        preset => preset.is_active
+      );
+
+
+    if (activePreset) {
+
+      currentQuotePresetId =
+        activePreset.id;
+
+
+      if (quotePresetName) {
+
+        quotePresetName.value =
+          activePreset.name;
+
+      }
+
+
+      applyQuoteSettings(
+        activePreset.settings ||
+        {}
+      );
+
+    }
+
+  }
+
+
   renderQuotePresets(
-    data || []
+    presets
   );
 
 }
