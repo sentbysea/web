@@ -334,6 +334,11 @@ const quotePreviewSize =
     "quotePreviewSize"
   );
 
+const quotePreviewHelp =
+  document.getElementById(
+    "quotePreviewHelp"
+  );
+
 /* =========================================================
    PRESET
 ========================================================== */

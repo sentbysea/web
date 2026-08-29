@@ -374,6 +374,29 @@ function updateQuotePreview() {
   }
 
 
+  /*
+    고정 비율(1:1/4:5/9:16/custom)은 캔버스 높이가 정해져
+    있어서 테스트 문구가 길면 overflow:hidden에 가려 잘린다
+    (AUTO는 콘텐츠 높이만큼 늘어나서 애초에 안 잘림) — 그냥
+    잘리기만 하면 왜 source가 안 보이는지 헷갈리니, 캡션을
+    안내 문구로 잠깐 바꿔서 알려준다.
+  */
+
+  if (quotePreviewHelp) {
+
+    const isOverflowing =
+      !ratio.auto &&
+      quotePreviewCanvas.scrollHeight >
+        quotePreviewCanvas.clientHeight + 1;
+
+    quotePreviewHelp.textContent =
+      isOverflowing
+        ? "내용이 길어 이 화면에서는 1페이지까지만 보입니다"
+        : "두 손가락으로 확대·축소, 두 번 탭하면 전체 보기";
+
+  }
+
+
   applyQuotePreviewScale();
 
 }
