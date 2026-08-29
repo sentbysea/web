@@ -1969,63 +1969,15 @@
             </div>
 
 
-            <!-- ===============================================
-                 PREVIEW ZOOM
-
-                 화면 표시 전용 확대/축소. export width/height
-                 계산과는 완전히 분리되어 있음(admin-quote-preview-update.js
-                 참고) — 여기서 값을 바꿔도 실제 내보내기 크기는
-                 그대로다. 데스크톱/모바일 공통으로 사용.
-
-                 quote-preview-stage-wrap으로 묶는 이유: 모바일에서는
-                 이 줌 컨트롤이 자기 자리를 따로 차지하지 않고
-                 stage 안쪽 모서리에 작게 겹쳐 뜬다(admin.css 모바일
-                 미디어쿼리 참고) — position:absolute 기준점이
-                 필요해서 감싸는 wrapper를 둔다.
-            ================================================ -->
+            <!--
+              배율 조정은 핀치 확대/축소·드래그 이동으로만 한다
+              (admin-quote-preview-gesture.js) — 예전엔 여기에
+              −/%/+/FIT 툴바가 stage 위에 겹쳐 떠 있었지만
+              캔버스를 가리기만 해서 없앴다. wrap은 아래
+              .quote-preview-help 위치 기준점으로만 쓰임.
+            -->
 
             <div class="quote-preview-stage-wrap">
-
-            <div
-              class="quote-preview-zoom"
-              id="quotePreviewZoom"
-            >
-
-              <button
-                class="quote-preview-zoom-btn"
-                id="quotePreviewZoomOut"
-                type="button"
-                aria-label="축소"
-              >
-                −
-              </button>
-
-              <span
-                class="quote-preview-zoom-value"
-                id="quotePreviewZoomValue"
-              >
-                100%
-              </span>
-
-              <button
-                class="quote-preview-zoom-btn"
-                id="quotePreviewZoomIn"
-                type="button"
-                aria-label="확대"
-              >
-                +
-              </button>
-
-              <button
-                class="quote-preview-zoom-fit active"
-                id="quotePreviewZoomFit"
-                type="button"
-              >
-                FIT
-              </button>
-
-            </div>
-
 
             <div
               class="quote-preview-stage"
@@ -2072,7 +2024,7 @@
 
 
             <p class="quote-preview-help">
-              settings are reflected here
+              두 손가락으로 확대·축소, 밀어서 이동
             </p>
 
             </div>

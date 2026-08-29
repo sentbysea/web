@@ -1,10 +1,10 @@
 /* =========================================================
-   QUOTE - PREVIEW 핀치 줌 / 드래그 이동
+   QUOTE - PREVIEW 핀치 줌 / 드래그 이동 / 더블탭 리셋
 
    admin-quote.js 분할본. DOM 참조는 admin-quote-refs.js,
    스케일/이동 상태(quotePreviewPanX 등)와 setQuotePreviewPan /
-   setQuotePreviewZoomAndPan은 admin-quote-preview-update.js에
-   있음(둘 다 먼저 로드돼야 함).
+   setQuotePreviewZoomAndPan / fitQuotePreview는
+   admin-quote-preview-update.js에 있음(둘 다 먼저 로드돼야 함).
 
    대지(.quote-preview-panel)와 설정창(.quote-controls) 사이를
    위아래로 드래그해서 나누던 이전 방식(예전 admin-quote-resize.js)은
@@ -12,8 +12,8 @@
    보이는 문제가 있었다 — 구획은 이제 CSS로 고정하고, 대신
    #quotePreviewStage 안에서 두 손가락 핀치로 확대/축소하고
    한 손가락 드래그로 이동하게 한다(사진 뷰어와 동일한 방식).
-   기존 −/+/FIT 버튼과 상태를 공유하므로 핀치/드래그 후에도
-   그대로 이어서 쓸 수 있다.
+   −/+/FIT 툴바는 캔버스를 가려서 완전히 없앴고, 대신 두 번
+   빠르게 탭하면 fitQuotePreview()로 되돌아간다.
 
    PAN 공식: 캔버스 transform은 translate(pan) scale(s) 순서라
    pan은 scale의 영향을 받지 않는 화면 픽셀 그대로다 — 그래서
@@ -49,6 +49,26 @@
   let pinchStartScale = 1;
   let pinchCenter = { x: 0, y: 0 };
   let pinchStartPan = { x: 0, y: 0 };
+
+
+  /*
+    더블탭 리셋 — 이 터치가 핀치를 거치지 않고(hadMultiTouch)
+    작은 움직임(TAP_MAX_MOVEMENT)과 짧은 시간(TAP_MAX_DURATION)
+    안에 끝나면 "탭"으로 보고, 직전 탭과 가깝고(DOUBLE_TAP_MAX_DISTANCE)
+    빠르면(DOUBLE_TAP_MAX_GAP) 더블탭으로 판정해 FIT으로 되돌린다.
+  */
+
+  const TAP_MAX_MOVEMENT = 10;
+  const TAP_MAX_DURATION = 400;
+  const DOUBLE_TAP_MAX_GAP = 350;
+  const DOUBLE_TAP_MAX_DISTANCE = 40;
+
+  let hadMultiTouch = false;
+  let tapDownPoint = { x: 0, y: 0 };
+  let tapDownTime = 0;
+
+  let lastTapTime = 0;
+  let lastTapPoint = null;
 
 
   function points() {
@@ -143,9 +163,24 @@
 
 
     if (pointers.size === 1) {
+
       beginPan();
+
+      hadMultiTouch = false;
+
+      tapDownPoint = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+
+      tapDownTime = Date.now();
+
     } else if (pointers.size === 2) {
+
       beginPinch();
+
+      hadMultiTouch = true;
+
     }
 
   }
@@ -250,6 +285,8 @@
       /*
         핀치 도중 손가락 하나를 뗀 경우 — 남은 손가락으로
         바로 이어서 드래그할 수 있도록 기준점을 다시 잡는다.
+        (이 시퀀스는 hadMultiTouch가 이미 true라 탭으로는
+        안 잡힌다.)
       */
 
       beginPan();
@@ -257,6 +294,52 @@
     } else if (pointers.size === 0) {
 
       mode = null;
+
+
+      const isTap =
+        !hadMultiTouch &&
+        Date.now() - tapDownTime <=
+          TAP_MAX_DURATION &&
+        distance(
+          tapDownPoint,
+          { x: event.clientX, y: event.clientY }
+        ) <= TAP_MAX_MOVEMENT;
+
+
+      if (isTap) {
+
+        const now = Date.now();
+
+        const isDoubleTap =
+          lastTapPoint &&
+          now - lastTapTime <=
+            DOUBLE_TAP_MAX_GAP &&
+          distance(
+            lastTapPoint,
+            tapDownPoint
+          ) <= DOUBLE_TAP_MAX_DISTANCE;
+
+
+        if (isDoubleTap) {
+
+          fitQuotePreview();
+
+          lastTapPoint = null;
+          lastTapTime = 0;
+
+        } else {
+
+          lastTapPoint = tapDownPoint;
+          lastTapTime = now;
+
+        }
+
+      } else {
+
+        lastTapPoint = null;
+        lastTapTime = 0;
+
+      }
 
     }
 

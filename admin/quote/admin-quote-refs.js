@@ -334,27 +334,6 @@ const quotePreviewSize =
     "quotePreviewSize"
   );
 
-const quotePreviewZoomOut =
-  document.getElementById(
-    "quotePreviewZoomOut"
-  );
-
-const quotePreviewZoomIn =
-  document.getElementById(
-    "quotePreviewZoomIn"
-  );
-
-const quotePreviewZoomFit =
-  document.getElementById(
-    "quotePreviewZoomFit"
-  );
-
-const quotePreviewZoomValue =
-  document.getElementById(
-    "quotePreviewZoomValue"
-  );
-
-
 /* =========================================================
    PRESET
 ========================================================== */

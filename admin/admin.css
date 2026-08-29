@@ -1601,10 +1601,8 @@ button {
 
 
 /*
-  quote-preview-zoom(모바일에서 stage 위쪽 가운데 겹침)과
   quote-preview-help(우측 하단 겹침)가 기준으로 삼는 위치
-  컨테이너. 데스크톱에서는 zoom이 static이라 이
-  position:relative가 zoom에는 영향이 없고 help에만 쓰임.
+  컨테이너.
 */
 
 .quote-preview-stage-wrap {
@@ -1639,99 +1637,6 @@ button {
   font-size: 9px;
 
   letter-spacing: 0.04em;
-}
-
-
-
-/* =========================================================
-   QUOTE PREVIEW ZOOM
-
-   화면 표시 전용 확대/축소 컨트롤. export width/height와는
-   무관하고, 캔버스에 transform: scale()만 건다(admin-quote-preview-update.js
-   의 setQuotePreviewZoom / fitQuotePreview). 데스크톱/모바일
-   공통.
-========================================================== */
-
-.quote-preview-zoom {
-  display: flex;
-
-  align-items: center;
-  justify-content: flex-end;
-
-  gap: 6px;
-
-  margin-bottom: 10px;
-}
-
-
-.quote-preview-zoom-btn,
-.quote-preview-zoom-fit {
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  min-width: 32px;
-  min-height: 32px;
-
-  padding: 0 9px;
-
-  border:
-    1px solid
-    #eeeeee;
-
-  border-radius: 0;
-
-  background: #ffffff;
-
-  color: #999999;
-
-  font-family:
-    "Pretendard",
-    sans-serif;
-
-  font-size: 11px;
-
-  cursor: pointer;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-
-
-.quote-preview-zoom-btn:hover,
-.quote-preview-zoom-fit:hover {
-  color: #e39ab5;
-
-  border-color: #efccd9;
-}
-
-
-.quote-preview-zoom-fit.active {
-  color: #555555;
-
-  border-color: #d9d9d9;
-
-  background: #fafafa;
-}
-
-
-.quote-preview-zoom-value {
-  min-width: 40px;
-
-  text-align: center;
-
-  color: #999999;
-
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-
-  letter-spacing: 0.03em;
 }
 
 
@@ -2107,6 +2012,19 @@ button {
   }
 
 
+  /*
+    footer(방문자 수/copyright, <main> 뒤 형제 요소)는 원래
+    페이지 맨 아래 장식이지만, quote-mode는 화면 전체를 꽉
+    채우는 단일 화면 에디터라 footer만큼 body가 더 길어져서
+    화면 밑에 잘린 채로 살짝 삐져나와 보였다 — quote-mode에서는
+    아예 없애서 그 자리가 설정창(.quote-controls) 몫이 되게 함.
+  */
+
+  .admin-page.quote-mode ~ .admin-site-footer {
+    display: none;
+  }
+
+
   .admin-page.quote-mode #adminDashboard {
     height: 100%;
   }
@@ -2170,14 +2088,16 @@ button {
       대지를 flex:1로 남는 공간을 다 채우게 하면, 캔버스는
       비율이 고정이라 못 채우는 만큼 그대로 빈 여백(레터박싱)이
       됐다 — 특히 짧은 글/AUTO 비율일 때 위아래로 커다란 흰
-      여백이 보이던 원인. 대지는 고정 높이(40vh)로 두고, 대신
+      여백이 보이던 원인. 대지는 고정 높이로 두고, 대신
       설정창(.quote-controls)을 flex:1로 둬서 남는 공간을 실제
-      입력 필드로 채우게 함.
+      입력 필드로 채우게 함. 대지는 핀치/드래그로 어차피
+      확대해서 볼 수 있으니 32vh로 줄이고, 그만큼 설정창이
+      더 넓게 쓰이게 했다.
     */
 
     flex: 0 0 auto;
 
-    height: 40vh;
+    height: 32vh;
 
     min-height: 160px;
     max-height: 78vh;
@@ -2216,86 +2136,18 @@ button {
     padding: 18px;
 
     /*
-      캔버스 비율이 stage보다 옆으로 넓으면(모바일은 거의 항상
-      그럼 — 폭 기준으로 맞춰 축소되니까) 위아래로 남는 공간이
-      생긴다. desktop처럼 center로 두면 그 여백이 절반씩
-      위/아래로 갈라져서 캔버스 바로 아래·손잡이 바로 위에도
-      여백이 보였다 — flex-end로 캔버스를 손잡이 쪽(아래)에
-      붙이면 남는 여백은 전부 위쪽(줌 컨트롤 있는 곳)으로만
-      모이고, 손잡이 바로 위는 stage 자체의 padding(18px)만
-      남는다.
+      예전엔 캔버스를 stage 아래쪽(손잡이 쪽)에 붙이고 남는
+      여백을 전부 위쪽(줌 컨트롤 있는 곳)으로 모았지만, 손잡이도
+      줌 컨트롤도 이제 없다 — 그냥 desktop과 같은 center로 두면
+      캔버스가 대지 안에서 항상 정중앙에 온다.
     */
 
-    align-items: flex-end;
+    align-items: center;
   }
 
 
   .quote-preview-canvas {
     padding: 36px;
-  }
-
-
-  /*
-    ★ 줌 컨트롤(−/%/+/FIT)을 stage 위 별도 줄로 두면 그만큼
-    프리뷰가 차지할 세로 공간이 줄어든다 — stage 위쪽 가운데에
-    작게 겹쳐 띄워서 그 줄 자체를 없앤다(기준 위치는
-    .quote-preview-stage-wrap, 위 desktop 섹션 참고).
-  */
-
-  .quote-preview-zoom {
-    position: absolute;
-
-    top: 8px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    z-index: 5;
-
-    margin-bottom: 0;
-
-    padding: 4px 6px;
-
-    gap: 4px;
-
-    background:
-      rgba(
-        255,
-        255,
-        255,
-        0.92
-      );
-
-    border-radius: 0;
-
-    box-shadow:
-      0
-      2px
-      8px
-      rgba(
-        0,
-        0,
-        0,
-        0.10
-      );
-  }
-
-
-  .quote-preview-zoom-btn,
-  .quote-preview-zoom-fit {
-    min-width: 24px;
-    min-height: 24px;
-
-    padding: 0 6px;
-
-    font-size: 10px;
-  }
-
-
-  .quote-preview-zoom-value {
-    min-width: 28px;
-
-    font-size: 9px;
   }
 
 

@@ -404,9 +404,9 @@ function updateQuotePreview() {
    문제가 있었다. 이제 stage 크기는 CSS(clamp/dvh)가 정하고,
    JS는 그 안에 맞춰 축소만 한다.
 
-   MANUAL 모드: 사용자가 [-]/[+]로 직접 배율을 바꾼 상태.
-   FIT 배율과 무관하게 10%~200% 범위에서 유지되고, FIT 버튼을
-   눌러야 다시 자동 계산으로 돌아간다.
+   MANUAL 모드: 핀치로 직접 배율을 바꾼 상태(admin-quote-preview-gesture.js).
+   FIT 배율과 무관하게 10%~200% 범위에서 유지되고, 더블탭해야
+   다시 자동 계산(FIT)으로 돌아간다.
 ========================================================== */
 
 const QUOTE_PREVIEW_NATURAL_WIDTH =
@@ -417,9 +417,6 @@ const QUOTE_PREVIEW_MIN_ZOOM =
 
 const QUOTE_PREVIEW_MAX_ZOOM =
   2;
-
-const QUOTE_PREVIEW_ZOOM_STEP =
-  0.1;
 
 
 let quotePreviewZoomMode =
@@ -526,34 +523,6 @@ function getCurrentQuotePreviewScale() {
 }
 
 
-function updateQuotePreviewZoomUI() {
-
-  if (quotePreviewZoomValue) {
-
-    quotePreviewZoomValue.textContent =
-      `${
-        Math.round(
-          getCurrentQuotePreviewScale() *
-          100
-        )
-      }%`;
-
-  }
-
-
-  if (quotePreviewZoomFit) {
-
-    quotePreviewZoomFit.classList.toggle(
-      "active",
-      quotePreviewZoomMode ===
-        "fit"
-    );
-
-  }
-
-}
-
-
 function applyQuotePreviewScale() {
 
   if (
@@ -588,9 +557,6 @@ function applyQuotePreviewScale() {
 
   quotePreviewCanvas.style.transform =
     `translate(${quotePreviewPanX}px, ${quotePreviewPanY}px) scale(${scale})`;
-
-
-  updateQuotePreviewZoomUI();
 
 }
 
@@ -649,27 +615,10 @@ function setQuotePreviewPan(
 }
 
 
-function setQuotePreviewZoom(
-  scale
-) {
-
-  quotePreviewZoomMode =
-    "manual";
-
-  quotePreviewManualScale =
-    Math.min(
-      QUOTE_PREVIEW_MAX_ZOOM,
-      Math.max(
-        QUOTE_PREVIEW_MIN_ZOOM,
-        scale
-      )
-    );
-
-
-  applyQuotePreviewScale();
-
-}
-
+/*
+  버튼 없이(툴바를 없앴으므로) admin-quote-preview-gesture.js의
+  더블탭에서 호출해서 "전체 보기"로 되돌리는 용도로 씀.
+*/
 
 function fitQuotePreview() {
 
@@ -686,41 +635,6 @@ function fitQuotePreview() {
   applyQuotePreviewScale();
 
 }
-
-
-quotePreviewZoomOut
-  ?.addEventListener(
-    "click",
-    () => {
-
-      setQuotePreviewZoom(
-        getCurrentQuotePreviewScale() -
-        QUOTE_PREVIEW_ZOOM_STEP
-      );
-
-    }
-  );
-
-
-quotePreviewZoomIn
-  ?.addEventListener(
-    "click",
-    () => {
-
-      setQuotePreviewZoom(
-        getCurrentQuotePreviewScale() +
-        QUOTE_PREVIEW_ZOOM_STEP
-      );
-
-    }
-  );
-
-
-quotePreviewZoomFit
-  ?.addEventListener(
-    "click",
-    fitQuotePreview
-  );
 
 
 window.addEventListener(
