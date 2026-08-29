@@ -1,23 +1,19 @@
 /* =========================================================
-   QUOTE - PREVIEW 핀치 줌 / 드래그 이동 / 더블탭 리셋
+   QUOTE - PREVIEW 핀치 줌 / 더블탭 리셋
 
    admin-quote.js 분할본. DOM 참조는 admin-quote-refs.js,
-   스케일/이동 상태(quotePreviewPanX 등)와 setQuotePreviewPan /
-   setQuotePreviewZoomAndPan / fitQuotePreview는
-   admin-quote-preview-update.js에 있음(둘 다 먼저 로드돼야 함).
+   스케일/이동 상태(quotePreviewPanX 등)와 setQuotePreviewZoomAndPan /
+   fitQuotePreview는 admin-quote-preview-update.js에 있음
+   (둘 다 먼저 로드돼야 함).
 
    대지(.quote-preview-panel)와 설정창(.quote-controls) 사이를
    위아래로 드래그해서 나누던 이전 방식(예전 admin-quote-resize.js)은
    손잡이를 끌 때 대지가 화면 대부분을 잃어서 캔버스가 잘려
    보이는 문제가 있었다 — 구획은 이제 CSS로 고정하고, 대신
-   #quotePreviewStage 안에서 두 손가락 핀치로 확대/축소하고
-   한 손가락 드래그로 이동하게 한다(사진 뷰어와 동일한 방식).
-   −/+/FIT 툴바는 캔버스를 가려서 완전히 없앴고, 대신 두 번
-   빠르게 탭하면 fitQuotePreview()로 되돌아간다.
-
-   PAN 공식: 캔버스 transform은 translate(pan) scale(s) 순서라
-   pan은 scale의 영향을 받지 않는 화면 픽셀 그대로다 — 그래서
-   드래그 델타(화면 픽셀)를 pan에 그대로 더하면 된다.
+   #quotePreviewStage 안에서 두 손가락 핀치로 확대/축소한다.
+   한 손가락 드래그 이동도 처음엔 같이 넣었지만 실제로 쓸 일이
+   거의 없어서 뺐다 — 대신 두 번 빠르게 탭하면 fitQuotePreview()로
+   전체 보기로 돌아간다(−/+/FIT 툴바도 캔버스를 가려서 없앴음).
 
    PINCH 공식: 두 손가락 중심(F)이 확대/축소 중에도 화면상 같은
    자리에 머물도록, 제스처 시작 시점의 캔버스 중심(C0,
@@ -41,9 +37,6 @@
   const pointers = new Map();
 
   let mode = null;
-
-  let panStartPoint = { x: 0, y: 0 };
-  let panStart = { x: 0, y: 0 };
 
   let pinchStartDist = 0;
   let pinchStartScale = 1;
@@ -100,25 +93,6 @@
   }
 
 
-  function beginPan() {
-
-    mode = "pan";
-
-    const [point] = points();
-
-    panStartPoint = {
-      x: point.x,
-      y: point.y,
-    };
-
-    panStart = {
-      x: quotePreviewPanX,
-      y: quotePreviewPanY,
-    };
-
-  }
-
-
   function beginPinch() {
 
     mode = "pinch";
@@ -164,7 +138,7 @@
 
     if (pointers.size === 1) {
 
-      beginPan();
+      mode = null;
 
       hadMultiTouch = false;
 
@@ -234,22 +208,6 @@
           (center.y - pinchCenter.y) * factor
       );
 
-    } else if (
-      mode === "pan" &&
-      pointers.size === 1
-    ) {
-
-      event.preventDefault();
-
-      const [point] = points();
-
-      setQuotePreviewPan(
-        panStart.x +
-          (point.x - panStartPoint.x),
-        panStart.y +
-          (point.y - panStartPoint.y)
-      );
-
     }
 
   }
@@ -280,18 +238,7 @@
     }
 
 
-    if (pointers.size === 1) {
-
-      /*
-        핀치 도중 손가락 하나를 뗀 경우 — 남은 손가락으로
-        바로 이어서 드래그할 수 있도록 기준점을 다시 잡는다.
-        (이 시퀀스는 hadMultiTouch가 이미 true라 탭으로는
-        안 잡힌다.)
-      */
-
-      beginPan();
-
-    } else if (pointers.size === 0) {
+    if (pointers.size === 0) {
 
       mode = null;
 

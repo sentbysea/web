@@ -430,10 +430,10 @@ let quotePreviewManualScale =
 
 
 /*
-  핀치/드래그(admin-quote-preview-gesture.js)로 움직인 캔버스
-  이동량 — 화면 픽셀 단위. FIT 버튼(fitQuotePreview)을 눌러야
-  0,0으로 되돌아가고, 그 외에는 확대/축소나 설정 변경을 거쳐도
-  그대로 유지된다.
+  핀치 확대/축소(admin-quote-preview-gesture.js) 중 중심을
+  맞추려고 같이 움직이는 캔버스 이동량 — 화면 픽셀 단위.
+  fitQuotePreview(더블탭)를 실행해야 0,0으로 되돌아가고, 그
+  외에는 확대/축소나 설정 변경을 거쳐도 그대로 유지된다.
 */
 
 let quotePreviewPanX =
@@ -598,21 +598,6 @@ function setQuotePreviewZoomAndPan(
 }
 
 
-function setQuotePreviewPan(
-  panX,
-  panY
-) {
-
-  quotePreviewPanX =
-    panX;
-
-  quotePreviewPanY =
-    panY;
-
-
-  applyQuotePreviewScale();
-
-}
 
 
 /*
