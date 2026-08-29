@@ -233,9 +233,12 @@ function createPreviewSource(
 
   source.style.marginTop =
     `${
-      Number(
-        settings.sourceSpacing
-      ) || 0
+      previewSourceSpacing ??
+      (
+        Number(
+          settings.sourceSpacing
+        ) || 0
+      )
     }px`;
 
 
@@ -248,9 +251,12 @@ function createPreviewSource(
 
   source.style.marginBottom =
     `${
-      Number(
-        settings.sourceBottomOffset
-      ) || 0
+      previewSourceBottomOffset ??
+      (
+        Number(
+          settings.sourceBottomOffset
+        ) || 0
+      )
     }px`;
 
 

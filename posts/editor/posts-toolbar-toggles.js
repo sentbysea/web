@@ -271,12 +271,64 @@ postEditorPreviewRatioButtons
           syncPreviewRatioControls();
 
 
+          syncPreviewSourceOffsetControls();
+
+
           updateEditorPreview(
             {
               preserveView: true
             }
           );
 
+        }
+      );
+
+    }
+  );
+
+
+
+/* =========================================================
+   PREVIEW SOURCE POSITION (BOTTOM MARGIN / GAP)
+========================================================== */
+
+postEditorPreviewSourceBottomOffset
+  ?.addEventListener(
+    "input",
+    () => {
+
+      previewSourceBottomOffset =
+        Number(
+          postEditorPreviewSourceBottomOffset.value
+        ) ||
+        0;
+
+
+      updateEditorPreview(
+        {
+          preserveView: true
+        }
+      );
+
+    }
+  );
+
+
+postEditorPreviewSourceSpacing
+  ?.addEventListener(
+    "input",
+    () => {
+
+      previewSourceSpacing =
+        Number(
+          postEditorPreviewSourceSpacing.value
+        ) ||
+        0;
+
+
+      updateEditorPreview(
+        {
+          preserveView: true
         }
       );
 

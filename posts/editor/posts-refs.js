@@ -577,6 +577,26 @@ const postEditorPreviewRatioCustomHeight =
     "postEditorPreviewRatioCustomHeight"
   );
 
+const postEditorPreviewSourceBottomOffsetRow =
+  document.getElementById(
+    "postEditorPreviewSourceBottomOffsetRow"
+  );
+
+const postEditorPreviewSourceBottomOffset =
+  document.getElementById(
+    "postEditorPreviewSourceBottomOffset"
+  );
+
+const postEditorPreviewSourceSpacingRow =
+  document.getElementById(
+    "postEditorPreviewSourceSpacingRow"
+  );
+
+const postEditorPreviewSourceSpacing =
+  document.getElementById(
+    "postEditorPreviewSourceSpacing"
+  );
+
 const postEditorPreviewTitle =
   document.getElementById(
     "postEditorPreviewTitle"

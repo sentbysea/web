@@ -135,6 +135,23 @@ let previewVerticalAlign = null;
 let previewBodyAlign = null;
 
 
+/*
+  ★ NEW
+  source 위치 세션 오버라이드. null이면 QUOTE 프리셋의
+  sourceBottomOffset/sourceSpacing을 그대로 따른다. 둘 중
+  어느 쪽이 실제로 쓰이는지는 ratio에 달려 있다 — AUTO가
+  아니면 source가 캔버스 맨 아래 고정(스페이서 방식)이라
+  bottomOffset이 의미 있고, AUTO면 source가 본문 바로 뒤로
+  흘러가는 flow 요소라 spacing(=간격)이 의미 있다
+  (posts-preview.js의 createPreviewSource/
+  createEditorPreviewPage 참고). syncPreviewSourceOffsetControls가
+  ratio에 따라 둘 중 맞는 입력칸만 보여준다.
+*/
+
+let previewSourceBottomOffset = null;
+let previewSourceSpacing = null;
+
+
 function resetPreviewVisibilityOverrides() {
 
   const settings =
@@ -157,6 +174,14 @@ function resetPreviewVisibilityOverrides() {
 
 
   previewBodyAlign =
+    null;
+
+
+  previewSourceBottomOffset =
+    null;
+
+
+  previewSourceSpacing =
     null;
 
 
@@ -193,6 +218,9 @@ function resetPreviewVisibilityOverrides() {
 
 
   syncPreviewRatioControls();
+
+
+  syncPreviewSourceOffsetControls();
 
 }
 
@@ -329,6 +357,82 @@ function syncPreviewRatioControls() {
 
     postEditorPreviewRatioCustomHeight.value =
       previewCustomRatioHeight;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   PREVIEW SOURCE POSITION (BOTTOM MARGIN / GAP)
+
+   어느 입력칸을 보여줄지는 ratio에 달려 있다 —
+   previewSourceBottomOffset/previewSourceSpacing 자체의
+   설명은 위 선언부 주석 참고.
+========================================================== */
+
+function syncPreviewSourceOffsetControls() {
+
+  const settings =
+    postStyleSettings ||
+    {};
+
+
+  const ratio =
+    getPostPreviewRatio(
+      settings
+    );
+
+
+  if (
+    postEditorPreviewSourceBottomOffsetRow
+  ) {
+
+    postEditorPreviewSourceBottomOffsetRow.hidden =
+      ratio.auto;
+
+  }
+
+
+  if (
+    postEditorPreviewSourceSpacingRow
+  ) {
+
+    postEditorPreviewSourceSpacingRow.hidden =
+      !ratio.auto;
+
+  }
+
+
+  if (
+    postEditorPreviewSourceBottomOffset
+  ) {
+
+    postEditorPreviewSourceBottomOffset.value =
+      previewSourceBottomOffset ??
+      (
+        Number(
+          settings.sourceBottomOffset
+        ) ||
+        0
+      );
+
+  }
+
+
+  if (
+    postEditorPreviewSourceSpacing
+  ) {
+
+    postEditorPreviewSourceSpacing.value =
+      previewSourceSpacing ??
+      (
+        Number(
+          settings.sourceSpacing
+        ) ||
+        0
+      );
 
   }
 

@@ -2094,15 +2094,7 @@ body.post-mode .music-button {
   align-items: flex-start;
   justify-content: space-between;
 
-  margin-bottom: 12px;
-}
-
-
-.post-editor-preview-header-left {
-  display: flex;
-  align-items: center;
-
-  gap: 10px;
+  margin-bottom: 8px;
 }
 
 
@@ -2125,6 +2117,23 @@ body.post-mode .music-button {
 ========================================================== */
 
 .post-editor-preview-visibility-controls {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+
+/*
+  한 줄에 해당하는 컨트롤 묶음(title/align/body, ratio,
+  source 순서). 예전에는 이 전부가 하나의 flex-wrap 줄에
+  뒤섞여 있었는데, 특히 ratio가 다른 컨트롤들 사이에 끼어
+  모바일에서 지저분해 보여서 줄 단위로 분리했다.
+*/
+
+.post-editor-preview-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;

@@ -953,232 +953,9 @@
 
           <div class="post-editor-preview-header">
 
-            <div class="post-editor-preview-header-left">
-
-              <span class="post-editor-preview-label">
-                PREVIEW
-              </span>
-
-
-              <div class="post-editor-preview-visibility-controls">
-
-                <button
-                  class="post-editor-preview-visibility-toggle"
-                  id="postEditorPreviewTitleToggle"
-                  type="button"
-                  aria-pressed="true"
-                >
-                  title
-                </button>
-
-
-                <button
-                  class="post-editor-preview-visibility-toggle"
-                  id="postEditorPreviewSourceToggle"
-                  type="button"
-                  aria-pressed="true"
-                >
-                  source
-                </button>
-
-
-                <!-- =============================================
-                     VERTICAL ALIGN (세션 한정 — "preset"이면
-                     QUOTE 프리셋 값을 그대로 따름. 이 글에서만
-                     잠깐 위/가운데로 바꿔보고 싶을 때 사용)
-                ============================================== -->
-
-                <div class="post-editor-preview-subrow">
-
-                  <span class="post-editor-preview-subrow-label">
-                    align
-                  </span>
-
-
-                  <select
-                    class="post-editor-preview-select"
-                    id="postEditorPreviewAlignSelect"
-                  >
-
-                    <option value="">
-                      preset
-                    </option>
-
-                    <option value="top">
-                      top
-                    </option>
-
-                    <option value="center">
-                      center
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-
-                <!-- =============================================
-                     BODY ALIGN (세션 한정 — "preset"이면 QUOTE
-                     프리셋 값을 그대로 따름)
-                ============================================== -->
-
-                <div class="post-editor-preview-subrow">
-
-                  <span class="post-editor-preview-subrow-label">
-                    body
-                  </span>
-
-
-                  <select
-                    class="post-editor-preview-select"
-                    id="postEditorPreviewBodyAlignSelect"
-                  >
-
-                    <option value="">
-                      preset
-                    </option>
-
-                    <option value="left">
-                      left
-                    </option>
-
-                    <option value="center">
-                      center
-                    </option>
-
-                    <option value="right">
-                      right
-                    </option>
-
-                    <option value="justify">
-                      justify
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-                <button
-                  class="post-editor-preview-visibility-toggle post-editor-preview-ratio-trigger"
-                  id="postEditorPreviewRatioTrigger"
-                  type="button"
-                  aria-pressed="false"
-                  aria-expanded="false"
-                  aria-controls="postEditorPreviewRatioControls"
-                >
-                  ratio
-                </button>
-
-
-                <!-- =============================================
-                     RATIO ("ratio" 버튼을 눌러야 그 옆에 펼쳐짐)
-                ============================================== -->
-
-                <div
-                  class="post-editor-preview-ratio-controls"
-                  id="postEditorPreviewRatioControls"
-                  hidden
-                >
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="4:5"
-                    aria-pressed="false"
-                  >
-                    4:5
-                  </button>
-
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="4:6"
-                    aria-pressed="false"
-                  >
-                    4:6
-                  </button>
-
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="1:1"
-                    aria-pressed="false"
-                  >
-                    1:1
-                  </button>
-
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="4:3"
-                    aria-pressed="false"
-                  >
-                    4:3
-                  </button>
-
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="auto"
-                    aria-pressed="false"
-                  >
-                    auto
-                  </button>
-
-
-                  <button
-                    class="post-editor-preview-ratio-button"
-                    type="button"
-                    data-ratio="custom"
-                    aria-pressed="false"
-                  >
-                    custom
-                  </button>
-
-
-                  <div
-                    class="post-editor-preview-ratio-custom-inputs"
-                    id="postEditorPreviewRatioCustomInputs"
-                    hidden
-                  >
-
-                    <input
-                      class="post-editor-preview-ratio-custom-input"
-                      id="postEditorPreviewRatioCustomWidth"
-                      type="number"
-                      inputmode="numeric"
-                      min="1"
-                      value="4"
-                      aria-label="가로 비율"
-                    >
-
-                    <span class="post-editor-preview-ratio-custom-sep">
-                      :
-                    </span>
-
-                    <input
-                      class="post-editor-preview-ratio-custom-input"
-                      id="postEditorPreviewRatioCustomHeight"
-                      type="number"
-                      inputmode="numeric"
-                      min="1"
-                      value="5"
-                      aria-label="세로 비율"
-                    >
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
+            <span class="post-editor-preview-label">
+              PREVIEW
+            </span>
 
 
             <button
@@ -1189,6 +966,306 @@
             >
               ×
             </button>
+
+          </div>
+
+
+          <!-- ===================================================
+               PREVIEW CONTROLS
+
+               title/align/body → ratio → source 순서로 한 줄씩
+               (PREVIEW 라벨이 자리를 차지하지 않도록 헤더에서
+               분리해서 여기 따로 둠).
+          ==================================================== -->
+
+          <div class="post-editor-preview-visibility-controls">
+
+            <div class="post-editor-preview-row">
+
+              <button
+                class="post-editor-preview-visibility-toggle"
+                id="postEditorPreviewTitleToggle"
+                type="button"
+                aria-pressed="true"
+              >
+                title
+              </button>
+
+
+              <!-- =============================================
+                   VERTICAL ALIGN (세션 한정 — "preset"이면
+                   QUOTE 프리셋 값을 그대로 따름. 이 글에서만
+                   잠깐 위/가운데로 바꿔보고 싶을 때 사용)
+              ============================================== -->
+
+              <div class="post-editor-preview-subrow">
+
+                <span class="post-editor-preview-subrow-label">
+                  align
+                </span>
+
+
+                <select
+                  class="post-editor-preview-select"
+                  id="postEditorPreviewAlignSelect"
+                >
+
+                  <option value="">
+                    preset
+                  </option>
+
+                  <option value="top">
+                    top
+                  </option>
+
+                  <option value="center">
+                    center
+                  </option>
+
+                </select>
+
+              </div>
+
+
+
+              <!-- =============================================
+                   BODY ALIGN (세션 한정 — "preset"이면 QUOTE
+                   프리셋 값을 그대로 따름)
+              ============================================== -->
+
+              <div class="post-editor-preview-subrow">
+
+                <span class="post-editor-preview-subrow-label">
+                  body
+                </span>
+
+
+                <select
+                  class="post-editor-preview-select"
+                  id="postEditorPreviewBodyAlignSelect"
+                >
+
+                  <option value="">
+                    preset
+                  </option>
+
+                  <option value="left">
+                    left
+                  </option>
+
+                  <option value="center">
+                    center
+                  </option>
+
+                  <option value="right">
+                    right
+                  </option>
+
+                  <option value="justify">
+                    justify
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <div class="post-editor-preview-row">
+
+              <button
+                class="post-editor-preview-visibility-toggle post-editor-preview-ratio-trigger"
+                id="postEditorPreviewRatioTrigger"
+                type="button"
+                aria-pressed="false"
+                aria-expanded="false"
+                aria-controls="postEditorPreviewRatioControls"
+              >
+                ratio
+              </button>
+
+
+              <!-- =============================================
+                   RATIO ("ratio" 버튼을 눌러야 그 옆에 펼쳐짐)
+              ============================================== -->
+
+              <div
+                class="post-editor-preview-ratio-controls"
+                id="postEditorPreviewRatioControls"
+                hidden
+              >
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="4:5"
+                  aria-pressed="false"
+                >
+                  4:5
+                </button>
+
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="4:6"
+                  aria-pressed="false"
+                >
+                  4:6
+                </button>
+
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="1:1"
+                  aria-pressed="false"
+                >
+                  1:1
+                </button>
+
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="4:3"
+                  aria-pressed="false"
+                >
+                  4:3
+                </button>
+
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="auto"
+                  aria-pressed="false"
+                >
+                  auto
+                </button>
+
+
+                <button
+                  class="post-editor-preview-ratio-button"
+                  type="button"
+                  data-ratio="custom"
+                  aria-pressed="false"
+                >
+                  custom
+                </button>
+
+
+                <div
+                  class="post-editor-preview-ratio-custom-inputs"
+                  id="postEditorPreviewRatioCustomInputs"
+                  hidden
+                >
+
+                  <input
+                    class="post-editor-preview-ratio-custom-input"
+                    id="postEditorPreviewRatioCustomWidth"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    value="4"
+                    aria-label="가로 비율"
+                  >
+
+                  <span class="post-editor-preview-ratio-custom-sep">
+                    :
+                  </span>
+
+                  <input
+                    class="post-editor-preview-ratio-custom-input"
+                    id="postEditorPreviewRatioCustomHeight"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    value="5"
+                    aria-label="세로 비율"
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="post-editor-preview-row">
+
+              <button
+                class="post-editor-preview-visibility-toggle"
+                id="postEditorPreviewSourceToggle"
+                type="button"
+                aria-pressed="true"
+              >
+                source
+              </button>
+
+
+              <!-- =============================================
+                   SOURCE BOTTOM MARGIN (세션 한정 — ratio가
+                   AUTO가 아닐 때만 표시. source는 캔버스 맨
+                   아래에 고정되므로, 그 위치에서 위로 얼마나
+                   띄울지 조절)
+              ============================================== -->
+
+              <div
+                class="post-editor-preview-subrow"
+                id="postEditorPreviewSourceBottomOffsetRow"
+              >
+
+                <span class="post-editor-preview-subrow-label">
+                  margin
+                </span>
+
+
+                <input
+                  class="post-editor-preview-ratio-custom-input"
+                  id="postEditorPreviewSourceBottomOffset"
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  max="500"
+                  aria-label="출처 하단 여백"
+                >
+
+              </div>
+
+
+              <!-- =============================================
+                   SOURCE GAP (세션 한정 — ratio가 AUTO일 때만
+                   표시. AUTO는 source가 캔버스 맨 아래 고정이
+                   아니라 본문 바로 아래로 흘러가므로, 대신
+                   title/body 묶음과의 간격을 조절)
+              ============================================== -->
+
+              <div
+                class="post-editor-preview-subrow"
+                id="postEditorPreviewSourceSpacingRow"
+                hidden
+              >
+
+                <span class="post-editor-preview-subrow-label">
+                  gap
+                </span>
+
+
+                <input
+                  class="post-editor-preview-ratio-custom-input"
+                  id="postEditorPreviewSourceSpacing"
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  max="300"
+                  aria-label="출처 간격"
+                >
+
+              </div>
+
+            </div>
 
           </div>
 

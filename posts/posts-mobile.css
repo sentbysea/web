@@ -458,6 +458,13 @@
   .post-editor-preview-header {
     flex: 0 0 auto;
 
+    margin-bottom: 6px;
+  }
+
+
+  .post-editor-preview-visibility-controls {
+    flex: 0 0 auto;
+
     margin-bottom: 10px;
 
     padding:
